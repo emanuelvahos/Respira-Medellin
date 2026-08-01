@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: ecodata-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATA_INTEGRACION_PM25_ARBOLES
+        value: ./data/integracion_v2_pm25_arboles_medellin.csv
+      - key: DATA_AUDITORIA_ESTACIONES_COMUNAS
+        value: ./data/auditoria_estaciones_comunas.csv
+      - key: DATA_RELACIONES_BLOQUE2
+        value: ./data/relaciones_v2_bloque2.csv
+      - key: DATA_RECOMENDACION_SIEMBRA_ZONA
+        value: ./data/recomendacion_siembra_por_zona.csv
+      - key: DATA_RESUMEN_RECOMENDACION_COMUNA
+        value: ./data/resumen_recomendacion_por_comuna.csv
+      - key: DATA_ZONAS_PRIORIZADAS_SIEMBRA
+        value: ./data/zonas_priorizadas_siembra.geojson
+      - key: DATA_LIMITE_CATASTRAL_COMUNAS
+        value: ./data/limite_catastral_de_comun.geojson
+      - key: DATA_INVENTARIO_ZONAS_VERDES
+        value: ./data/inventario_zonas_verdes.geojson
+      - key: DATA_SOLICITUD_PM25_ESTACIONES
+        value: ./data/Solicitud_PM25_DP1763941.csv
+      - key: CORS_ALLOWED_ORIGINS
+        value: http://localhost:3000
+        sync: false

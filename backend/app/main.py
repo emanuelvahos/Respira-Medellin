@@ -33,5 +33,10 @@ app.include_router(zonas_verdes.router)
 
 
 @app.get("/", tags=["health"])
-def health() -> dict[str, str]:
+def root() -> dict[str, str]:
     return {"status": "ok", "docs": "/docs"}
+
+
+@app.get("/health", tags=["health"])
+def health() -> dict[str, str]:
+    return {"status": "ok"}

@@ -133,15 +133,35 @@ deploy — ya no se leen con rutas `../Visualizacion-de-datos/...`), así que no
 hace falta ningún volumen externo ni empaquetar nada por fuera de esta
 carpeta. Root Directory a configurar en la plataforma: **`backend`**.
 
-1. **Railway (recomendado)**: soporta un *start command* directo
-   (`uvicorn app.main:app --host 0.0.0.0 --port $PORT`) sin necesidad de
-   contenedor. Configurar ahí las mismas variables `DATA_*` de `.env.example`
-   (ya apuntan a `./data/...`, no requieren ajuste) y `CORS_ALLOWED_ORIGINS`
-   con la URL del frontend desplegado.
-2. **Render**: mismo start command, mismas variables.
-3. **Docker simple**: `Dockerfile` mínimo con Python 3.11+, `pip install -r
+1. **Render (usado en este proyecto, plan Free)**: configuración versionada en
+   `render.yaml` (raíz del repo) — build nativo de Python, sin Dockerfile.
+   `geopandas>=1.0` usa `pyogrio` (no `fiona`), y `pyogrio`/`shapely`/`pyproj`
+   traen GDAL/GEOS/PROJ empaquetados en sus wheels de Linux, así que no hace
+   falta ninguna dependencia de sistema adicional en el build de Render —
+   verificado revisando `pip show geopandas` (`Requires: numpy, packaging,
+   pandas, pyogrio, pyproj, shapely`, sin `fiona`) antes de asumir que un
+   Dockerfile custom era necesario.
+   - **Root Directory**: `backend`.
+   - **Build Command**: `pip install -r requirements.txt`.
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - **Health Check Path**: `/health`.
+   - Variables de entorno: las mismas `DATA_*` de `.env.example` (ya apuntan
+     a `./data/...`) + `CORS_ALLOWED_ORIGINS` con la URL del frontend
+     desplegado en Vercel.
+   - **Trade-off del plan Free**: el servicio se duerme tras 15 minutos sin
+     tráfico; el primer request tras dormir tarda ~30-50s (cold start) en
+     responder mientras el contenedor arranca. Es una decisión consciente de
+     costo para una demo de bajo tráfico, mitigada en el frontend con un
+     mensaje de carga explícito para esperas largas — ver
+     `docs/ESTADO_PROYECTO.md`.
+2. **Railway**: mismo start command/variables que Render; requiere plan de
+   pago si ya se usó el proyecto gratuito de prueba en esa cuenta (limitación
+   de cuenta, no del código — por eso este proyecto usa Render).
+3. **Docker simple**: si en algún momento Render dejara de bastar (por
+   ejemplo, si una versión futura de alguna dependencia sí requiriera GDAL de
+   sistema), un `Dockerfile` mínimo con Python 3.11+, `pip install -r
    requirements.txt` y `CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0",
-   "--port", "8000"]`; despliega igual en Railway/Render/Fly.io o cualquier
+   "--port", "8000"]` despliega igual en Render/Railway/Fly.io o cualquier
    host con soporte de contenedores.
 
 En cualquier caso, actualizar `CORS_ALLOWED_ORIGINS` con la URL del frontend
