@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading);
+  --color-vegetation: var(--vegetation);
+  --color-vegetation-foreground: var(--vegetation-foreground);
+  --color-vegetation-muted: var(--vegetation-muted);
+  --color-earth: var(--earth);
+  --color-earth-foreground: var(--earth-foreground);
+  --color-critical: var(--critical);
+  --color-critical-foreground: var(--critical-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-data-sky: var(--data-sky);
+  --color-data-sky-foreground: var(--data-sky-foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --font-heading: var(--font-fraunces);
+  --font-body: var(--font-sans);
+
+  --background: oklch(0.99 0.006 100);
+  --foreground: oklch(0.2 0.02 150);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.02 150);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.02 150);
+  --primary: oklch(0.52 0.13 150);
+  --primary-foreground: oklch(0.99 0.006 100);
+  --secondary: oklch(0.95 0.02 100);
+  --secondary-foreground: oklch(0.28 0.03 150);
+  --muted: oklch(0.95 0.015 100);
+  --muted-foreground: oklch(0.48 0.02 140);
+  --accent: oklch(0.91 0.05 145);
+  --accent-foreground: oklch(0.24 0.04 150);
+  --destructive: oklch(0.58 0.22 27);
+  --border: oklch(0.88 0.02 110);
+  --input: oklch(0.88 0.02 110);
+  --ring: oklch(0.52 0.13 150);
+  --chart-1: oklch(0.6 0.15 150);
+  --chart-2: oklch(0.65 0.13 90);
+  --chart-3: oklch(0.7 0.15 60);
+  --chart-4: oklch(0.62 0.22 27);
+  --chart-5: oklch(0.6 0.12 220);
+  --radius: 0.5rem;
+
+  --vegetation: oklch(0.52 0.13 150);
+  --vegetation-foreground: oklch(0.99 0.006 100);
+  --vegetation-muted: oklch(0.91 0.05 145);
+  --earth: oklch(0.55 0.09 70);
+  --earth-foreground: oklch(0.99 0.006 100);
+  --critical: oklch(0.58 0.22 27);
+  --critical-foreground: oklch(0.99 0.006 100);
+  --warning: oklch(0.75 0.16 65);
+  --warning-foreground: oklch(0.2 0.05 65);
+  --data-sky: oklch(0.6 0.12 220);
+  --data-sky-foreground: oklch(0.99 0.006 100);
+
+  --sidebar: oklch(0.97 0.01 110);
+  --sidebar-foreground: oklch(0.2 0.02 150);
+  --sidebar-primary: oklch(0.52 0.13 150);
+  --sidebar-primary-foreground: oklch(0.99 0.006 100);
+  --sidebar-accent: oklch(0.91 0.05 145);
+  --sidebar-accent-foreground: oklch(0.24 0.04 150);
+  --sidebar-border: oklch(0.88 0.02 110);
+  --sidebar-ring: oklch(0.52 0.13 150);
+}
+
+.dark {
+  --background: oklch(0.16 0.02 155);
+  --foreground: oklch(0.94 0.01 110);
+  --card: oklch(0.2 0.02 155);
+  --card-foreground: oklch(0.94 0.01 110);
+  --popover: oklch(0.2 0.02 155);
+  --popover-foreground: oklch(0.94 0.01 110);
+  --primary: oklch(0.74 0.16 150);
+  --primary-foreground: oklch(0.16 0.03 155);
+  --secondary: oklch(0.27 0.02 155);
+  --secondary-foreground: oklch(0.94 0.01 110);
+  --muted: oklch(0.25 0.02 155);
+  --muted-foreground: oklch(0.68 0.02 130);
+  --accent: oklch(0.3 0.05 150);
+  --accent-foreground: oklch(0.94 0.01 110);
+  --destructive: oklch(0.66 0.22 25);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.74 0.16 150);
+  --chart-1: oklch(0.74 0.16 150);
+  --chart-2: oklch(0.78 0.13 90);
+  --chart-3: oklch(0.78 0.15 60);
+  --chart-4: oklch(0.66 0.22 25);
+  --chart-5: oklch(0.7 0.12 220);
+
+  --vegetation: oklch(0.74 0.16 150);
+  --vegetation-foreground: oklch(0.16 0.03 155);
+  --vegetation-muted: oklch(0.3 0.05 150);
+  --earth: oklch(0.68 0.09 70);
+  --earth-foreground: oklch(0.16 0.03 155);
+  --critical: oklch(0.66 0.22 25);
+  --critical-foreground: oklch(0.16 0.03 155);
+  --warning: oklch(0.8 0.16 65);
+  --warning-foreground: oklch(0.2 0.05 65);
+  --data-sky: oklch(0.7 0.12 220);
+  --data-sky-foreground: oklch(0.16 0.03 155);
+
+  --sidebar: oklch(0.2 0.02 155);
+  --sidebar-foreground: oklch(0.94 0.01 110);
+  --sidebar-primary: oklch(0.74 0.16 150);
+  --sidebar-primary-foreground: oklch(0.16 0.03 155);
+  --sidebar-accent: oklch(0.3 0.05 150);
+  --sidebar-accent-foreground: oklch(0.94 0.01 110);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.74 0.16 150);
+}
+
+.deck-tooltip {
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+}

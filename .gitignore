@@ -1,0 +1,24 @@
+# Este .gitignore cubre lo que vive en la raíz del monorepo (fuera de
+# ecodata-lab-frontend/ y backend/, que ya tienen su propio .gitignore —
+# git respeta ambos, anidados, sin necesidad de repetir sus reglas aquí).
+
+# artefactos de sistema Windows (OneDrive genera uno por carpeta)
+desktop.ini
+**/desktop.ini
+Thumbs.db
+$RECYCLE.BIN/
+
+# por si algún editor/IDE se corre desde la raíz en vez de cada subcarpeta
+node_modules/
+.next/
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+lighthouse-reports/
+.DS_Store
+
+# configuración local de Claude Code (personal, no se comparte en el repo)
+.claude/settings.local.json
