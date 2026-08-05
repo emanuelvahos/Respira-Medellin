@@ -32,6 +32,31 @@ export const COMUNA_FLYTO_ZOOM = 17.8;
 export const COMUNA_FLYTO_PITCH = 60;
 export const COMUNA_FLYTO_BEARING = 0;
 
+/**
+ * Límites de paneo/zoom del mapa, derivados del bounding box real de
+ * `limite_catastral_de_comun.geojson` (las 21 comunas/corregimientos):
+ * lng [-75.7193, -75.4719], lat [6.1629, 6.3749]. Se les da ~15-20% de
+ * margen para que el usuario tenga "aire" alrededor de la ciudad sin poder
+ * alejarse a ver medio país.
+ */
+export const MEDELLIN_MAX_BOUNDS: [[number, number], [number, number]] = [
+  [-75.8, 6.09],
+  [-75.39, 6.45],
+];
+
+/**
+ * `minZoom`: nivel en el que el área acotada (`MEDELLIN_MAX_BOUNDS`) apenas
+ * llena el viewport, calculado con la fórmula estándar de tiles Web Mercator
+ * (pixeles_por_grado = 256*2^zoom/360) contra un viewport de referencia
+ * ~1280x800px. Zoom por debajo de este valor solo agregaría espacio vacío
+ * fuera del área de interés, así que se usa como tope de alejamiento.
+ * `maxZoom`: por encima de `COMUNA_FLYTO_ZOOM` (17.8, usado por "Respiro
+ * Urbano"), para permitir algo de inspección de detalle adicional sin
+ * bloquear el flyTo.
+ */
+export const MEDELLIN_MIN_ZOOM = 10.5;
+export const MEDELLIN_MAX_ZOOM = 19;
+
 type MapState = {
   selectedComuna: string | null;
   hoveredComuna: string | null;
@@ -57,7 +82,10 @@ export const useMapStore = create<MapState>((set) => ({
   layers: {
     comunas: true,
     zonasSiembra: true,
-    zonasVerdes: true,
+    // 48.348 polígonos (~23MB tras simplificar): apagada por defecto para no
+    // descargarla en el primer render de /mapa; el usuario la activa a
+    // conciencia desde el toggle.
+    zonasVerdes: false,
     pm25: false,
   },
   viewState: INITIAL_VIEW_STATE,

@@ -1,8 +1,6 @@
 "use client";
 
-import { useZonasVerdes } from "@/lib/api/queries";
 import { useMapStore, type MapLayerId } from "@/store/mapStore";
-import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const LAYER_LABELS: Record<MapLayerId, string> = {
@@ -14,8 +12,6 @@ const LAYER_LABELS: Record<MapLayerId, string> = {
 
 export function MapLayerToggles() {
   const { layers, toggleLayer, particlesPaused, toggleParticlesPaused } = useMapStore();
-  const zonasVerdesQuery = useZonasVerdes();
-  const zonasVerdesUnavailable = zonasVerdesQuery.isError;
   const reducedMotion = usePrefersReducedMotion();
 
   return (
@@ -24,34 +20,19 @@ export function MapLayerToggles() {
         Capas
       </p>
       <ul className="space-y-2">
-        {(Object.keys(LAYER_LABELS) as MapLayerId[]).map((id) => {
-          const disabled = id === "zonasVerdes" && zonasVerdesUnavailable;
-          return (
-            <li key={id}>
-              <label
-                className={cn(
-                  "flex items-center justify-between gap-2",
-                  disabled && "cursor-not-allowed opacity-50",
-                )}
-                title={disabled ? "Datos no disponibles" : undefined}
-              >
-                <span className="text-foreground">{LAYER_LABELS[id]}</span>
-                <input
-                  type="checkbox"
-                  checked={disabled ? false : layers[id]}
-                  disabled={disabled}
-                  onChange={() => toggleLayer(id)}
-                  className="size-4 accent-vegetation"
-                />
-              </label>
-              {disabled && (
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
-                  Datos no disponibles
-                </p>
-              )}
-            </li>
-          );
-        })}
+        {(Object.keys(LAYER_LABELS) as MapLayerId[]).map((id) => (
+          <li key={id}>
+            <label className="flex items-center justify-between gap-2">
+              <span className="text-foreground">{LAYER_LABELS[id]}</span>
+              <input
+                type="checkbox"
+                checked={layers[id]}
+                onChange={() => toggleLayer(id)}
+                className="size-4 accent-vegetation"
+              />
+            </label>
+          </li>
+        ))}
       </ul>
 
       {layers.pm25 && (

@@ -70,7 +70,9 @@ export function ComunaDetailPanel() {
 
           {resumenQuery.isSuccess && !resumen && (
             <p className="text-sm text-muted-foreground">
-              No hay datos de recomendación de siembra para esta comuna.
+              Esta comuna no tiene zonas de siembra priorizadas en el modelo
+              actual: el pipeline de recomendación (AHP) no calculó un score
+              para ella con los datos fuente disponibles.
             </p>
           )}
 

@@ -63,15 +63,22 @@ class ComunaProperties(BaseModel):
 
 
 class ZonaVerdeInventarioProperties(BaseModel):
-    """properties del inventario completo de zonas verdes.
+    """properties de inventario_zonas_verdes.geojson (fuente oficial
+    GeoMedellín, ver backend/README.md).
 
-    Placeholder: el dataset fuente (inventario_zonas_verdes.geojson) no
-    existe todavía en el repo de datos — ver backend/README.md. El esquema
-    se define desde ya para que el contrato quede documentado en /docs, pero
-    el router responde 503 mientras el archivo no exista.
+    extra="allow": el archivo trae numerosas columnas de detalle por
+    subsistema (ap_*, so_*, ree_*, sh_*) casi siempre "No aplica"; se
+    preservan sin truncar la respuesta pero no se tipan una a una aquí.
     """
 
+    model_config = {"extra": "allow"}
+
     id_poligono: int
-    tipo_cobertura: str
     tipologia: str
-    comuna: str
+    categoria: str
+    subcategoria: str
+    cober_dom: str
+    narb_aprox: str
+    cubierta_verde: str
+    potencial_verde: str
+    observaciones: str | None = None

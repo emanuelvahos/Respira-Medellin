@@ -12,6 +12,10 @@ export function MapLegend() {
           <span>Baja</span>
           <span>Alta</span>
         </div>
+        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <span className="inline-block size-2.5 shrink-0 rounded-full bg-muted-foreground/40" aria-hidden="true" />
+          Gris plano: sin zonas de siembra priorizadas en el modelo actual
+        </p>
       </div>
 
       <div className="mb-3">
@@ -25,6 +29,41 @@ export function MapLegend() {
         </div>
         <p className="mt-1 text-[10px] text-muted-foreground">
           Más densidad y velocidad de flujo = mayor concentración real en esa estación.
+        </p>
+      </div>
+
+      <div className="mb-3">
+        <p className="mb-1 font-medium text-muted-foreground">
+          Zonas verdes · cobertura dominante (inventario GeoMedellín)
+        </p>
+        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-vegetation" aria-hidden="true" />
+            Árboles
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-chart-1" aria-hidden="true" />
+            Grama
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-chart-2" aria-hidden="true" />
+            Jardín
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-chart-3" aria-hidden="true" />
+            Arbustos
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-earth" aria-hidden="true" />
+            Tierra
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block size-2.5 shrink-0 rounded-full bg-chart-5" aria-hidden="true" />
+            Piso duro
+          </span>
+        </div>
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          Capa apagada por defecto (48.348 polígonos): actívala desde el panel de capas.
         </p>
       </div>
 

@@ -36,15 +36,144 @@
 
 ## 2. Limitaciones conocidas (documentadas, no ocultas)
 
-### `/api/zonas-verdes` → 503
-El archivo `inventario_zonas_verdes.geojson` no existe en el repo de datos
-(`Visualizacion-de-datos`) en la ruta que `bloque2_recomendador_siembra.py`
-espera — problema del dataset fuente, no del backend ni del frontend. El
+### `/api/zonas-verdes` → RESUELTO (2026-08-04) con fuente oficial GeoMedellín
+
+**Actualización 2026-08-04**: se consiguió el archivo real desde el portal
+oficial de datos abiertos de la Alcaldía de Medellín (**GeoMedellín**),
+reemplazando la limitación documentada abajo. 48.348 polígonos, CRS
+EPSG:9377, colocado en `backend/data/inventario_zonas_verdes.geojson`.
+`/api/zonas-verdes` responde **200** (confirmado con curl: coordenadas en
+rango válido de Medellín, no las coordenadas planas EPSG:9377 originales).
+El payload se optimiza de 71MB a ~23MB (simplify + set_precision + recorte
+de columnas de detalle no usadas — detalle completo en
+`backend/README.md`, sección "Fuente de `inventario_zonas_verdes.geojson`").
+El toggle de la capa en el frontend ya no muestra "Datos no disponibles";
+queda **apagado por defecto** (el usuario la activa a conciencia) porque
+sigue siendo la capa más pesada del mapa incluso optimizada. La
+investigación original que sigue abajo se conserva como registro de por qué
+el dataset estuvo ausente durante las fases 1-6.
+
+#### Investigación original (503, archivo ausente en el repo fuente)
+Se reabrió esta investigación (2026-08-03) clonando el repo fuente completo
+(`https://github.com/nena0237/visualizacion-de-datos`, los 9 commits de su
+historia completa, en una carpeta temporal fuera del monorepo) para descartar
+que el archivo estuviera en alguna ruta o commit no revisado antes. Resultado:
+
+- Búsqueda por nombre de archivo (`*zona_verde*`, `*zonas_verde*`,
+  `*cobertura*`, `*inventario*`) en todo el árbol de trabajo: solo aparecen
+  `dashboard/mapa_coropletico_pm25_zonas_verdes.py` y sus `.png` de salida
+  (mapas ya renderizados), nunca un dataset fuente.
+- Búsqueda en **todo el historial de git** (`git log --all --diff-filter=A`)
+  por cualquier archivo alguna vez agregado bajo una ruta que contenga
+  `zonas_verdes` o `base_datos_zonas_verdes`: cero resultados en los 9
+  commits del repo (`git log --oneline | wc -l` → 9). No hay `.gitignore` que
+  explique una exclusión deliberada.
+- El propio código del repo fuente confirma que el archivo nunca estuvo ahí:
+  tanto `dashboard/mapa_coropletico_pm25_zonas_verdes.py` (línea 25) como
+  `scripts/bloque_2/bloque2_recomendador_siembra.py` (línea 80, variable
+  `RUTA_ZONAS`) apuntan a la misma ruta hardcodeada
+  `../../bases_de_datos/base_datos_zonas_verdes/geojson_inventario_zonas_verdes/inventario_zonas_verdes.geojson`,
+  una carpeta `base_datos_zonas_verdes/` que **no existe en ningún commit**
+  del repo — es una dependencia externa que el autor original tenía en su
+  máquina local (probablemente un shapefile de la Alcaldía/Área
+  Metropolitana descargado aparte) y nunca subió al repositorio público.
+  Esto también explica por qué `resumen_recomendacion_por_comuna.csv` solo
+  cubre 11 de las 21 comunas/corregimientos (ver diagnóstico de comunas sin
+  score más abajo): `bloque2_recomendador_siembra.py` usa ese mismo archivo
+  ausente (`gdf_zonas`) como fuente de los polígonos candidatos de siembra,
+  así que su cobertura territorial real e incompleta se hereda a todo el
+  pipeline.
+
+**Veredicto: confirmado, es una limitación real del dataset fuente, no un
+bug del backend ni del frontend.** No hay nada que copiar ni convertir. El
 endpoint está completamente implementado y responderá 200 en cuanto el
 archivo exista en la ruta configurada en `DATA_INVENTARIO_ZONAS_VERDES`. El
 frontend maneja esto con gracia: el toggle de la capa "Zonas verdes
 (inventario)" aparece deshabilitado con la nota "Datos no disponibles" en vez
-de fallar silenciosamente o romper el mapa.
+de fallar silenciosamente o romper el mapa. No se modificó código de
+backend/frontend en esta ronda porque no hay nada que conectar: si en el
+futuro la Secretaría entrega el archivo real, basta con colocarlo en
+`backend/data/inventario_zonas_verdes.geojson` (reproyectando a WGS84 si no
+viene ya en ese CRS, igual que los demás GeoJSON del proyecto — ver
+`backend/app/services/data_loader.py`); el endpoint empezará a responder 200
+automáticamente, sin cambios de código adicionales.
+
+### Comunas sin score AHP: diagnóstico definitivo (2026-08-03)
+
+Se investigó si las comunas sin `score_multicriteria` en
+`resumen_recomendacion_por_comuna.csv` eran así por falta real de datos en la
+fuente o por un bug de cruce de nombres (tildes/mayúsculas) en algún punto
+del pipeline o del frontend. Metodología: comparar (1) los 19 archivos Excel
+de árboles por comuna en el repo fuente
+(`base_datos_arboles/ARBOLES/Data_Raw/ARBOLES_TOTALES/*.xlsx`), (2) el
+diccionario `GEOJSON_NOMBRE_MAP` usado tanto en `bloque_1` como en `bloque_2`
+para normalizar los nombres del GeoJSON catastral, y (3) las 11 filas de
+`resumen_recomendacion_por_comuna.csv`.
+
+**Medellín tiene 21 unidades (16 comunas + 5 corregimientos). El CSV de
+recomendación solo cubre 11: Guayabal, Belén, Castilla, La Candelaria, El
+Poblado, Robledo, La América (con score real) y Aranjuez, Buenos Aires,
+Laureles Estadio, San Javier (con `score_multicriteria = 0` y
+`ranking_prioridad = 99` porque no tienen estación de PM2.5 cercana, aunque sí
+tienen zonas candidatas de siembra).** Las otras 10 (Manrique, Popular, Santa
+Cruz, Doce de Octubre, Villa Hermosa, y los corregimientos de San Cristóbal,
+Santa Elena, San Antonio de Prado, San Sebastián de Palmitas y Altavista) no
+aparecen en absoluto en el CSV.
+
+Veredicto comuna por comuna para las 10 ausentes:
+
+| Comuna/corregimiento | ¿Tiene Excel de árboles en la fuente? | ¿Nombre coincide (normalizado) con `GEOJSON_NOMBRE_MAP` y con el frontend? | Veredicto |
+|---|---|---|---|
+| Manrique | Sí (`MANRIQUE.xlsx`) | Sí | Sin datos en la fuente (sin zona candidata de siembra ni estación PM2.5 cercana) |
+| Popular | Sí (`POPULAR.xlsx`) | Sí | Sin datos en la fuente |
+| Santa Cruz | Sí (`SANTA_CRUZ.xlsx`) | Sí | Sin datos en la fuente (tiene estación PM2.5 según `auditoria_estaciones_comunas.csv`, pero no aparece con zona de siembra candidata → falta en el archivo ausente de zonas verdes, no un bug de nombre) |
+| Doce de Octubre | Sí (`DOCE_OCTUBRE.xlsx`) | Sí | Sin datos en la fuente |
+| Villa Hermosa | Sí (`VILLA_HERMOSA.xlsx`) | Sí | Sin datos en la fuente (mismo caso que Santa Cruz: tiene estación PM2.5 pero no zona candidata) |
+| Corregimiento de San Cristóbal | Sí (`CORRE_SAN_CRISTOBAL.xlsx`) | Sí | Sin datos en la fuente (mismo caso: tiene estación PM2.5, no zona candidata) |
+| Corregimiento de Santa Elena | Sí (`CORRE_SANTA_ELENA.xlsx`) | Sí | Sin datos en la fuente (mismo caso) |
+| Corregimiento de San Antonio de Prado | Sí (`CORRE_SAN_ANTONIOP.xlsx`) | Sí | Sin datos en la fuente |
+| Corregimiento de San Sebastián de Palmitas | Sí (`CORRE_SAN_SEBASTIAN.xlsx`) | Sí | Sin datos en la fuente |
+| Corregimiento de Altavista | Sí (`CORRE_ALTAVISTA.xlsx`) | Sí | Sin datos en la fuente |
+
+Es decir: **ninguna de las 10 comunas sin score falta por un bug de cruce de
+nombres** — los 19 archivos Excel existen para todas ellas y sus nombres
+normalizados coinciden exactamente con el diccionario `GEOJSON_NOMBRE_MAP`
+(que ya incluye tildes y las formas largas de corregimiento correctas, p. ej.
+`"SAN CRISTOBAL": "Corregimiento de San Cristóbal"`). La causa raíz es que
+`bloque2_recomendador_siembra.py` construye el CSV de recomendación a partir
+del spatial join entre las comunas y el archivo ausente
+`inventario_zonas_verdes.geojson` (ver sección anterior): si esa capa de
+zonas candidatas no cubre una comuna, esa comuna simplemente no genera fila
+en el CSV, sin importar si tiene árboles inventariados o estación de PM2.5.
+Cuatro comunas (Santa Cruz, Villa Hermosa, San Cristóbal, Santa Elena) sí
+tienen estación de PM2.5 pero tampoco aparecen — confirma que el filtro
+decisivo es la cobertura de esa capa de zonas verdes ausente, no el cruce de
+nombres.
+
+**Único bug de cruce de nombres real que sí se encontró — en el frontend de
+este proyecto, ya corregido**: la comuna 11 es "Laureles - Estadio" en el
+CSV de siembra/PM2.5 pero el GeoJSON catastral (`limite_catastral_de_comun.geojson`)
+solo trae el nombre `"LAURELES"` en mayúsculas sin la segunda palabra. Sin un
+alias explícito, la normalización por mayúsculas/tildes NO resuelve esta
+diferencia (son cadenas distintas, no solo un problema de acentos). Esto está
+documentado y corregido en
+`ecodata-lab-frontend/src/lib/map/matchComuna.ts` vía el diccionario
+`NAME_ALIASES` (`"LAURELES ESTADIO": "LAURELES"`), y se confirmó que
+`ComunaDetailPanel.tsx` y `MapCanvas.tsx` usan `normalizeComunaName()` en
+todos los cruces relevantes. No se encontró el mismo bug replicado en el
+pipeline Python original (`GEOJSON_NOMBRE_MAP` en `bloque_2` ya mapea
+`"LAURELES": "Laureles Estadio"` correctamente en esa dirección), así que no
+hay hallazgo nuevo que reportar aguas arriba.
+
+**Manejo de "comuna sin score" en el frontend — confirmado, ya existía y
+está completo:** `ComunaDetailPanel.tsx` (líneas 71-77) muestra el mensaje
+explícito "Esta comuna no tiene zonas de siembra priorizadas en el modelo
+actual: el pipeline de recomendación (AHP) no calculó un score para ella con
+los datos fuente disponibles" cuando `resumenQuery.isSuccess && !resumen`.
+`MapCanvas.tsx` (tooltip, línea ~305-310) retorna `null` en vez de mostrar
+datos falsos cuando no hay `resumen` para la comuna bajo el cursor. No se
+necesitó ningún cambio de código en esta ronda: el manejo ya era correcto y
+completo antes de esta investigación.
 
 ### Árboles 3D: muestra, no censo completo
 `TreeInstances` no renderiza el censo real de árboles por comuna (serían
@@ -85,6 +214,22 @@ build de producción (`pnpm build && pnpm start`):
 - **Best Practices, "Missing source maps": corregido en `/mapa` y
   `/dashboard`** (antes fallaba en las 3, ahora solo queda un caso aislado en
   `/`) activando `productionBrowserSourceMaps: true` en `next.config.ts`.
+
+**Re-corrida 2026-08-04** (tras integrar `inventario_zonas_verdes.geojson`
+real y dejar esa capa apagada por defecto/carga diferida — ver sección
+"RESUELTO" de `/api/zonas-verdes" abajo): sin regresión, scores iguales o
+mejores que la línea base de Fase 6.
+
+| Página | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| `/` | 36 | 100 | 81 | 100 |
+| `/mapa` | 39 | 100 | 81 | 100 |
+| `/dashboard` | 61 | 100 | 81 | 100 |
+
+Confirma que la nueva capa (apagada por defecto, se difiere su fetch de
+~23MB hasta que el usuario la activa) no degrada el score inicial de
+`/mapa`. El resto de audits < 90 son los mismos ya diagnosticados abajo
+(ruido de Kaspersky en el entorno local, no del código).
 
 **Por qué Performance bajó más de lo esperado y por qué no se persigue más
 en esta fase — hallazgo real, no una excusa:**

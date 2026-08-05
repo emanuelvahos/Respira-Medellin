@@ -17,6 +17,9 @@ import {
   COMUNA_FLYTO_BEARING,
   COMUNA_FLYTO_PITCH,
   COMUNA_FLYTO_ZOOM,
+  MEDELLIN_MAX_BOUNDS,
+  MEDELLIN_MAX_ZOOM,
+  MEDELLIN_MIN_ZOOM,
   useMapStore,
   type MapViewState,
 } from "@/store/mapStore";
@@ -63,7 +66,7 @@ export function MapCanvas() {
   const comunasQuery = useComunas();
   const resumenQuery = useResumenComuna();
   const zonasSiembraQuery = useZonasSiembraGeojson();
-  const zonasVerdesQuery = useZonasVerdes();
+  const zonasVerdesQuery = useZonasVerdes(layers.zonasVerdes);
   const pm25Query = usePM25();
   const estacionesPm25Query = useEstacionesPM25();
 
@@ -101,12 +104,9 @@ export function MapCanvas() {
   const zonasVerdesLayer = useMemo(
     () =>
       layers.zonasVerdes
-        ? createZonasVerdesLayer({
-            data: zonasVerdesQuery.data,
-            isError: zonasVerdesQuery.isError,
-          })
+        ? createZonasVerdesLayer({ data: zonasVerdesQuery.data })
         : null,
-    [layers.zonasVerdes, zonasVerdesQuery.data, zonasVerdesQuery.isError],
+    [layers.zonasVerdes, zonasVerdesQuery.data],
   );
 
   // --- Partículas PM2.5: campo determinista función de `t`, animado por rAF ---
@@ -283,7 +283,14 @@ export function MapCanvas() {
   return (
     <div className="relative h-full w-full overflow-hidden rounded-lg border border-border">
       <DeckGL
-        viewState={viewState}
+        viewState={
+          {
+            ...viewState,
+            minZoom: MEDELLIN_MIN_ZOOM,
+            maxZoom: MEDELLIN_MAX_ZOOM,
+            maxBounds: MEDELLIN_MAX_BOUNDS,
+          } as typeof viewState
+        }
         onViewStateChange={({ viewState: next }) =>
           setViewState(next as typeof viewState)
         }
@@ -306,6 +313,7 @@ export function MapCanvas() {
           ref={mapRef}
           mapboxAccessToken={MAPBOX_TOKEN}
           mapStyle="mapbox://styles/mapbox/dark-v11"
+          maxBounds={MEDELLIN_MAX_BOUNDS}
           reuseMaps
         />
       </DeckGL>

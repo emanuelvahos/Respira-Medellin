@@ -13,6 +13,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
+import shapely
 from fastapi import HTTPException
 
 from app.core.config import get_settings
@@ -41,9 +42,14 @@ def _read_csv(path: Path, env_var: str) -> pd.DataFrame:
     return pd.read_csv(path, encoding="utf-8-sig")
 
 
-def _read_geojson_wgs84(path: Path, env_var: str) -> dict:
+def _read_geojson_wgs84(path: Path, env_var: str, simplify_tolerance: float | None = None) -> dict:
     _require_file(path, env_var)
     gdf = gpd.read_file(path)
+    if simplify_tolerance is not None:
+        # Simplificar en el CRS proyectado original (unidades = metros) antes
+        # de reproyectar: la tolerancia es directamente interpretable y el
+        # resultado es determinista frente al CRS destino.
+        gdf["geometry"] = gdf.geometry.simplify(tolerance=simplify_tolerance, preserve_topology=True)
     if gdf.crs is not None and str(gdf.crs) != WGS84:
         gdf = gdf.to_crs(WGS84)
     return json.loads(gdf.to_json())
@@ -119,13 +125,46 @@ def load_limite_catastral_comunas_geojson() -> dict:
     )
 
 
+_ZONAS_VERDES_PROPERTIES = [
+    "id_poligono",
+    "tipologia",
+    "categoria",
+    "subcategoria",
+    "cober_dom",
+    "narb_aprox",
+    "cubierta_verde",
+    "potencial_verde",
+    "observaciones",
+    "geometry",
+]
+
+
 @lru_cache
 def load_inventario_zonas_verdes_geojson() -> dict:
+    """48.348 polígonos (fuente GeoMedellín, ver backend/README.md).
+
+    Tres optimizaciones para que el payload sea manejable en el mapa:
+    1. simplify(tolerance=0.5m) en el CRS proyectado original (EPSG:9377,
+       unidades = metros) antes de reproyectar: ~44% menos vértices con
+       <0.12% de distorsión de área total.
+    2. set_precision a grid_size=1e-6° (~0.11m) tras reproyectar: trunca el
+       ruido decimal de flotantes que no aporta precisión visual.
+    3. Se descartan las columnas *_subcategoria/*_componente/*_elemento de
+       subsistemas (ap_/so_/ree_/sh_) que en la práctica son casi siempre
+       "No aplica" y no se usan para colorear ni en el popup del mapa.
+    """
     settings = get_settings()
-    return _read_geojson_wgs84(
-        settings.data_inventario_zonas_verdes,
-        "DATA_INVENTARIO_ZONAS_VERDES",
-    )
+    path = settings.data_inventario_zonas_verdes
+    _require_file(path, "DATA_INVENTARIO_ZONAS_VERDES")
+
+    gdf = gpd.read_file(path)
+    gdf["geometry"] = gdf.geometry.simplify(tolerance=0.5, preserve_topology=True)
+    if gdf.crs is not None and str(gdf.crs) != WGS84:
+        gdf = gdf.to_crs(WGS84)
+    gdf["geometry"] = shapely.set_precision(gdf.geometry.values, grid_size=1e-6)
+
+    gdf = gdf[_ZONAS_VERDES_PROPERTIES]
+    return json.loads(gdf.to_json(drop_id=True))
 
 
 @lru_cache

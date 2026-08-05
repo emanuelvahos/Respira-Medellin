@@ -65,7 +65,7 @@ export function useResumenComuna() {
   });
 }
 
-export function useZonasVerdes() {
+export function useZonasVerdes(enabled = true) {
   return useQuery({
     queryKey: ["zonas-verdes"],
     queryFn: () =>
@@ -73,9 +73,10 @@ export function useZonasVerdes() {
         endpoints.zonasVerdes,
         zonasVerdesFeatureCollectionSchema,
       ),
-    // El dataset fuente puede no existir todavía (503 esperado): no reintentar
-    // en bucle, para que la capa se degrade a "no disponible" de inmediato.
-    retry: false,
+    // 48.348 polígonos (~23MB): se difiere hasta que el usuario active la
+    // capa (toggle apagado por defecto), no se descarga desde el primer
+    // render de /mapa.
+    enabled,
   });
 }
 

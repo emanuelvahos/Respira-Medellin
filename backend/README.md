@@ -59,7 +59,7 @@ uvicorn app.main:app --reload
 | GET | `/api/siembra/zonas/geojson` | `zonas_priorizadas_siembra.geojson` | Geometría de zonas priorizadas (GeoJSON, WGS84) |
 | GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` | Score AHP y ranking agregado por comuna |
 | GET | `/api/siembra/ranking-comunas?peso_pm25=&peso_deficit=&peso_area=` | recalculado (ver abajo) | Ranking AHP con pesos custom (comparador de escenarios, Fase 4) |
-| GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | **Ver "Dataset pendiente" abajo** |
+| GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | Inventario real de zonas verdes (48.348 polígonos) — ver "Fuente de `inventario_zonas_verdes.geojson`" abajo |
 
 ## Reproyección de geometrías
 
@@ -107,17 +107,43 @@ ranking = orden descendente por score_total
 - No se re-ejecuta el spatial join ni se relee ningún archivo fuera de lo
   que el backend ya expone en otros endpoints.
 
-## Dataset pendiente: `inventario_zonas_verdes.geojson`
+## Fuente de `inventario_zonas_verdes.geojson`
 
-Este archivo **no existe** en el repo de datos al momento de esta fase. El
-script `bloque2_recomendador_siembra.py` lo referencia en una ruta
-(`bases_de_datos/base_datos_zonas_verdes/...`) que no coincide con ninguna
-carpeta real del repo (las carpetas existentes usan `base_datos_*`,
-singular). El router `/api/zonas-verdes` está completamente implementado
-(modelo Pydantic, reproyección, endpoint) y responderá **200** en cuanto el
-archivo exista en la ruta configurada en `DATA_INVENTARIO_ZONAS_VERDES`;
-hasta entonces responde **503** con el nombre exacto de la variable de
-entorno a revisar.
+**Resuelto (2026-08-04).** El script original `bloque2_recomendador_siembra.py`
+referenciaba una ruta (`bases_de_datos/base_datos_zonas_verdes/...`) que no
+coincidía con ninguna carpeta real del repo de datos, y el archivo nunca
+existió en el repo original — por eso el endpoint respondía 503 en fases
+anteriores.
+
+Se reemplazó por el inventario real de zonas verdes descargado del portal
+oficial de datos abiertos **GeoMedellín** (Alcaldía de Medellín), descargado
+el **2026-08-04**. 48.348 polígonos, CRS EPSG:9377, con columnas de detalle
+(`tipologia`, `categoria`, `subcategoria`, `cober_dom`, `narb_aprox`,
+`cubierta_verde`, `potencial_verde`) más ricas que el esquema placeholder
+original — `app/models/zona_verde.py` se actualizó para reflejar los campos
+reales (`extra="allow"` para las columnas de detalle por subsistema, casi
+siempre "No aplica", que no se tipan una a una).
+
+**Optimización de payload** (`load_inventario_zonas_verdes_geojson` en
+`app/services/data_loader.py`): el archivo fuente pesa 71MB sin optimizar,
+demasiado para servir sin degradar el framerate del mapa con la capa activa.
+Se aplican tres pasos antes de servir la respuesta (cacheados vía
+`lru_cache`, un único costo de carga/proceso ~20s en el primer request):
+
+1. `geopandas.GeoDataFrame.geometry.simplify(tolerance=0.5, preserve_topology=True)`
+   en el CRS proyectado original (metros): ~44% menos vértices, <0.12% de
+   distorsión de área total (medido comparando área agregada antes/después).
+2. `shapely.set_precision(grid_size=1e-6)` tras reproyectar a WGS84 (~0.11m
+   de resolución): trunca el ruido decimal de los flotantes.
+3. Se descartan en la respuesta las columnas de detalle por subsistema
+   (`ap_*`, `so_*`, `ree_*`, `sh_*`) que no se usan para colorear ni en el
+   popup del mapa.
+
+Resultado: 71MB → ~23MB servidos, endpoint responde **200**.
+
+Si en el futuro se necesita más rendimiento (p. ej. paginación espacial por
+bounding box del viewport), evaluarlo después de medir el impacto real de
+esta simplificación a solas — no antes.
 
 ## Manejo de errores
 

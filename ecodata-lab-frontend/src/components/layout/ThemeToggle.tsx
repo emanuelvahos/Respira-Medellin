@@ -21,7 +21,13 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      aria-label={
+        mounted
+          ? isDark
+            ? "Cambiar a modo claro"
+            : "Cambiar a modo oscuro"
+          : "Cambiar tema"
+      }
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="shrink-0"
     >
