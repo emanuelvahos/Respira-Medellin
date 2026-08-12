@@ -8,6 +8,7 @@ const LAYER_LABELS: Record<MapLayerId, string> = {
   zonasSiembra: "Zonas priorizadas de siembra",
   zonasVerdes: "Zonas verdes (inventario)",
   pm25: "PM2.5 (partículas animadas)",
+  arbolesSau: "Árboles SAU (inventario real)",
 };
 
 export function MapLayerToggles() {

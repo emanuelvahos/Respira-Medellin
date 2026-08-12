@@ -17,7 +17,16 @@ export type MapViewState = {
   bearing: number;
 };
 
-export type MapLayerId = "comunas" | "zonasSiembra" | "zonasVerdes" | "pm25";
+export type MapLayerId = "comunas" | "zonasSiembra" | "zonasVerdes" | "pm25" | "arbolesSau";
+
+/**
+ * Zoom a partir del cual la capa de árboles del SAU cambia de clusters (grid
+ * agregado) a puntos individuales reales por viewport — mismo patrón visual
+ * que el propio visor del SAU al acercar el mapa. Por debajo de este umbral,
+ * pedir puntos individuales devolvería demasiados árboles por celda de
+ * pantalla; por encima, el bbox del viewport ya acota lo suficiente.
+ */
+export const ARBOLES_SAU_PUNTOS_MIN_ZOOM = 15;
 
 export type MapLayerToggles = Record<MapLayerId, boolean>;
 
@@ -87,6 +96,10 @@ export const useMapStore = create<MapState>((set) => ({
     // conciencia desde el toggle.
     zonasVerdes: false,
     pm25: false,
+    // 339.724 árboles reales (SAU): apagada por defecto, igual que
+    // zonas-verdes — se activa a conciencia desde el toggle, y siempre carga
+    // primero en modo clustered (liviano), nunca los puntos crudos.
+    arbolesSau: false,
   },
   viewState: INITIAL_VIEW_STATE,
   particlesPaused: false,

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import comunas, pm25, siembra, zonas_verdes
+from app.routers import arboles, comunas, pm25, siembra, zonas_verdes
 
 settings = get_settings()
 
@@ -30,6 +30,7 @@ app.include_router(comunas.router)
 app.include_router(pm25.router)
 app.include_router(siembra.router)
 app.include_router(zonas_verdes.router)
+app.include_router(arboles.router)
 
 
 @app.get("/", tags=["health"])

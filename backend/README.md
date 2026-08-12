@@ -45,6 +45,20 @@ uvicorn app.main:app --reload
 - API: http://localhost:8000
 - Documentación interactiva (Swagger): http://localhost:8000/docs
 
+## Scripts de ETL
+
+`backend/scripts/fetch_sau_arboles.py` descarga (throttled, paginado) el
+inventario real de árboles del SAU desde el servicio ArcGIS REST público de
+la Alcaldía y lo guarda en `backend/data/sau_arboles_urbanos.csv`. No corre
+automáticamente ni en el build ni en el deploy — es una descarga puntual que
+ya se ejecutó una vez (ver "Fuente de `sau_arboles_urbanos.csv`" abajo); solo
+hace falta volver a correrlo si se necesita refrescar el dataset:
+
+```bash
+cd backend
+python scripts/fetch_sau_arboles.py
+```
+
 ## Endpoints
 
 | Método | Ruta | Fuente | Descripción |
@@ -60,6 +74,9 @@ uvicorn app.main:app --reload
 | GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` | Score AHP y ranking agregado por comuna |
 | GET | `/api/siembra/ranking-comunas?peso_pm25=&peso_deficit=&peso_area=` | recalculado (ver abajo) | Ranking AHP con pesos custom (comparador de escenarios, Fase 4) |
 | GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | Inventario real de zonas verdes (48.348 polígonos) — ver "Fuente de `inventario_zonas_verdes.geojson`" abajo |
+| GET | `/api/arboles/resumen-comuna` | `sau_arboles_urbanos.csv` | Conteo real por comuna, top 5 especies y % de estado fitosanitario (SAU) — agregado liviano para el dashboard |
+| GET | `/api/arboles/clusters?cell_size_deg=` | idem | Clustering espacial en grid (centroide + conteo por celda) — para el mapa a zoom alejado |
+| GET | `/api/arboles/puntos?min_lon=&min_lat=&max_lon=&max_lat=&limit=` | idem | Árboles individuales reales dentro de un bbox, con tope duro de resultados — para el mapa a zoom cercano |
 
 ## Reproyección de geometrías
 
@@ -144,6 +161,64 @@ Resultado: 71MB → ~23MB servidos, endpoint responde **200**.
 Si en el futuro se necesita más rendimiento (p. ej. paginación espacial por
 bounding box del viewport), evaluarlo después de medir el impacto real de
 esta simplificación a solas — no antes.
+
+## Fuente de `sau_arboles_urbanos.csv`
+
+Inventario real de árboles del **Sistema de Árbol Urbano (SAU)**, Alcaldía de
+Medellín — no es el mismo dataset que `base_datos_arboles` del pipeline
+original (bloque_1/bloque_2), que sigue alimentando exclusivamente el modelo
+AHP de recomendación de siembra (`app/services/ahp.py`). Esta fuente es para
+enriquecer visualización y KPIs informativos del dashboard/mapa; no se mezcló
+con el pipeline de recomendación.
+
+**Descubrimiento**: el visor público https://www.medellin.gov.co/sau/
+consulta, sin autenticación, un servicio ArcGIS REST propio de la Alcaldía
+(`servidormapas`, no el AMVA como se sospechaba inicialmente) — confirmado
+inspeccionando la pestaña Network del navegador. `?f=json` en la raíz del
+servicio no declara ningún término de uso/licencia (`copyrightText` vacío);
+es infraestructura pública sin restricción documentada.
+
+- **Servicio**: `https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Ciudadano/MapServer/1` (capa "Arbol Urbano").
+- **Descargado**: 2026-08-12, con `backend/scripts/fetch_sau_arboles.py`.
+- **Método**: paginado (`resultOffset`/`resultRecordCount=2000`, tope real
+  del servicio), throttled a 1 request/segundo (~170 requests, obligatorio —
+  es un servicio público compartido, no una API comercial), con reintentos
+  ante fallos de red puntuales y deduplicación por `objectid`.
+- **Volumen**: 339.724 árboles reales (`returnCountOnly` del servicio,
+  confirmado contra el conteo final descargado — el script imprime y
+  compara ambos al terminar).
+- **Formato de almacenamiento**: CSV (no GeoJSON) con 13 columnas —
+  `s_especie`, `nombre_comun`, `tipoarbol`, `s_estado_arbol`,
+  `s_estado_individuo`, `municipio`, `comuna`, `barrio`, `fecha_ingreso`,
+  `fecha_actualizacion`, `lon`/`lat` (WGS84, ya reproyectadas desde el
+  EPSG:3116 nativo del servicio) y `objectid`/`id_individuo_disperso`. Se
+  eligió CSV sobre GeoJSON porque a este volumen (339k filas) el overhead de
+  estructura GeoJSON (`type`/`geometry`/`properties` por feature) infla el
+  archivo sin necesidad — un CSV con columnas `lon`/`lat` planas es
+  suficiente para las agregaciones de `app/services/arboles.py` y mucho más
+  compacto.
+
+**Ningún endpoint expone los 339.724 puntos crudos en una sola respuesta**
+(mismo problema de framerate que ya se vio con zonas verdes, 48.348
+polígonos, pero aquí el volumen es ~7x mayor):
+
+1. `/api/arboles/resumen-comuna`: agregados por comuna (conteo, top 5
+   especies, % de estado fitosanitario) — decenas de filas, no cientos de
+   miles.
+2. `/api/arboles/clusters`: grid espacial (`cell_size_deg`, por defecto
+   ~0.01° ≈ 1.1km) — el número de celdas depende del área cubierta, no de la
+   densidad real de árboles, así que el payload se mantiene pequeño sin
+   importar cuántos árboles haya.
+3. `/api/arboles/puntos`: puntos individuales reales, pero acotados a un
+   `bbox` explícito (viewport actual del mapa) y con un tope duro de 3.000
+   resultados por request (`truncado=true` en la respuesta si el viewport
+   tiene más).
+
+Este diseño se decidió **antes** de implementar la capa del mapa (a
+diferencia de zonas verdes, donde la paginación espacial quedó pendiente como
+optimización futura tras detectar el problema de framerate) — ver la sección
+correspondiente en `ecodata-lab-frontend/README.md` o en los componentes de
+`src/components/map/layers/arbolesSauLayer.ts`.
 
 ## Manejo de errores
 

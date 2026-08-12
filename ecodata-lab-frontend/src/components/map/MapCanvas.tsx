@@ -12,8 +12,11 @@ import {
   useZonasVerdes,
   usePM25,
   useEstacionesPM25,
+  useArbolesClusters,
+  useArbolesPuntos,
 } from "@/lib/api/queries";
 import {
+  ARBOLES_SAU_PUNTOS_MIN_ZOOM,
   COMUNA_FLYTO_BEARING,
   COMUNA_FLYTO_PITCH,
   COMUNA_FLYTO_ZOOM,
@@ -23,9 +26,11 @@ import {
   useMapStore,
   type MapViewState,
 } from "@/store/mapStore";
+import type { Bbox } from "@/lib/api/endpoints";
 import { createComunasLayer } from "@/components/map/layers/comunasLayer";
 import { createZonasSiembraLayer } from "@/components/map/layers/zonasSiembraLayer";
 import { createZonasVerdesLayer } from "@/components/map/layers/zonasVerdesLayer";
+import { createArbolesClustersLayer, createArbolesPuntosLayer } from "@/components/map/layers/arbolesSauLayer";
 import {
   buildPm25ParticleField,
   createPm25ParticlesLayer,
@@ -69,6 +74,40 @@ export function MapCanvas() {
   const zonasVerdesQuery = useZonasVerdes(layers.zonasVerdes);
   const pm25Query = usePM25();
   const estacionesPm25Query = useEstacionesPM25();
+
+  // --- Árboles SAU: clusters (grid liviano) a zoom alejado, puntos reales
+  // acotados al bbox del viewport solo a partir de ARBOLES_SAU_PUNTOS_MIN_ZOOM.
+  const arbolesSauZoomCercano = viewState.zoom >= ARBOLES_SAU_PUNTOS_MIN_ZOOM;
+  const [arbolesBbox, setArbolesBbox] = useState<Bbox | null>(null);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    // Si la capa se apaga o se aleja el zoom no se limpia `arbolesBbox`: el
+    // query de puntos ya queda `enabled: false` (ver useArbolesPuntos), así
+    // que el bbox obsoleto no dispara ningún fetch de más.
+    if (!map || !layers.arbolesSau || !arbolesSauZoomCercano) return;
+    const updateBbox = () => {
+      const bounds = map.getBounds();
+      if (!bounds) return;
+      setArbolesBbox({
+        minLon: bounds.getWest(),
+        minLat: bounds.getSouth(),
+        maxLon: bounds.getEast(),
+        maxLat: bounds.getNorth(),
+      });
+    };
+    updateBbox();
+    map.on("moveend", updateBbox);
+    return () => {
+      map.off("moveend", updateBbox);
+    };
+  }, [layers.arbolesSau, arbolesSauZoomCercano]);
+
+  const arbolesClustersQuery = useArbolesClusters(layers.arbolesSau && !arbolesSauZoomCercano);
+  const arbolesPuntosQuery = useArbolesPuntos(
+    layers.arbolesSau && arbolesSauZoomCercano,
+    arbolesBbox,
+  );
 
   const resumenPorComuna = useMemo(() => {
     const map = new Map<string, ResumenRecomendacionComuna>();
@@ -146,9 +185,40 @@ export function MapCanvas() {
     [layers.pm25, particles, particleField],
   );
 
+  const arbolesClustersLayer = useMemo(
+    () =>
+      layers.arbolesSau && !arbolesSauZoomCercano
+        ? createArbolesClustersLayer({ data: arbolesClustersQuery.data })
+        : null,
+    [layers.arbolesSau, arbolesSauZoomCercano, arbolesClustersQuery.data],
+  );
+
+  const arbolesPuntosLayer = useMemo(
+    () =>
+      layers.arbolesSau && arbolesSauZoomCercano
+        ? createArbolesPuntosLayer({ data: arbolesPuntosQuery.data?.puntos })
+        : null,
+    [layers.arbolesSau, arbolesSauZoomCercano, arbolesPuntosQuery.data],
+  );
+
   const deckLayers = useMemo(
-    () => [zonasVerdesLayer, pm25Layer, zonasSiembraLayer, comunasLayer].filter(Boolean),
-    [zonasVerdesLayer, pm25Layer, zonasSiembraLayer, comunasLayer],
+    () =>
+      [
+        zonasVerdesLayer,
+        pm25Layer,
+        zonasSiembraLayer,
+        comunasLayer,
+        arbolesClustersLayer,
+        arbolesPuntosLayer,
+      ].filter(Boolean),
+    [
+      zonasVerdesLayer,
+      pm25Layer,
+      zonasSiembraLayer,
+      comunasLayer,
+      arbolesClustersLayer,
+      arbolesPuntosLayer,
+    ],
   );
 
   // --- "Respiro Urbano": flyTo + revelación de árboles 3D al seleccionar comuna ---
@@ -296,8 +366,31 @@ export function MapCanvas() {
         }
         controller
         layers={deckLayers}
-        getTooltip={({ object }: PickingInfo) => {
-          if (!object?.properties) return null;
+        getTooltip={({ object, layer }: PickingInfo) => {
+          if (!object) return null;
+
+          if (layer?.id === "arboles-sau-puntos") {
+            const arbol = object as {
+              s_especie?: string | null;
+              nombre_comun?: string | null;
+              s_estado_arbol?: string | null;
+              comuna?: string | null;
+            };
+            return {
+              html: `<strong>${arbol.s_especie ?? "Especie sin dato"}</strong>${arbol.nombre_comun ? `<br/>${arbol.nombre_comun}` : ""}<br/>Estado: ${arbol.s_estado_arbol ?? "s/d"}<br/>Comuna: ${arbol.comuna ?? "s/d"}`,
+              className: "deck-tooltip",
+            };
+          }
+
+          if (layer?.id === "arboles-sau-clusters") {
+            const cluster = object as { cantidad?: number };
+            return {
+              html: `<strong>${cluster.cantidad ?? 0} árboles</strong>`,
+              className: "deck-tooltip",
+            };
+          }
+
+          if (!object.properties) return null;
           const props = object.properties as { comuna?: string; nombre?: string };
           const resumen = props.nombre
             ? resumenPorComuna.get(normalizeComunaName(props.nombre))
@@ -317,6 +410,12 @@ export function MapCanvas() {
           reuseMaps
         />
       </DeckGL>
+
+      {layers.arbolesSau && arbolesSauZoomCercano && arbolesPuntosQuery.data?.truncado && (
+        <div className="absolute bottom-4 left-4 z-10 rounded-md border border-border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-md backdrop-blur">
+          Hay más árboles en esta vista de los que se muestran ({arbolesPuntosQuery.data.limite} máx.) — acerca más el zoom para verlos todos.
+        </div>
+      )}
 
       {treesRevealed && comunaCentroid && cameraState && (
         <TreeInstances

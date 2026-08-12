@@ -5,3 +5,4 @@ pydantic-settings>=2.6
 pandas>=2.2
 geopandas>=1.0
 python-dotenv>=1.0
+requests>=2.31  # solo usado por backend/scripts/fetch_sau_arboles.py (ETL, no runtime de la API)

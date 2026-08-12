@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiFetch } from "@/lib/api/client";
-import { endpoints, rankingComunasUrl } from "@/lib/api/endpoints";
+import { arbolesClustersUrl, arbolesPuntosUrl, endpoints, rankingComunasUrl, type Bbox } from "@/lib/api/endpoints";
 import { comunasFeatureCollectionSchema, estacionAuditoriaSchema } from "@/types/comuna";
 import { estacionPM25Schema } from "@/types/estacionPM25";
 import { integracionPM25ArbolesSchema } from "@/types/pm25";
@@ -12,6 +12,11 @@ import {
   zonasPriorizadasSiembraFeatureCollectionSchema,
 } from "@/types/siembra";
 import { zonasVerdesFeatureCollectionSchema } from "@/types/zonaVerde";
+import {
+  clusterArbolesSchema,
+  puntosArbolesResponseSchema,
+  resumenArbolesComunaSchema,
+} from "@/types/arbolSau";
 
 async function fetchAndValidate<Schema extends z.ZodTypeAny>(
   path: string,
@@ -109,6 +114,44 @@ export function useRankingComunas(pesos: PesosAhp) {
     queryKey: ["ranking-comunas", pesos.pesoPm25, pesos.pesoDeficit, pesos.pesoArea],
     queryFn: () =>
       fetchAndValidate(rankingComunasUrl(pesos), z.array(rankingComunaItemSchema)),
+  });
+}
+
+export function useArbolesResumenComuna() {
+  return useQuery({
+    queryKey: ["arboles-resumen-comuna"],
+    queryFn: () =>
+      fetchAndValidate(
+        endpoints.arbolesResumenComuna,
+        z.array(resumenArbolesComunaSchema),
+      ),
+    // Agregado liviano (comuna, top especies, % estado): a diferencia de
+    // zonas-verdes, se puede cargar siempre para nutrir el dashboard sin
+    // esperar a que el usuario active ninguna capa del mapa.
+  });
+}
+
+export function useArbolesClusters(enabled: boolean, cellSizeDeg?: number) {
+  return useQuery({
+    queryKey: ["arboles-clusters", cellSizeDeg ?? "default"],
+    queryFn: () =>
+      fetchAndValidate(arbolesClustersUrl(cellSizeDeg), z.array(clusterArbolesSchema)),
+    // Capa de árboles apagada por defecto (igual que zonas-verdes); solo se
+    // pide cuando el usuario la activa, y solo en modo clustered (liviano:
+    // el número de celdas depende del área, no de los 339.724 árboles).
+    enabled,
+  });
+}
+
+export function useArbolesPuntos(enabled: boolean, bbox: Bbox | null) {
+  return useQuery({
+    queryKey: ["arboles-puntos", bbox?.minLon, bbox?.minLat, bbox?.maxLon, bbox?.maxLat],
+    queryFn: () =>
+      fetchAndValidate(arbolesPuntosUrl(bbox as Bbox), puntosArbolesResponseSchema),
+    // Solo se activa a zoom cercano (nivel comuna/barrio, ver MapCanvas) y
+    // solo con un bbox real del viewport actual: nunca pide puntos crudos
+    // sin acotar por área.
+    enabled: enabled && bbox !== null,
   });
 }
 

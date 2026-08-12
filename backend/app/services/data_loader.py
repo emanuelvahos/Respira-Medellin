@@ -17,6 +17,7 @@ import shapely
 from fastapi import HTTPException
 
 from app.core.config import get_settings
+from app.models.arbol_sau import ArbolSau
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
 from app.models.siembra import RecomendacionSiembraZona, ResumenRecomendacionComuna
@@ -165,6 +166,26 @@ def load_inventario_zonas_verdes_geojson() -> dict:
 
     gdf = gdf[_ZONAS_VERDES_PROPERTIES]
     return json.loads(gdf.to_json(drop_id=True))
+
+
+@lru_cache
+def load_arboles_sau_df() -> pd.DataFrame:
+    """DataFrame crudo de sau_arboles_urbanos.csv, cacheado en memoria.
+
+    Se expone como DataFrame (no `list[ArbolSau]`) porque las agregaciones de
+    `app/services/arboles.py` (resumen por comuna, grid de clustering, bbox)
+    son mucho más rápidas con pandas/numpy vectorizado que iterando 339.724
+    objetos Pydantic en Python puro.
+    """
+    settings = get_settings()
+    df = _read_csv(settings.data_sau_arboles_urbanos, "DATA_SAU_ARBOLES_URBANOS")
+    df = df.astype(object).where(pd.notna(df), None)
+    return df
+
+
+def load_arboles_sau() -> list[ArbolSau]:
+    df = load_arboles_sau_df()
+    return [ArbolSau.model_validate(row) for row in df.to_dict(orient="records")]
 
 
 @lru_cache

@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     data_limite_catastral_comunas: Path
     data_inventario_zonas_verdes: Path
     data_solicitud_pm25_estaciones: Path
+    data_sau_arboles_urbanos: Path
 
     cors_allowed_origins: str = "http://localhost:3000"
 

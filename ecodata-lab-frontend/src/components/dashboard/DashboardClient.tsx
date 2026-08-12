@@ -7,6 +7,7 @@ import { KpiCards } from "@/components/dashboard/KpiCards";
 import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
+import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
 import { AhpScenarioComparator } from "@/components/dashboard/AhpScenarioComparator";
 import { RankingScoreChart } from "@/components/dashboard/RankingScoreChart";
 import { PESOS_AHP_ORIGINALES, type PesosAhp } from "@/types/rankingComuna";
@@ -34,6 +35,8 @@ export function DashboardClient() {
         <Pm25BarChart />
         <Pm25TrendChart />
       </div>
+
+      <ArbolesSauStats />
 
       <Card>
         <CardHeader>
