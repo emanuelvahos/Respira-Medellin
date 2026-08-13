@@ -2,16 +2,18 @@
 
 import { useEffect, useRef } from "react";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
-import { useComunas, usePM25, useResumenComuna } from "@/lib/api/queries";
+import { useComunas, usePM25, useResumenComuna, useSaludResumenComuna } from "@/lib/api/queries";
 import { useMapStore } from "@/store/mapStore";
 import { cn } from "@/lib/utils";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
+import { MethodologyNote } from "@/components/dashboard/MethodologyNote";
 
 export function ComunaDetailPanel() {
   const { selectedComuna, setSelectedComuna } = useMapStore();
   const comunasQuery = useComunas();
   const resumenQuery = useResumenComuna();
   const pm25Query = usePM25();
+  const saludQuery = useSaludResumenComuna();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const isOpen = selectedComuna !== null;
@@ -36,6 +38,9 @@ export function ComunaDetailPanel() {
   const arbolesActuales = registrosPm25?.length
     ? Math.max(...registrosPm25.map((r) => r.cantidad_arboles_totales))
     : undefined;
+  const saludComuna = saludQuery.data?.comunas.find(
+    (c) => normalizeComunaName(c.comuna) === selectedComuna,
+  );
 
   return (
     <aside
@@ -138,6 +143,27 @@ export function ComunaDetailPanel() {
                 </dd>
               </div>
             </dl>
+          )}
+
+          {saludComuna && (
+            <div className="mt-4 space-y-2 border-t border-border pt-4">
+              <p className="text-xs text-muted-foreground">
+                Diagnósticos respiratorios (red pública Metrosalud)
+              </p>
+              <p className="font-heading text-2xl font-semibold text-foreground">
+                {saludComuna.total_diagnosticos_respiratorios.toLocaleString("es-CO")}
+              </p>
+              {saludComuna.top_diagnosticos[0] && (
+                <p className="text-xs text-muted-foreground">
+                  Más frecuente: {saludComuna.top_diagnosticos[0].nombre} (
+                  {saludComuna.top_diagnosticos[0].cantidad.toLocaleString("es-CO")})
+                </p>
+              )}
+              <MethodologyNote>
+                Red pública Metrosalud (régimen subsidiado); no representa la
+                morbilidad respiratoria total de la comuna.
+              </MethodologyNote>
+            </div>
           )}
         </div>
       )}

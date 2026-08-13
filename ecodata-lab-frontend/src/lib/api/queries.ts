@@ -17,6 +17,7 @@ import {
   puntosArbolesResponseSchema,
   resumenArbolesComunaSchema,
 } from "@/types/arbolSau";
+import { resumenSaludRespiratoriaResponseSchema } from "@/types/saludRespiratoria";
 
 async function fetchAndValidate<Schema extends z.ZodTypeAny>(
   path: string,
@@ -152,6 +153,19 @@ export function useArbolesPuntos(enabled: boolean, bbox: Bbox | null) {
     // solo con un bbox real del viewport actual: nunca pide puntos crudos
     // sin acotar por área.
     enabled: enabled && bbox !== null,
+  });
+}
+
+export function useSaludResumenComuna() {
+  return useQuery({
+    queryKey: ["salud-resumen-comuna"],
+    queryFn: () =>
+      fetchAndValidate(
+        endpoints.saludResumenComuna,
+        resumenSaludRespiratoriaResponseSchema,
+      ),
+    // Agregado liviano (por comuna, ya resumido en el backend): se puede
+    // cargar siempre, igual que arboles-resumen-comuna.
   });
 }
 

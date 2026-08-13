@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     data_inventario_zonas_verdes: Path
     data_solicitud_pm25_estaciones: Path
     data_sau_arboles_urbanos: Path
+    data_salud_respiratoria_resumen_comuna: Path
 
     cors_allowed_origins: str = "http://localhost:3000"
 

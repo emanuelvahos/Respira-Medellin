@@ -45,6 +45,34 @@ uvicorn app.main:app --reload
 - API: http://localhost:8000
 - Documentación interactiva (Swagger): http://localhost:8000/docs
 
+## Testing
+
+Suite `pytest` (fase 1: sin CI todavía) enfocada en la lógica más frágil del
+backend — el ranking AHP (`app/services/ahp.py`) y la reproyección de
+geometrías (`app/services/data_loader.py`) — más smoke tests de los
+endpoints principales con `fastapi.testclient.TestClient`. Corre contra los
+datasets reales de `backend/data/` (hermético: sin llamadas de red).
+
+```bash
+cd backend
+.venv\Scripts\activate   # o `source .venv/bin/activate` en macOS/Linux
+pytest
+```
+
+Cobertura: `pytest --cov=app --cov-report=term-missing`.
+
+`backend/tests/`:
+- `test_ahp.py` — orden real del ranking con pesos por defecto (0.45/0.35/0.20),
+  422 cuando los pesos no suman 1.0, un peso custom válido que cambia el
+  orden, maximizar el peso de PM2.5 sube a la comuna con peor PM2.5 real, y
+  casos límite de pesos en 0/1.
+- `test_data_loader.py` — un punto real de `limite_catastral_de_comun.geojson`
+  (EPSG:9377) reproyectado cae en el rango geográfico de Medellín.
+- `test_endpoints.py` — `/`, `/health`, `/api/comunas`,
+  `/api/siembra/resumen-comuna`, `/api/siembra/ranking-comunas` (pesos por
+  defecto, custom, y 422), `/api/salud/resumen-comuna`, y un 503 simulado
+  monkeypatcheando el loader para representar un dataset ausente.
+
 ## Scripts de ETL
 
 `backend/scripts/fetch_sau_arboles.py` descarga (throttled, paginado) el
@@ -77,6 +105,7 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/arboles/resumen-comuna` | `sau_arboles_urbanos.csv` | Conteo real por comuna, top 5 especies y % de estado fitosanitario (SAU) — agregado liviano para el dashboard |
 | GET | `/api/arboles/clusters?cell_size_deg=` | idem | Clustering espacial en grid (centroide + conteo por celda) — para el mapa a zoom alejado |
 | GET | `/api/arboles/puntos?min_lon=&min_lat=&max_lon=&max_lat=&limit=` | idem | Árboles individuales reales dentro de un bbox, con tope duro de resultados — para el mapa a zoom cercano |
+| GET | `/api/salud/resumen-comuna` | `salud_respiratoria_resumen_comuna.json` | Diagnósticos CIE-10 J00-J99 por comuna, red pública Metrosalud — ver "Fuente de `salud_respiratoria_resumen_comuna.json`" abajo. **Respuesta incluye `metodologia` obligatorio** (no es la morbilidad total de la ciudad) |
 
 ## Reproyección de geometrías
 
@@ -219,6 +248,61 @@ diferencia de zonas verdes, donde la paginación espacial quedó pendiente como
 optimización futura tras detectar el problema de framerate) — ver la sección
 correspondiente en `ecodata-lab-frontend/README.md` o en los componentes de
 `src/components/map/layers/arbolesSauLayer.ts`.
+
+## Fuente de `salud_respiratoria_resumen_comuna.json`
+
+Resumen agregado (no crudo) de diagnósticos respiratorios por comuna, para
+enriquecer el dashboard con un indicador de salud pública — fuente
+independiente tanto del pipeline original (bloque_1/bloque_2, que sigue
+alimentando exclusivamente el modelo AHP) como del inventario del SAU.
+
+**Descubrimiento**: exploración de portales de datos abiertos (MEData de la
+Alcaldía tiene el "Tablero de datos - Secretaría de Salud" en
+`medata.gov.co/node/8080`, pero es un dashboard Power BI embebido sin datos
+exportables, y además el sitio tiene un certificado SSL vencido — confirmado
+con dos herramientas distintas). El dataset real y descargable se encontró en
+el portal nacional **datos.gov.co**: **"Perfil de morbilidad de la ESE
+Metrosalud"** (`https://www.datos.gov.co/Salud-y-Protecci-n-Social/Perfil-de-morbilidad-de-la-ESE-Metrosalud/pypc-7h3w`,
+dataset id `pypc-7h3w`), publicado por la propia Metrosalud (red pública de
+salud de Medellín) vía API Socrata (SoQL).
+
+- **Consultado**: 2026-08-12, con `backend/scripts/fetch_salud_respiratoria.py`.
+- **Método**: 3 consultas SoQL agregadas del lado del servidor (`$select`/`$where`/`$group`)
+  — total por comuna, desglose por año, y top 5 diagnósticos CIE-10 por
+  comuna — **nunca** se descargan las >1.048.575 filas crudas de atenciones
+  individuales del dataset fuente. Sin App Token de Socrata (uso puntual y de
+  bajo volumen, 3 requests); si en el futuro se refresca con frecuencia,
+  registrar uno gratis en https://dev.socrata.com/docs/app-tokens.
+- **Filtro aplicado**: `codigo_diagnostico_principal LIKE 'J%'` (CIE-10
+  J00-J99, enfermedades del sistema respiratorio).
+- **Granularidad**: `comuna` (coincide con los nombres usados en el resto del
+  proyecto) y `barrio`/lat-lon de barrio en el dataset fuente, aunque este
+  resumen solo persiste el nivel comuna.
+- **Rango temporal**: 2024-01-01 a 2026-04-21 en el dataset fuente (dataset
+  activo, actualizado por última vez 2026-07-23 según metadata de Socrata) —
+  **se solapa solo parcialmente** con la ventana PM2.5 del proyecto
+  (2023-2025); no asumir correspondencia temporal exacta entre ambos
+  indicadores en ningún cruce visual.
+- **Actualización recomendada**: dado que el dataset fuente se actualiza
+  activamente, re-ejecutar `backend/scripts/fetch_salud_respiratoria.py`
+  cada 1-3 meses sería razonable para mantener el resumen al día; no hay
+  automatización de esto todavía (ejecución manual).
+
+**Sesgo metodológico (no opcional, documentado en 3 lugares — este README,
+el campo `metodologia` de la respuesta del endpoint, y el disclaimer visible
+en el frontend)**: Metrosalud es la red **pública/régimen subsidiado** de
+Medellín — no cubre pacientes de EPS del régimen contributivo atendidos en
+clínicas privadas. El sesgo hacia comunas de menor estrato (San Javier,
+Robledo, Manrique con más diagnósticos; El Poblado, Laureles con menos)
+refleja composición de la población atendida por esta red específica, **no**
+necesariamente mayor incidencia real de enfermedad. Es un proxy válido de
+"carga respiratoria en la red pública", nunca "morbilidad respiratoria total
+de la ciudad" — ningún texto de la UI debe presentarlo como tal.
+
+`app/models/salud_respiratoria.py` define `metodologia: str` como campo
+**obligatorio** (no `| None`) en `ResumenSaludRespiratoriaResponse`: es
+imposible deserializar la respuesta del endpoint sin recibir también este
+caveat.
 
 ## Manejo de errores
 

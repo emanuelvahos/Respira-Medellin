@@ -18,6 +18,7 @@ from fastapi import HTTPException
 
 from app.core.config import get_settings
 from app.models.arbol_sau import ArbolSau
+from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
 from app.models.siembra import RecomendacionSiembraZona, ResumenRecomendacionComuna
@@ -186,6 +187,25 @@ def load_arboles_sau_df() -> pd.DataFrame:
 def load_arboles_sau() -> list[ArbolSau]:
     df = load_arboles_sau_df()
     return [ArbolSau.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
+def load_salud_respiratoria_resumen() -> ResumenSaludRespiratoriaResponse:
+    """Resumen agregado (no crudo) de diagnósticos respiratorios por comuna.
+
+    Pre-agregado por backend/scripts/fetch_salud_respiratoria.py con
+    consultas SoQL del lado del servidor de Socrata: este loader solo lee un
+    JSON pequeño, nunca re-consulta la API en cada arranque del backend. Ver
+    backend/README.md, sección "Fuente de salud_respiratoria_resumen_comuna.json"
+    para el caveat metodológico (red pública Metrosalud, no morbilidad total
+    de la ciudad) — ese texto también viaja en el propio JSON (`metodologia`).
+    """
+    settings = get_settings()
+    path = settings.data_salud_respiratoria_resumen_comuna
+    _require_file(path, "DATA_SALUD_RESPIRATORIA_RESUMEN_COMUNA")
+    with path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    return ResumenSaludRespiratoriaResponse.model_validate(raw)
 
 
 @lru_cache

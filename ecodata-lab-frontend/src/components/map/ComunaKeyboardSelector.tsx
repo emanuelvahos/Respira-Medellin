@@ -19,7 +19,9 @@ export function ComunaKeyboardSelector() {
     .sort((a, b) => a.localeCompare(b));
 
   return (
-    <div className="absolute left-4 top-4 z-10 w-64 rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur">
+    // `top-24`, no `top-4`: deja espacio arriba para `AddressSearch`, que
+    // ocupa el borde superior de la pantalla.
+    <div className="absolute left-4 top-24 z-10 w-64 rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur">
       <label htmlFor="comuna-select" className="mb-2 block font-heading text-sm font-semibold text-card-foreground">
         Ir a comuna
       </label>

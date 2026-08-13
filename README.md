@@ -1,5 +1,7 @@
 # proyecto-alcaldia — EcoData Lab Medellín
 
+[![CI](https://github.com/emanuelvahos/Eco-Data-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/emanuelvahos/Eco-Data-Lab/actions/workflows/ci.yml)
+
 Monorepo del proyecto de arborización urbana para mitigación de PM2.5 en
 Medellín. El proyecto **activo** son dos carpetas desplegadas por separado:
 

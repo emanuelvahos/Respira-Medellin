@@ -1,9 +1,13 @@
 "use client";
 
-import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import { ArrowCounterClockwiseIcon, FilePdfIcon, FileXlsIcon } from "@phosphor-icons/react/dist/ssr";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { PESOS_AHP_ORIGINALES, type PesosAhp } from "@/types/rankingComuna";
+import { rankingComunasExportUrl } from "@/lib/api/endpoints";
+import { apiFetchBlob, ApiError } from "@/lib/api/client";
+import { reajustarPesos } from "@/lib/dashboard/reajustarPesos";
 
 type PesoKey = keyof PesosAhp;
 
@@ -13,32 +17,7 @@ const CAMPOS: { key: PesoKey; label: string; color: string }[] = [
   { key: "pesoArea", label: "Área disponible", color: "var(--color-vegetation)" },
 ];
 
-/**
- * Mueve `key` a `nuevoValor` y reajusta los otros dos pesos proporcionalmente
- * para que la suma se mantenga en 1.0 — el segundo se deriva por resta del
- * remanente en vez de redondearse de forma independiente, así la suma queda
- * exacta en punto flotante (el backend valida con tolerancia 1e-6, no admite
- * redondeos sueltos que se salgan de ese margen).
- */
-function reajustarPesos(actual: PesosAhp, key: PesoKey, nuevoValor: number): PesosAhp {
-  const clamped = Math.min(1, Math.max(0, nuevoValor));
-  const otras = CAMPOS.map((c) => c.key).filter((k) => k !== key) as [PesoKey, PesoKey];
-  const [k1, k2] = otras;
-  const sumaOtras = actual[k1] + actual[k2];
-  const remanente = 1 - clamped;
-
-  let v1: number;
-  let v2: number;
-  if (sumaOtras <= 0) {
-    v1 = remanente / 2;
-    v2 = remanente - v1;
-  } else {
-    v1 = (actual[k1] / sumaOtras) * remanente;
-    v2 = remanente - v1;
-  }
-
-  return { ...actual, [key]: clamped, [k1]: v1, [k2]: v2 } as PesosAhp;
-}
+type FormatoExport = "pdf" | "excel";
 
 export function AhpScenarioComparator({
   pesos,
@@ -51,6 +30,36 @@ export function AhpScenarioComparator({
     Math.abs(pesos.pesoPm25 - PESOS_AHP_ORIGINALES.pesoPm25) < 1e-6 &&
     Math.abs(pesos.pesoDeficit - PESOS_AHP_ORIGINALES.pesoDeficit) < 1e-6 &&
     Math.abs(pesos.pesoArea - PESOS_AHP_ORIGINALES.pesoArea) < 1e-6;
+
+  const [exportando, setExportando] = useState<FormatoExport | null>(null);
+  const [errorExport, setErrorExport] = useState<string | null>(null);
+
+  async function handleExport(formato: FormatoExport) {
+    setExportando(formato);
+    setErrorExport(null);
+    try {
+      // `pesos` es el estado ACTUAL de los sliders en pantalla, no un
+      // default: el archivo exportado siempre refleja el escenario que la
+      // persona está viendo en ese momento.
+      const { blob, filename } = await apiFetchBlob(rankingComunasExportUrl(pesos, formato));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename ?? `ranking-siembra-medellin.${formato === "pdf" ? "pdf" : "xlsx"}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setErrorExport(
+        err instanceof ApiError
+          ? `No se pudo generar el archivo: ${err.message}`
+          : "No se pudo generar el archivo: error inesperado.",
+      );
+    } finally {
+      setExportando(null);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -90,6 +99,28 @@ export function AhpScenarioComparator({
         <ArrowCounterClockwiseIcon size={16} />
         Restaurar pesos originales (45/35/20)
       </Button>
+
+      <div className="flex flex-wrap gap-2 border-t border-border pt-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleExport("pdf")}
+          disabled={exportando !== null}
+        >
+          <FilePdfIcon size={16} />
+          {exportando === "pdf" ? "Generando…" : "Exportar PDF"}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleExport("excel")}
+          disabled={exportando !== null}
+        >
+          <FileXlsIcon size={16} />
+          {exportando === "excel" ? "Generando…" : "Exportar Excel"}
+        </Button>
+      </div>
+      {errorExport && <p className="text-xs text-critical">{errorExport}</p>}
     </div>
   );
 }

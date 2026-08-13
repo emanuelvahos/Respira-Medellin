@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
-import { FlyToInterpolator, type PickingInfo } from "@deck.gl/core";
-import MapGL, { type MapRef } from "react-map-gl/mapbox";
+import type { PickingInfo } from "@deck.gl/core";
+import MapGL, { Marker, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useComunas,
   useResumenComuna,
@@ -24,7 +25,6 @@ import {
   MEDELLIN_MAX_ZOOM,
   MEDELLIN_MIN_ZOOM,
   useMapStore,
-  type MapViewState,
 } from "@/store/mapStore";
 import type { Bbox } from "@/lib/api/endpoints";
 import { createComunasLayer } from "@/components/map/layers/comunasLayer";
@@ -39,6 +39,7 @@ import {
 import type { ResumenRecomendacionComuna } from "@/types/siembra";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { approximateCentroid } from "@/lib/map/geoCentroid";
+import { flyTo } from "@/lib/map/flyTo";
 import { randomPointsInPolygon } from "@/lib/map/scatterInPolygon";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { TreeInstances, type TreePoint } from "@/components/trees/TreeInstances";
@@ -62,6 +63,7 @@ export function MapCanvas() {
     setIsFlyingTo,
     treesRevealed,
     setTreesRevealed,
+    searchMarker,
   } = useMapStore();
 
   const reducedMotion = usePrefersReducedMotion();
@@ -242,16 +244,17 @@ export function MapCanvas() {
       return;
     }
 
-    const duration = reducedMotion ? 0 : 1800;
-    setViewState({
-      longitude: centroid[0],
-      latitude: centroid[1],
-      zoom: COMUNA_FLYTO_ZOOM,
-      pitch: COMUNA_FLYTO_PITCH,
-      bearing: COMUNA_FLYTO_BEARING,
-      transitionDuration: duration,
-      transitionInterpolator: new FlyToInterpolator({ speed: 1.6 }),
-    } as MapViewState);
+    const duration = flyTo(
+      setViewState,
+      {
+        longitude: centroid[0],
+        latitude: centroid[1],
+        zoom: COMUNA_FLYTO_ZOOM,
+        pitch: COMUNA_FLYTO_PITCH,
+        bearing: COMUNA_FLYTO_BEARING,
+      },
+      reducedMotion,
+    );
 
     const timeout = setTimeout(() => {
       setIsFlyingTo(false);
@@ -408,7 +411,22 @@ export function MapCanvas() {
           mapStyle="mapbox://styles/mapbox/dark-v11"
           maxBounds={MEDELLIN_MAX_BOUNDS}
           reuseMaps
-        />
+        >
+          {searchMarker && (
+            <Marker
+              longitude={searchMarker.longitude}
+              latitude={searchMarker.latitude}
+              anchor="bottom"
+            >
+              <MapPinIcon
+                size={32}
+                weight="fill"
+                className="text-critical drop-shadow-md"
+                aria-hidden="true"
+              />
+            </Marker>
+          )}
+        </MapGL>
       </DeckGL>
 
       {layers.arbolesSau && arbolesSauZoomCercano && arbolesPuntosQuery.data?.truncado && (

@@ -7,6 +7,7 @@ import {
   ClockCountdownIcon,
   ArrowRightIcon,
   LeafIcon,
+  PresentationChartIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { ScrollSection } from "@/components/landing/ScrollSection";
 import { ScrollMapSync } from "@/components/landing/ScrollMapSync";
@@ -33,7 +34,13 @@ const MapCanvas = dynamic(
 
 const FALLBACK_KEYFRAME: MapViewState = INITIAL_VIEW_STATE;
 
-export function HomeClient() {
+export function HomeClient({
+  showPresentationEntry = true,
+}: {
+  /** Oculto cuando `HomeClient` se reutiliza dentro de `/presentacion`
+   * (evita un botón "Modo presentación" dentro del modo presentación). */
+  showPresentationEntry?: boolean;
+}) {
   const comunasQuery = useComunas();
   const resumenQuery = useResumenComuna();
   const setSelectedComuna = useMapStore((s) => s.setSelectedComuna);
@@ -86,6 +93,17 @@ export function HomeClient() {
       </div>
 
       <ScrollMapSync keyframes={keyframes} />
+
+      {showPresentationEntry && (
+        <Link
+          href="/presentacion"
+          aria-label="Modo presentación"
+          title="Modo presentación"
+          className="fixed bottom-4 right-4 z-40 flex size-9 items-center justify-center rounded-full border border-border bg-card/80 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
+        >
+          <PresentationChartIcon size={18} weight="bold" aria-hidden="true" />
+        </Link>
+      )}
 
       <ScrollSection id="intro" className="justify-center">
         <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">

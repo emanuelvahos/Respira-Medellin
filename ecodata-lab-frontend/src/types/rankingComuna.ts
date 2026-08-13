@@ -29,3 +29,34 @@ export const PESOS_AHP_ORIGINALES: PesosAhp = {
   pesoDeficit: 0.35,
   pesoArea: 0.2,
 };
+
+const TOLERANCIA_SUMA_PESOS = 1e-3;
+
+/**
+ * Lee los 3 pesos desde query params de la URL (vista compartible del
+ * comparador AHP) — devuelve `null` si faltan, no son números válidos, o no
+ * suman ~1.0, para que quien llama pueda hacer fallback a
+ * `PESOS_AHP_ORIGINALES` sin propagar un estado inconsistente.
+ */
+export function pesosFromSearchParams(params: URLSearchParams): PesosAhp | null {
+  const pesoPm25 = Number(params.get("peso_pm25"));
+  const pesoDeficit = Number(params.get("peso_deficit"));
+  const pesoArea = Number(params.get("peso_area"));
+
+  if (![pesoPm25, pesoDeficit, pesoArea].every((v) => Number.isFinite(v) && v >= 0 && v <= 1)) {
+    return null;
+  }
+  if (Math.abs(pesoPm25 + pesoDeficit + pesoArea - 1) > TOLERANCIA_SUMA_PESOS) {
+    return null;
+  }
+  return { pesoPm25, pesoDeficit, pesoArea };
+}
+
+/** Serializa los pesos a los mismos nombres de query param que lee `pesosFromSearchParams`. */
+export function pesosToSearchParamsEntries(pesos: PesosAhp): [string, string][] {
+  return [
+    ["peso_pm25", pesos.pesoPm25.toFixed(4)],
+    ["peso_deficit", pesos.pesoDeficit.toFixed(4)],
+    ["peso_area", pesos.pesoArea.toFixed(4)],
+  ];
+}

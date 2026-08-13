@@ -1,0 +1,924 @@
+{
+  "fuente": {
+    "nombre": "Perfil de morbilidad de la ESE Metrosalud",
+    "url": "https://www.datos.gov.co/Salud-y-Protecci-n-Social/Perfil-de-morbilidad-de-la-ESE-Metrosalud/pypc-7h3w",
+    "dataset_id": "pypc-7h3w",
+    "fecha_consulta": "2026-08-12",
+    "rango_datos_fuente": "2024-01-01 a 2026-04-21 (según exploración previa; puede haber crecido desde entonces)",
+    "filtro_aplicado": "codigo_diagnostico_principal LIKE 'J%' (CIE-10 J00-J99, enfermedades del sistema respiratorio)"
+  },
+  "metodologia": "Fuente: red pública Metrosalud (régimen subsidiado), no la morbilidad respiratoria total de Medellín. Metrosalud no cubre pacientes de EPS del régimen contributivo atendidos en clínicas privadas; el sesgo hacia comunas de menor estrato refleja composición de la población atendida, no necesariamente mayor incidencia real de enfermedad. Diagnósticos CIE-10 J00-J99 (enfermedades del sistema respiratorio).",
+  "comunas": [
+    {
+      "comuna": "San Javier",
+      "total_diagnosticos_respiratorios": 6469,
+      "por_anio": {
+        "2024": 5884,
+        "2025": 585
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 1662
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 635
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 540
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 497
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 306
+        }
+      ]
+    },
+    {
+      "comuna": "Robledo",
+      "total_diagnosticos_respiratorios": 6443,
+      "por_anio": {
+        "2024": 5609,
+        "2025": 834
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 1397
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 787
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 513
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 446
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 390
+        }
+      ]
+    },
+    {
+      "comuna": "Manrique",
+      "total_diagnosticos_respiratorios": 5566,
+      "por_anio": {
+        "2024": 5105,
+        "2025": 461
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 1250
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 912
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 678
+        },
+        {
+          "codigo": "J159",
+          "nombre": "NEUMONIA BACTERIANA, NO ESPECIFICADA",
+          "cantidad": 271
+        },
+        {
+          "codigo": "J039",
+          "nombre": "AMIGDALITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 254
+        }
+      ]
+    },
+    {
+      "comuna": "Doce de Octubre",
+      "total_diagnosticos_respiratorios": 4702,
+      "por_anio": {
+        "2024": 4172,
+        "2025": 530
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 1036
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 958
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 508
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 283
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 239
+        }
+      ]
+    },
+    {
+      "comuna": "Aranjuez",
+      "total_diagnosticos_respiratorios": 4520,
+      "por_anio": {
+        "2024": 3999,
+        "2025": 520,
+        "2026": 1
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 1071
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 720
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 568
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 195
+        },
+        {
+          "codigo": "J039",
+          "nombre": "AMIGDALITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 163
+        }
+      ]
+    },
+    {
+      "comuna": "Popular",
+      "total_diagnosticos_respiratorios": 4338,
+      "por_anio": {
+        "2024": 3864,
+        "2025": 474
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 888
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 614
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 578
+        },
+        {
+          "codigo": "J22X",
+          "nombre": "INFECCION AGUDA NO ESPECIFICADA DE LAS VIAS RESPIRATORIAS INFERIORES",
+          "cantidad": 197
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 178
+        }
+      ]
+    },
+    {
+      "comuna": "Santa Cruz",
+      "total_diagnosticos_respiratorios": 3895,
+      "por_anio": {
+        "2024": 3526,
+        "2025": 369
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 1035
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 533
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 465
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 215
+        },
+        {
+          "codigo": "J029",
+          "nombre": "FARINGITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 182
+        }
+      ]
+    },
+    {
+      "comuna": "Buenos Aires",
+      "total_diagnosticos_respiratorios": 3542,
+      "por_anio": {
+        "2024": 3234,
+        "2025": 308
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 805
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 503
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 476
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 242
+        },
+        {
+          "codigo": "J039",
+          "nombre": "AMIGDALITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 175
+        }
+      ]
+    },
+    {
+      "comuna": "Belén",
+      "total_diagnosticos_respiratorios": 3486,
+      "por_anio": {
+        "2024": 3235,
+        "2025": 251
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 933
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 354
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 350
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 237
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 188
+        }
+      ]
+    },
+    {
+      "comuna": "Castilla",
+      "total_diagnosticos_respiratorios": 3265,
+      "por_anio": {
+        "2024": 2895,
+        "2025": 370
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 719
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 576
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 456
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 161
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 127
+        }
+      ]
+    },
+    {
+      "comuna": "La Candelaria",
+      "total_diagnosticos_respiratorios": 2959,
+      "por_anio": {
+        "2024": 2700,
+        "2025": 259
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 975
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 562
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 431
+        },
+        {
+          "codigo": "J159",
+          "nombre": "NEUMONIA BACTERIANA, NO ESPECIFICADA",
+          "cantidad": 138
+        },
+        {
+          "codigo": "J22X",
+          "nombre": "INFECCION AGUDA NO ESPECIFICADA DE LAS VIAS RESPIRATORIAS INFERIORES",
+          "cantidad": 94
+        }
+      ]
+    },
+    {
+      "comuna": "Villa Hermosa",
+      "total_diagnosticos_respiratorios": 2920,
+      "por_anio": {
+        "2024": 2716,
+        "2025": 204
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 537
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 391
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 241
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 219
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 138
+        }
+      ]
+    },
+    {
+      "comuna": "Corregimiento de San Cristóbal",
+      "total_diagnosticos_respiratorios": 2328,
+      "por_anio": {
+        "2024": 2034,
+        "2025": 294
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 579
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 242
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 231
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 212
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 130
+        }
+      ]
+    },
+    {
+      "comuna": "Corregimiento de San Antonio de Prado",
+      "total_diagnosticos_respiratorios": 1743,
+      "por_anio": {
+        "2024": 1580,
+        "2025": 163
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 380
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 141
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 104
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 99
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 97
+        }
+      ]
+    },
+    {
+      "comuna": "SAN CRISTOBAL - CABECERA",
+      "total_diagnosticos_respiratorios": 1462,
+      "por_anio": {
+        "2024": 1318,
+        "2025": 144
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 266
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 186
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 164
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 133
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 103
+        }
+      ]
+    },
+    {
+      "comuna": "SAN ANTONIO DE PRADO -CABECERA",
+      "total_diagnosticos_respiratorios": 1240,
+      "por_anio": {
+        "2024": 1137,
+        "2025": 103
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 457
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 106
+        },
+        {
+          "codigo": "J22X",
+          "nombre": "INFECCION AGUDA NO ESPECIFICADA DE LAS VIAS RESPIRATORIAS INFERIORES",
+          "cantidad": 83
+        },
+        {
+          "codigo": "J440",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON INFECCION AGUDA DE LAS VIAS RESPIRATORIAS INFERIORES",
+          "cantidad": 56
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 52
+        }
+      ]
+    },
+    {
+      "comuna": "La América",
+      "total_diagnosticos_respiratorios": 1042,
+      "por_anio": {
+        "2024": 904,
+        "2025": 138
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 232
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 190
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 106
+        },
+        {
+          "codigo": "J159",
+          "nombre": "NEUMONIA BACTERIANA, NO ESPECIFICADA",
+          "cantidad": 58
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 40
+        }
+      ]
+    },
+    {
+      "comuna": "Guayabal",
+      "total_diagnosticos_respiratorios": 990,
+      "por_anio": {
+        "2024": 913,
+        "2025": 77
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 211
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 111
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 94
+        },
+        {
+          "codigo": "J159",
+          "nombre": "NEUMONIA BACTERIANA, NO ESPECIFICADA",
+          "cantidad": 78
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 53
+        }
+      ]
+    },
+    {
+      "comuna": "El Poblado",
+      "total_diagnosticos_respiratorios": 722,
+      "por_anio": {
+        "2024": 670,
+        "2025": 52
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 116
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 116
+        },
+        {
+          "codigo": "J159",
+          "nombre": "NEUMONIA BACTERIANA, NO ESPECIFICADA",
+          "cantidad": 49
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 46
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 43
+        }
+      ]
+    },
+    {
+      "comuna": "Corregimiento de Santa Elena",
+      "total_diagnosticos_respiratorios": 513,
+      "por_anio": {
+        "2024": 487,
+        "2025": 26
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 120
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 64
+        },
+        {
+          "codigo": "J029",
+          "nombre": "FARINGITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 62
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 41
+        },
+        {
+          "codigo": "J028",
+          "nombre": "FARINGITIS AGUDA DEBIDA A OTROS MICROORGANISMOS ESPECIFICADOS",
+          "cantidad": 34
+        }
+      ]
+    },
+    {
+      "comuna": "SANTA ELENA - CABECERA",
+      "total_diagnosticos_respiratorios": 282,
+      "por_anio": {
+        "2024": 276,
+        "2025": 6
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J029",
+          "nombre": "FARINGITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 47
+        },
+        {
+          "codigo": "J028",
+          "nombre": "FARINGITIS AGUDA DEBIDA A OTROS MICROORGANISMOS ESPECIFICADOS",
+          "cantidad": 38
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 29
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 24
+        },
+        {
+          "codigo": "J039",
+          "nombre": "AMIGDALITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 14
+        }
+      ]
+    },
+    {
+      "comuna": "Laureles Estadio",
+      "total_diagnosticos_respiratorios": 276,
+      "por_anio": {
+        "2024": 260,
+        "2025": 16
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 60
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 60
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 40
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 11
+        },
+        {
+          "codigo": "J440",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON INFECCION AGUDA DE LAS VIAS RESPIRATORIAS INFERIORES",
+          "cantidad": 10
+        }
+      ]
+    },
+    {
+      "comuna": "Corregimiento de San Sebastián de Palmitas",
+      "total_diagnosticos_respiratorios": 261,
+      "por_anio": {
+        "2024": 209,
+        "2025": 52
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 108
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 31
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 25
+        },
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 18
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 11
+        }
+      ]
+    },
+    {
+      "comuna": "Corregimiento de Altavista",
+      "total_diagnosticos_respiratorios": 213,
+      "por_anio": {
+        "2024": 186,
+        "2025": 27
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 49
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 42
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 25
+        },
+        {
+          "codigo": "J00X",
+          "nombre": "RINOFARINGITIS AGUDA [RESFRIADO COMUN]",
+          "cantidad": 17
+        },
+        {
+          "codigo": "J039",
+          "nombre": "AMIGDALITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 14
+        }
+      ]
+    },
+    {
+      "comuna": "ALTAVISTA - CABECERA",
+      "total_diagnosticos_respiratorios": 181,
+      "por_anio": {
+        "2024": 161,
+        "2025": 20
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J90X",
+          "nombre": "DERRAME PLEURAL NO CLASIFICADO EN OTRA PARTE",
+          "cantidad": 45
+        },
+        {
+          "codigo": "J441",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA CON EXACERBACION AGUDA, NO ESPECIFICADA",
+          "cantidad": 33
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 20
+        },
+        {
+          "codigo": "J459",
+          "nombre": "ASMA, NO ESPECIFICADO",
+          "cantidad": 14
+        },
+        {
+          "codigo": "J189",
+          "nombre": "NEUMONIA, NO ESPECIFICADA",
+          "cantidad": 8
+        }
+      ]
+    },
+    {
+      "comuna": "PALMITAS - CABECERA",
+      "total_diagnosticos_respiratorios": 22,
+      "por_anio": {
+        "2024": 19,
+        "2025": 3
+      },
+      "top_diagnosticos": [
+        {
+          "codigo": "J069",
+          "nombre": "INFECCION AGUDA DE LAS VIAS RESPIRATORIAS SUPERIORES, NO ESPECIFICADA",
+          "cantidad": 4
+        },
+        {
+          "codigo": "J029",
+          "nombre": "FARINGITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 4
+        },
+        {
+          "codigo": "J209",
+          "nombre": "BRONQUITIS AGUDA, NO ESPECIFICADA",
+          "cantidad": 2
+        },
+        {
+          "codigo": "J348",
+          "nombre": "OTROS TRASTORNOS ESPECIFICADOS DE LA NARIZ Y DE LOS SENOS PARANASALES",
+          "cantidad": 2
+        },
+        {
+          "codigo": "J449",
+          "nombre": "ENFERMEDAD PULMONAR OBSTRUCTIVA CRONICA, NO ESPECIFICADA",
+          "cantidad": 2
+        }
+      ]
+    }
+  ]
+}

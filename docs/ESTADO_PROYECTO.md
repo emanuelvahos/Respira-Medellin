@@ -20,11 +20,13 @@
   de comunas ordenable/filtrable, comparador de escenarios AHP con sliders
   operables por teclado (flechas) que anuncian su valor a lectores de
   pantalla (`aria-valuenow` + `aria-valuetext`) y recalculan en vivo.
-- **Backend FastAPI**: los 9 endpoints sobre datos reales responden 200
+- **Backend FastAPI**: los endpoints sobre datos reales responden 200
   (`/api/comunas`, `/api/comunas/{nombre}`, `/api/comunas/estaciones/auditoria`,
   `/api/pm25`, `/api/pm25/relaciones-anuales`, `/api/pm25/estaciones`,
   `/api/siembra/zonas`, `/api/siembra/zonas/geojson`,
-  `/api/siembra/resumen-comuna`, `/api/siembra/ranking-comunas`).
+  `/api/siembra/resumen-comuna`, `/api/siembra/ranking-comunas`,
+  `/api/zonas-verdes`, `/api/arboles/resumen-comuna`, `/api/arboles/clusters`,
+  `/api/arboles/puntos`, `/api/salud/resumen-comuna`).
 - **Ranking AHP con pesos por defecto** reproduce exactamente
   (`ranking_prioridad` 1-5 verificado) el CSV original del pipeline
   (`resumen_recomendacion_por_comuna.csv`).
@@ -33,6 +35,23 @@
   sistema de diseño (Fase 0), sin color hardcodeado que rompa el toggle.
 - **Limpieza**: `/debug/data` eliminado (confirmado 404), sin
   `console.log`/`console.warn` de debugging en el código.
+
+### `/api/salud/resumen-comuna` → NUEVO (2026-08-12), fuente Metrosalud vía datos.gov.co
+
+Diagnósticos respiratorios (CIE-10 J00-J99) por comuna, agregados desde
+"Perfil de morbilidad de la ESE Metrosalud" (`datos.gov.co`, dataset
+`pypc-7h3w`) vía consultas SoQL del lado del servidor — nunca se descargan
+las >1M filas crudas. Detalle completo (método, caveat metodológico, rango
+temporal) en `backend/README.md`, sección "Fuente de
+`salud_respiratoria_resumen_comuna.json`".
+
+**Sesgo obligatorio a preservar en cualquier consumo futuro de este dato**:
+Metrosalud es la red pública/régimen subsidiado — el dato es "carga
+respiratoria en la red pública", no morbilidad total de la ciudad. El campo
+`metodologia` de la respuesta es obligatorio (no opcional) precisamente para
+que este caveat no se pierda en integraciones futuras. Fuente independiente
+del modelo AHP (que sigue usando exclusivamente sus datasets originales) y
+del inventario del SAU (Fase de árboles).
 
 ## 2. Limitaciones conocidas (documentadas, no ocultas)
 

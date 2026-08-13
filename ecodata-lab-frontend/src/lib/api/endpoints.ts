@@ -9,6 +9,7 @@ export const endpoints = {
   resumenComuna: "/api/siembra/resumen-comuna",
   zonasVerdes: "/api/zonas-verdes",
   arbolesResumenComuna: "/api/arboles/resumen-comuna",
+  saludResumenComuna: "/api/salud/resumen-comuna",
 } as const;
 
 /** `/api/siembra/ranking-comunas` toma pesos como query params — no es una ruta estática. */
@@ -23,6 +24,20 @@ export function rankingComunasUrl(pesos: {
     peso_area: String(pesos.pesoArea),
   });
   return `/api/siembra/ranking-comunas?${params.toString()}`;
+}
+
+/** `/api/siembra/ranking-comunas/export` — PDF/Excel del ranking con los pesos actuales de pantalla. */
+export function rankingComunasExportUrl(
+  pesos: { pesoPm25: number; pesoDeficit: number; pesoArea: number },
+  formato: "pdf" | "excel",
+): string {
+  const params = new URLSearchParams({
+    formato,
+    peso_pm25: String(pesos.pesoPm25),
+    peso_deficit: String(pesos.pesoDeficit),
+    peso_area: String(pesos.pesoArea),
+  });
+  return `/api/siembra/ranking-comunas/export?${params.toString()}`;
 }
 
 /** `/api/arboles/clusters` — grid espacial (para zoom alejado del mapa). */

@@ -41,6 +41,14 @@ export const COMUNA_FLYTO_ZOOM = 17.8;
 export const COMUNA_FLYTO_PITCH = 60;
 export const COMUNA_FLYTO_BEARING = 0;
 
+/** Zoom/pitch/bearing usados por la búsqueda de direcciones (`AddressSearch`):
+ * un poco más alejado que "Respiro Urbano" porque el punto buscado es una
+ * dirección puntual, no una comuna completa — no hace falta acercarse tanto
+ * para ubicarla en contexto de calle. */
+export const ADDRESS_FLYTO_ZOOM = 16.5;
+export const ADDRESS_FLYTO_PITCH = 45;
+export const ADDRESS_FLYTO_BEARING = 0;
+
 /**
  * Límites de paneo/zoom del mapa, derivados del bounding box real de
  * `limite_catastral_de_comun.geojson` (las 21 comunas/corregimientos):
@@ -66,6 +74,13 @@ export const MEDELLIN_MAX_BOUNDS: [[number, number], [number, number]] = [
 export const MEDELLIN_MIN_ZOOM = 10.5;
 export const MEDELLIN_MAX_ZOOM = 19;
 
+/** Marcador temporal dejado por `AddressSearch` en el punto buscado. */
+export type SearchMarker = {
+  longitude: number;
+  latitude: number;
+  placeName: string;
+} | null;
+
 type MapState = {
   selectedComuna: string | null;
   hoveredComuna: string | null;
@@ -76,6 +91,7 @@ type MapState = {
   isFlyingTo: boolean;
   /** true una vez el flyTo termina: dispara la revelación de TreeInstances. */
   treesRevealed: boolean;
+  searchMarker: SearchMarker;
   setSelectedComuna: (comuna: string | null) => void;
   setHoveredComuna: (comuna: string | null) => void;
   toggleLayer: (layer: MapLayerId) => void;
@@ -83,6 +99,7 @@ type MapState = {
   toggleParticlesPaused: () => void;
   setIsFlyingTo: (flying: boolean) => void;
   setTreesRevealed: (revealed: boolean) => void;
+  setSearchMarker: (marker: SearchMarker) => void;
 };
 
 export const useMapStore = create<MapState>((set) => ({
@@ -105,6 +122,7 @@ export const useMapStore = create<MapState>((set) => ({
   particlesPaused: false,
   isFlyingTo: false,
   treesRevealed: false,
+  searchMarker: null,
   setSelectedComuna: (comuna) =>
     set({
       selectedComuna: comuna,
@@ -121,4 +139,5 @@ export const useMapStore = create<MapState>((set) => ({
     set((state) => ({ particlesPaused: !state.particlesPaused })),
   setIsFlyingTo: (flying) => set({ isFlyingTo: flying }),
   setTreesRevealed: (revealed) => set({ treesRevealed: revealed }),
+  setSearchMarker: (marker) => set({ searchMarker: marker }),
 }));
