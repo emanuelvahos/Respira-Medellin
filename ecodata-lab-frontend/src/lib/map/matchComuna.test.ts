@@ -42,4 +42,14 @@ describe("normalizeComunaName", () => {
     expect(normalizeComunaName("Buenos Aires")).toBe("BUENOS AIRES");
     expect(normalizeComunaName("Villa Hermosa")).toBe("VILLA HERMOSA");
   });
+
+  it("strips the 'Corregimiento de' prefix used by salud/población", () => {
+    expect(normalizeComunaName("Corregimiento de San Cristóbal")).toBe("SAN CRISTOBAL");
+    expect(normalizeComunaName("Corregimiento de Altavista")).toBe("ALTAVISTA");
+    expect(normalizeComunaName("Corregimiento de Santa Elena")).toBe("SANTA ELENA");
+  });
+
+  it("maps 'Corregimiento de San Sebastián de Palmitas' to the geojson 'PALMITAS' name", () => {
+    expect(normalizeComunaName("Corregimiento de San Sebastián de Palmitas")).toBe("PALMITAS");
+  });
 });

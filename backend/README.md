@@ -94,6 +94,7 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/comunas` | `limite_catastral_de_comun.geojson` | Límite catastral de comunas + corregimientos (GeoJSON, WGS84) |
 | GET | `/api/comunas/{nombre}` | idem | Filtra por nombre de comuna |
 | GET | `/api/comunas/estaciones/auditoria` | `auditoria_estaciones_comunas.csv` | Trazabilidad estación SIATA → comuna |
+| GET | `/api/comunas/poblacion` | `poblacion_por_comuna.csv` | Población, área (km²) y densidad (hab/km²) de las 21 comunas/corregimientos — ver "Fuente de `poblacion_por_comuna.csv`" abajo |
 | GET | `/api/pm25?comuna=&anio=` | `integracion_v2_pm25_arboles_medellin.csv` | PM2.5 × cobertura arbórea por comuna/periodo |
 | GET | `/api/pm25/relaciones-anuales?comuna=&anio=` | `relaciones_v2_bloque2.csv` | Relaciones anuales comuna × vulnerabilidad |
 | GET | `/api/pm25/estaciones` | `Solicitud_PM25_DP1763941.csv` + `auditoria_estaciones_comunas.csv` | Última lectura real de PM2.5 por estación SIATA (no agregada por comuna); pensado para capas que necesitan variación espacial genuina, p. ej. partículas animadas |
@@ -105,7 +106,7 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/arboles/resumen-comuna` | `sau_arboles_urbanos.csv` | Conteo real por comuna, top 5 especies y % de estado fitosanitario (SAU) — agregado liviano para el dashboard |
 | GET | `/api/arboles/clusters?cell_size_deg=` | idem | Clustering espacial en grid (centroide + conteo por celda) — para el mapa a zoom alejado |
 | GET | `/api/arboles/puntos?min_lon=&min_lat=&max_lon=&max_lat=&limit=` | idem | Árboles individuales reales dentro de un bbox, con tope duro de resultados — para el mapa a zoom cercano |
-| GET | `/api/salud/resumen-comuna` | `salud_respiratoria_resumen_comuna.json` | Diagnósticos CIE-10 J00-J99 por comuna, red pública Metrosalud — ver "Fuente de `salud_respiratoria_resumen_comuna.json`" abajo. **Respuesta incluye `metodologia` obligatorio** (no es la morbilidad total de la ciudad) |
+| GET | `/api/salud/resumen-comuna` | `salud_respiratoria_resumen_comuna.json` + `poblacion_por_comuna.csv` | Diagnósticos CIE-10 J00-J99 por comuna, red pública Metrosalud, con conteo absoluto **y** `tasa_por_1000_hab` — ver "Fuente de `salud_respiratoria_resumen_comuna.json`" abajo. **Respuesta incluye `metodologia` obligatorio** (no es la morbilidad total de la ciudad; el denominador de la tasa es población total, no población atendida por Metrosalud) |
 
 ## Reproyección de geometrías
 
@@ -304,6 +305,86 @@ de la ciudad" — ningún texto de la UI debe presentarlo como tal.
 imposible deserializar la respuesta del endpoint sin recibir también este
 caveat.
 
+## Fuente de `poblacion_por_comuna.csv`
+
+Proyecciones de población por comuna/corregimiento, para calcular densidad
+poblacional y normalizar la carga de morbilidad respiratoria de Metrosalud
+(tasa por 1.000 hab., ver arriba).
+
+- **Fuente**: DANE, vía Alcaldía de Medellín — "Proyecciones de población por
+  Comunas y Corregimientos 2018-2030, Actualización Año 2025" (Contrato
+  interadministrativo No. 4600104690 de 2025, DANE - Municipio de Medellín).
+  Descargado como `.xlsx` desde
+  `https://www.medellin.gov.co/es/centro-documental/proyecciones-poblacion-viviendas-y-hogares/`
+  (dominio principal `medellin.gov.co`, no `medata.gov.co` — ese subdominio
+  tenía el certificado SSL vencido, mismo hallazgo que con el dataset de
+  salud respiratoria).
+- **Descargado**: 2026-08-14.
+- **Procesado por**: `backend/scripts/procesar_poblacion_comunas.py` — lee la
+  hoja única `"Comunas y Corregimientos"` del Excel (header real en la fila
+  16, filas 1-15 son metadata/título), descarta la fila `"Totales"` y las
+  notas al pie, y agrupa (`groupby`) por `Nombre Comuna` sumando la columna
+  del año elegido: los corregimientos 60/70/80/90 vienen con **dos filas**
+  cada uno en el Excel fuente (una para `"Cabecera Municipal"` y otra para
+  `"Centros Poblados y Rural Disperso"`) que hay que sumar para obtener la
+  población total del corregimiento. Resultado: 21 filas (16 comunas + 5
+  corregimientos), población total ~2.52M, consistente con la cifra pública
+  conocida de Medellín.
+- **Año elegido: 2024**, de la serie 2018-2030 disponible. El dataset no
+  distingue explícitamente qué años son "observados" vs. "proyectados" (el
+  título dice "proyecciones" para toda la serie 2018-2030, recalibrada con la
+  actualización DANE de julio de 2025); se eligió 2024 por ser el año más
+  reciente de la serie que no es una proyección lejana hacia el futuro,
+  dentro de la ventana de solapamiento con los datos de PM2.5 (2023-2025) y
+  de salud respiratoria (2024-2026) del resto del proyecto. Cambiar el año
+  significa editar `ANIO_ELEGIDO` en el script y re-ejecutarlo.
+- **`area_km2`/`densidad_hab_km2`**: calculadas en `app/services/data_loader.py`
+  a partir de la geometría de `limite_catastral_de_comun.geojson`, en su CRS
+  proyectado original (EPSG:9377, unidades = metros) antes de reproyectar —
+  el área en grados de WGS84 no es interpretable directamente.
+
+## Cruce de comunas
+
+El proyecto cruza comunas por **nombre normalizado** (mayúsculas, sin
+tildes — ver `app/services/comuna_join.py` en el backend y
+`ecodata-lab-frontend/src/lib/map/matchComuna.ts` en el frontend, mismo
+algoritmo espejado en ambos lenguajes), no por el código numérico DANE /
+Decreto 346 de 2000. Ese código (`"01"`..`"16"`, `"50"`, `"60"`, `"70"`,
+`"80"`, `"90"`) solo existe hoy en `limite_catastral_de_comun.geojson`
+(`properties.comuna`) y en `poblacion_por_comuna.csv` (`codigo_comuna`,
+expuesto como dato de referencia); ningún otro dataset del proyecto lo trae.
+
+**Decisión tomada en esta integración (población)**: se evaluó migrar el
+cruce completo del proyecto a código DANE, ya que es más robusto que el
+cruce por texto (evita mantener una tabla de alias manual para casos como
+"LAURELES ESTADIO" → "LAURELES" o "Corregimiento de San Cristóbal" →
+"SAN CRISTOBAL"). Se decidió **no hacerlo** en este prompt: el cruce por
+nombre normalizado ya está en uso en ~7 archivos del frontend (capas del
+mapa en deck.gl, selectores por teclado, el comparador de comunas, el panel
+de detalle) más su test unitario, y migrarlo tocaría piezas ya estables del
+proyecto en el mismo cambio que introduce el dataset de población — un
+riesgo innecesario para el alcance de este prompt. En su lugar, el nuevo
+dataset de población se integró con el mismo mecanismo de nombre
+normalizado ya existente, extendiendo `matchComuna.ts`/`comuna_join.py` con
+dos piezas que hacían falta y que además arreglan un bug real preexistente:
+strip del prefijo `"CORREGIMIENTO DE "` (sin esto, `ComunaDetailPanel` nunca
+lograba cruzar los datos de salud respiratoria de los 5 corregimientos con
+la comuna seleccionada en el mapa) y el alias `"SAN SEBASTIAN DE PALMITAS"`
+→ `"PALMITAS"`.
+
+**Pendiente técnico documentado** (ver también `docs/ESTADO_PROYECTO.md`):
+migrar el cruce completo del proyecto (backend y frontend) de nombre
+normalizado a código DANE, como mejora de robustez separada. Valdría la
+pena porque: (1) elimina la necesidad de mantener tablas de alias a mano
+cada vez que aparece una fuente nueva con una variante de texto distinta
+para el mismo nombre; (2) es inmune a cambios de mayúsculas/tildes/prefijos
+en fuentes futuras; (3) ya existe el código en el geojson catastral, solo
+faltaría que los demás datasets (siembra, salud, población) lo expusieran
+también. El costo es tocar ~7 archivos de frontend estables (incluida su
+cobertura de tests) más los loaders del backend, en un cambio que no es
+urgente porque el cruce actual, aunque menos robusto, funciona correctamente
+para las 21 comunas/corregimientos existentes.
+
 ## Manejo de errores
 
 Si cualquier `DATA_*` apunta a un archivo inexistente, el endpoint
@@ -332,7 +413,9 @@ carpeta. Root Directory a configurar en la plataforma: **`backend`**.
    - **Health Check Path**: `/health`.
    - Variables de entorno: las mismas `DATA_*` de `.env.example` (ya apuntan
      a `./data/...`) + `CORS_ALLOWED_ORIGINS` con la URL del frontend
-     desplegado en Vercel.
+     desplegado en Vercel + `SENTRY_DSN` (proyecto "Python/FastAPI" en
+     [Sentry](https://sentry.io), monitoreo de errores en producción — sin
+     este valor, Sentry simplemente no se inicializa).
    - **Trade-off del plan Free**: el servicio se duerme tras 15 minutos sin
      tráfico; el primer request tras dormir tarda ~30-50s (cold start) en
      responder mientras el contenedor arranca. Es una decisión consciente de

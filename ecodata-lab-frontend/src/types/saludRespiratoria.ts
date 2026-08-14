@@ -13,6 +13,7 @@ export const resumenSaludComunaSchema = z.object({
   total_diagnosticos_respiratorios: z.number().int(),
   por_anio: z.record(z.string(), z.number().int()),
   top_diagnosticos: z.array(diagnosticoConteoSchema),
+  tasa_por_1000_hab: z.number().nullable().optional(),
 });
 export type ResumenSaludComuna = z.infer<typeof resumenSaludComunaSchema>;
 

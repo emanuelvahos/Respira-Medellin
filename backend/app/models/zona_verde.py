@@ -60,6 +60,10 @@ class ComunaProperties(BaseModel):
     sector: int | None = None
     nombre: str
     fecha_sincronizacion: int | None = None
+    poblacion: int | None = None
+    poblacion_anio: int | None = None
+    area_km2: float | None = None
+    densidad_hab_km2: float | None = None
 
 
 class ZonaVerdeInventarioProperties(BaseModel):

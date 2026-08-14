@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiFetch } from "@/lib/api/client";
 import { arbolesClustersUrl, arbolesPuntosUrl, endpoints, rankingComunasUrl, type Bbox } from "@/lib/api/endpoints";
-import { comunasFeatureCollectionSchema, estacionAuditoriaSchema } from "@/types/comuna";
+import {
+  comunasFeatureCollectionSchema,
+  estacionAuditoriaSchema,
+  poblacionComunaSchema,
+} from "@/types/comuna";
 import { estacionPM25Schema } from "@/types/estacionPM25";
 import { integracionPM25ArbolesSchema } from "@/types/pm25";
 import { rankingComunaItemSchema, type PesosAhp } from "@/types/rankingComuna";
@@ -166,6 +170,16 @@ export function useSaludResumenComuna() {
       ),
     // Agregado liviano (por comuna, ya resumido en el backend): se puede
     // cargar siempre, igual que arboles-resumen-comuna.
+  });
+}
+
+export function usePoblacionComuna() {
+  return useQuery({
+    queryKey: ["poblacion-comuna"],
+    queryFn: () =>
+      fetchAndValidate(endpoints.poblacionComuna, z.array(poblacionComunaSchema)),
+    // Agregado liviano (21 filas, ya resumido en el backend): se puede
+    // cargar siempre, igual que arboles-resumen-comuna y salud-resumen-comuna.
   });
 }
 

@@ -10,6 +10,7 @@ export const endpoints = {
   zonasVerdes: "/api/zonas-verdes",
   arbolesResumenComuna: "/api/arboles/resumen-comuna",
   saludResumenComuna: "/api/salud/resumen-comuna",
+  poblacionComuna: "/api/comunas/poblacion",
 } as const;
 
 /** `/api/siembra/ranking-comunas` toma pesos como query params — no es una ruta estática. */

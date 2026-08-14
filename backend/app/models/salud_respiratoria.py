@@ -16,6 +16,11 @@ class ResumenSaludComuna(BaseModel):
     total_diagnosticos_respiratorios: int
     por_anio: dict[str, int]
     top_diagnosticos: list[DiagnosticoConteo]
+    tasa_por_1000_hab: float | None = None
+    """Diagnósticos ÷ población total de la comuna × 1000. `None` cuando no
+    hubo cruce de nombre con poblacion_por_comuna.csv (ver `metodologia` para
+    el matiz del denominador: población total, no población atendida por
+    Metrosalud)."""
 
 
 class FuenteSaludRespiratoria(BaseModel):

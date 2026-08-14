@@ -15,16 +15,30 @@
  * - Comuna 11 es oficialmente "Laureles - Estadio"; el CSV de siembra la
  *   trae como "Laureles Estadio" pero el geojson catastral solo usa
  *   "LAURELES".
+ * - Comuna 50 es oficialmente "San Sebastián de Palmitas"; salud y
+ *   población la traen como "Corregimiento de San Sebastián de Palmitas"
+ *   pero el geojson catastral solo usa "PALMITAS".
+ *
+ * Espejo en Python: backend/app/services/comuna_join.py (misma lista,
+ * mismo algoritmo). Si se agrega un alias aquí, agregarlo también allá.
  */
 const NAME_ALIASES: Record<string, string> = {
   "LAURELES ESTADIO": "LAURELES",
+  "SAN SEBASTIAN DE PALMITAS": "PALMITAS",
 };
 
+const PREFIJO_CORREGIMIENTO = "CORREGIMIENTO DE ";
+
 export function normalizeComunaName(nombre: string): string {
-  const normalized = nombre
+  let normalized = nombre
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toUpperCase()
     .trim();
+  // Salud y población traen los corregimientos como "Corregimiento de X";
+  // el geojson catastral (fuente de verdad para el mapa) solo usa "X".
+  if (normalized.startsWith(PREFIJO_CORREGIMIENTO)) {
+    normalized = normalized.slice(PREFIJO_CORREGIMIENTO.length);
+  }
   return NAME_ALIASES[normalized] ?? normalized;
 }

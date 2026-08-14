@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import { useComunas, usePM25, useResumenComuna, useSaludResumenComuna } from "@/lib/api/queries";
 import { useMapStore } from "@/store/mapStore";
@@ -41,6 +41,7 @@ export function ComunaDetailPanel() {
   const saludComuna = saludQuery.data?.comunas.find(
     (c) => normalizeComunaName(c.comuna) === selectedComuna,
   );
+  const [mostrarTasa, setMostrarTasa] = useState(false);
 
   return (
     <aside
@@ -145,13 +146,64 @@ export function ComunaDetailPanel() {
             </dl>
           )}
 
+          {feature?.properties.poblacion != null && (
+            <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4 text-sm">
+              <div>
+                <dt className="text-xs text-muted-foreground">
+                  Población ({feature.properties.poblacion_anio ?? "—"})
+                </dt>
+                <dd className="font-medium text-foreground">
+                  {feature.properties.poblacion.toLocaleString("es-CO")}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">Densidad</dt>
+                <dd className="font-medium text-foreground">
+                  {feature.properties.densidad_hab_km2 != null
+                    ? `${Math.round(feature.properties.densidad_hab_km2).toLocaleString("es-CO")} hab/km²`
+                    : "—"}
+                </dd>
+              </div>
+            </div>
+          )}
+
           {saludComuna && (
             <div className="mt-4 space-y-2 border-t border-border pt-4">
-              <p className="text-xs text-muted-foreground">
-                Diagnósticos respiratorios (red pública Metrosalud)
-              </p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-muted-foreground">
+                  Diagnósticos respiratorios (red pública Metrosalud)
+                </p>
+                {saludComuna.tasa_por_1000_hab != null && (
+                  <div className="flex shrink-0 rounded-md border border-border p-0.5 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setMostrarTasa(false)}
+                      aria-pressed={!mostrarTasa}
+                      className={cn(
+                        "rounded px-2 py-0.5",
+                        !mostrarTasa ? "bg-vegetation-muted text-vegetation" : "text-muted-foreground",
+                      )}
+                    >
+                      Conteo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMostrarTasa(true)}
+                      aria-pressed={mostrarTasa}
+                      className={cn(
+                        "rounded px-2 py-0.5",
+                        mostrarTasa ? "bg-vegetation-muted text-vegetation" : "text-muted-foreground",
+                      )}
+                    >
+                      Tasa /1.000
+                    </button>
+                  </div>
+                )}
+              </div>
               <p className="font-heading text-2xl font-semibold text-foreground">
-                {saludComuna.total_diagnosticos_respiratorios.toLocaleString("es-CO")}
+                {mostrarTasa && saludComuna.tasa_por_1000_hab != null
+                  ? `${saludComuna.tasa_por_1000_hab.toFixed(1)} / 1.000 hab.`
+                  : saludComuna.total_diagnosticos_respiratorios.toLocaleString("es-CO")}
               </p>
               {saludComuna.top_diagnosticos[0] && (
                 <p className="text-xs text-muted-foreground">
@@ -160,8 +212,9 @@ export function ComunaDetailPanel() {
                 </p>
               )}
               <MethodologyNote>
-                Red pública Metrosalud (régimen subsidiado); no representa la
-                morbilidad respiratoria total de la comuna.
+                {mostrarTasa
+                  ? "Tasa por 1.000 habitantes: usa la población total proyectada de la comuna (DANE) como denominador, aunque el numerador son solo pacientes de la red pública Metrosalud (régimen subsidiado) — puede subestimar o sobreestimar la carga real según cuánto varíe la cobertura subsidiada entre comunas."
+                  : "Red pública Metrosalud (régimen subsidiado); no representa la morbilidad respiratoria total de la comuna. El conteo absoluto favorece a comunas más pobladas — compara con la tasa por 1.000 hab. para un panorama más equilibrado."}
               </MethodologyNote>
             </div>
           )}

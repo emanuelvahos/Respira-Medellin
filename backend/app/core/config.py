@@ -18,8 +18,10 @@ class Settings(BaseSettings):
     data_solicitud_pm25_estaciones: Path
     data_sau_arboles_urbanos: Path
     data_salud_respiratoria_resumen_comuna: Path
+    data_poblacion_por_comuna: Path
 
     cors_allowed_origins: str = "http://localhost:3000"
+    sentry_dsn: str | None = None
 
     @property
     def cors_origins(self) -> list[str]:

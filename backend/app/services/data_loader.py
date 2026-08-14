@@ -21,7 +21,9 @@ from app.models.arbol_sau import ArbolSau
 from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
+from app.models.poblacion import PoblacionComuna
 from app.models.siembra import RecomendacionSiembraZona, ResumenRecomendacionComuna
+from app.services.comuna_join import normalize_comuna_name
 
 WGS84 = "EPSG:4326"
 
@@ -119,12 +121,67 @@ def load_zonas_priorizadas_siembra_geojson() -> dict:
 
 
 @lru_cache
+def _area_km2_por_comuna_normalizada() -> dict[str, float]:
+    """Área en km² por comuna (llave = nombre normalizado), calculada en el
+    CRS proyectado original del shapefile (EPSG:9377, unidades = metros)
+    antes de reproyectar a WGS84 — el área en grados no es interpretable."""
+    settings = get_settings()
+    path = _require_file(settings.data_limite_catastral_comunas, "DATA_LIMITE_CATASTRAL_COMUNAS")
+    gdf = gpd.read_file(path)
+    return {
+        normalize_comuna_name(nombre): area_m2 / 1_000_000
+        for nombre, area_m2 in zip(gdf["nombre"], gdf.geometry.area)
+    }
+
+
+@lru_cache
+def load_poblacion_por_comuna() -> list[PoblacionComuna]:
+    """poblacion_por_comuna.csv (proyección DANE, año fijo elegido en
+    scripts/procesar_poblacion_comunas.py) enriquecido con área/densidad
+    calculadas desde limite_catastral_de_comun.geojson, cruzando por nombre
+    normalizado (ver app.services.comuna_join)."""
+    settings = get_settings()
+    df = _read_csv(settings.data_poblacion_por_comuna, "DATA_POBLACION_POR_COMUNA")
+    # códigos DANE de 2 dígitos ('01'..'16','50'..'90'); pandas los infiere
+    # como int y pierde el cero a la izquierda si no se fuerza el zfill.
+    df["codigo_comuna"] = df["codigo_comuna"].astype(str).str.zfill(2)
+
+    areas = _area_km2_por_comuna_normalizada()
+    resultado: list[PoblacionComuna] = []
+    for row in df.to_dict(orient="records"):
+        area_km2 = areas.get(normalize_comuna_name(row["nombre_comuna"]))
+        densidad = row["poblacion"] / area_km2 if area_km2 else None
+        resultado.append(
+            PoblacionComuna(
+                codigo_comuna=row["codigo_comuna"],
+                nombre_comuna=row["nombre_comuna"],
+                anio=int(row["anio"]),
+                poblacion=int(row["poblacion"]),
+                area_km2=area_km2,
+                densidad_hab_km2=densidad,
+            )
+        )
+    return resultado
+
+
+@lru_cache
 def load_limite_catastral_comunas_geojson() -> dict:
     settings = get_settings()
-    return _read_geojson_wgs84(
+    raw = _read_geojson_wgs84(
         settings.data_limite_catastral_comunas,
         "DATA_LIMITE_CATASTRAL_COMUNAS",
     )
+    poblacion_por_nombre = {
+        normalize_comuna_name(p.nombre_comuna): p for p in load_poblacion_por_comuna()
+    }
+    for feature in raw["features"]:
+        props = feature["properties"]
+        dato = poblacion_por_nombre.get(normalize_comuna_name(props["nombre"]))
+        props["poblacion"] = dato.poblacion if dato else None
+        props["poblacion_anio"] = dato.anio if dato else None
+        props["area_km2"] = dato.area_km2 if dato else None
+        props["densidad_hab_km2"] = dato.densidad_hab_km2 if dato else None
+    return raw
 
 
 _ZONAS_VERDES_PROPERTIES = [
@@ -205,6 +262,26 @@ def load_salud_respiratoria_resumen() -> ResumenSaludRespiratoriaResponse:
     _require_file(path, "DATA_SALUD_RESPIRATORIA_RESUMEN_COMUNA")
     with path.open(encoding="utf-8") as f:
         raw = json.load(f)
+
+    poblacion_por_nombre = {
+        normalize_comuna_name(p.nombre_comuna): p.poblacion for p in load_poblacion_por_comuna()
+    }
+    for comuna in raw["comunas"]:
+        poblacion = poblacion_por_nombre.get(normalize_comuna_name(comuna["comuna"]))
+        comuna["tasa_por_1000_hab"] = (
+            round(comuna["total_diagnosticos_respiratorios"] / poblacion * 1000, 2)
+            if poblacion
+            else None
+        )
+    raw["metodologia"] = (
+        raw["metodologia"]
+        + " La tasa por 1.000 habitantes usa como denominador la población total "
+        "proyectada de la comuna (DANE), no la población atendida por Metrosalud "
+        "específicamente: si la cobertura del régimen subsidiado varía mucho entre "
+        "comunas, la tasa puede subestimar la carga real en comunas con menor "
+        "proporción de población subsidiada, o sobreestimarla en comunas con mayor "
+        "proporción. Se muestra junto al conteo absoluto, no en su reemplazo."
+    )
     return ResumenSaludRespiratoriaResponse.model_validate(raw)
 
 

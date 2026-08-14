@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useRankingComunas } from "@/lib/api/queries";
+import { usePoblacionComuna, useRankingComunas } from "@/lib/api/queries";
 import { PESOS_AHP_ORIGINALES, type PesosAhp, type RankingComunaItem } from "@/types/rankingComuna";
+import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { cn } from "@/lib/utils";
 
 // Normaliza tildes para que buscar "belen" encuentre "Belén" — nombres de
@@ -68,7 +69,12 @@ function CambioRanking({ actual, base }: { actual: number; base: number | undefi
   );
 }
 
-const columns: ColumnDef<RankingComunaItem>[] = [
+type RankingComunaConPoblacion = RankingComunaItem & {
+  poblacion?: number | null;
+  densidad_hab_km2?: number | null;
+};
+
+const columns: ColumnDef<RankingComunaConPoblacion>[] = [
   {
     id: "ranking_prioridad",
     accessorKey: "ranking_prioridad",
@@ -106,11 +112,28 @@ const columns: ColumnDef<RankingComunaItem>[] = [
     accessorKey: "especie_principal",
     header: "Especie principal",
   },
+  {
+    accessorKey: "poblacion",
+    header: "Población",
+    cell: ({ row }) =>
+      row.original.poblacion != null
+        ? row.original.poblacion.toLocaleString("es-CO")
+        : "—",
+  },
+  {
+    accessorKey: "densidad_hab_km2",
+    header: "Densidad",
+    cell: ({ row }) =>
+      row.original.densidad_hab_km2 != null
+        ? `${Math.round(row.original.densidad_hab_km2).toLocaleString("es-CO")} hab/km²`
+        : "—",
+  },
 ];
 
 export function ComunasTable({ pesos }: { pesos: PesosAhp }) {
   const rankingQuery = useRankingComunas(pesos);
   const baselineQuery = useRankingComunas(PESOS_AHP_ORIGINALES);
+  const poblacionQuery = usePoblacionComuna();
   const [sorting, setSorting] = useState<SortingState>([{ id: "ranking_prioridad", desc: false }]);
   const [busqueda, setBusqueda] = useState("");
 
@@ -120,7 +143,25 @@ export function ComunasTable({ pesos }: { pesos: PesosAhp }) {
     return map;
   }, [baselineQuery.data]);
 
-  const data = useMemo(() => rankingQuery.data ?? [], [rankingQuery.data]);
+  const poblacionPorComuna = useMemo(() => {
+    const map = new Map<string, { poblacion: number; densidad_hab_km2: number | null | undefined }>();
+    for (const p of poblacionQuery.data ?? []) {
+      map.set(normalizeComunaName(p.nombre_comuna), {
+        poblacion: p.poblacion,
+        densidad_hab_km2: p.densidad_hab_km2,
+      });
+    }
+    return map;
+  }, [poblacionQuery.data]);
+
+  const data = useMemo<RankingComunaConPoblacion[]>(
+    () =>
+      (rankingQuery.data ?? []).map((r) => {
+        const pob = poblacionPorComuna.get(normalizeComunaName(r.comuna));
+        return { ...r, poblacion: pob?.poblacion, densidad_hab_km2: pob?.densidad_hab_km2 };
+      }),
+    [rankingQuery.data, poblacionPorComuna],
+  );
 
   const table = useReactTable({
     data,

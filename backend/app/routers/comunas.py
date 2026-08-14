@@ -1,13 +1,27 @@
 from fastapi import APIRouter, HTTPException
 
 from app.models.comuna import EstacionAuditoria
+from app.models.poblacion import PoblacionComuna
 from app.models.zona_verde import ComunaProperties, FeatureCollection
 from app.services.data_loader import (
     load_auditoria_estaciones_comunas,
     load_limite_catastral_comunas_geojson,
+    load_poblacion_por_comuna,
 )
 
 router = APIRouter(prefix="/api/comunas", tags=["comunas"])
+
+
+@router.get("/poblacion", response_model=list[PoblacionComuna])
+def get_poblacion_comunas() -> list[PoblacionComuna]:
+    """Población, área y densidad de las 21 comunas/corregimientos.
+
+    Fuente: DANE - Proyecciones de población 2018-2030 (ver backend/README.md
+    para el año elegido y su justificación). El cruce con el resto del
+    proyecto es por nombre normalizado, no por `codigo_comuna` (ver
+    app.services.comuna_join).
+    """
+    return load_poblacion_por_comuna()
 
 
 @router.get("", response_model=FeatureCollection[ComunaProperties])

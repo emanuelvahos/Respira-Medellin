@@ -26,7 +26,7 @@
   `/api/siembra/zonas`, `/api/siembra/zonas/geojson`,
   `/api/siembra/resumen-comuna`, `/api/siembra/ranking-comunas`,
   `/api/zonas-verdes`, `/api/arboles/resumen-comuna`, `/api/arboles/clusters`,
-  `/api/arboles/puntos`, `/api/salud/resumen-comuna`).
+  `/api/arboles/puntos`, `/api/salud/resumen-comuna`, `/api/comunas/poblacion`).
 - **Ranking AHP con pesos por defecto** reproduce exactamente
   (`ranking_prioridad` 1-5 verificado) el CSV original del pipeline
   (`resumen_recomendacion_por_comuna.csv`).
@@ -52,6 +52,70 @@ respiratoria en la red pública", no morbilidad total de la ciudad. El campo
 que este caveat no se pierda en integraciones futuras. Fuente independiente
 del modelo AHP (que sigue usando exclusivamente sus datasets originales) y
 del inventario del SAU (Fase de árboles).
+
+### Monitoreo de errores en producción (Sentry) → NUEVO (2026-08-14)
+
+Además del CI (regresiones antes de merge) y Vercel Analytics (tráfico), el
+proyecto ahora reporta a [Sentry](https://sentry.io) los errores no
+manejados que ocurren **después** del deploy — algo que antes solo se
+detectaba si un usuario lo reportaba manualmente.
+
+- **Frontend** (`ecodata-lab-frontend/instrumentation.ts`,
+  `src/instrumentation-client.ts`, `sentry.server.config.ts`,
+  `sentry.edge.config.ts`, `src/app/global-error.tsx`): proyecto Sentry tipo
+  "Next.js", DSN en `NEXT_PUBLIC_SENTRY_DSN` (variable pública, como
+  `NEXT_PUBLIC_MAPBOX_TOKEN` — debe agregarse también en Vercel).
+- **Backend** (`backend/app/main.py`, inicializado si `SENTRY_DSN` está
+  presente en `backend/.env` / variables de entorno de Render): proyecto
+  Sentry tipo "Python/FastAPI", DSN distinto al del frontend (son proyectos
+  separados en Sentry).
+- **Filtrado de ruido intencional**: los estados de dominio ya manejados —
+  503 de dataset no disponible (p. ej. `/api/zonas-verdes` mientras no
+  existía el dataset, ver arriba) y 422 de validación de pesos AHP que no
+  suman 1.0 — están excluidos explícitamente vía `before_send` (backend) y
+  `beforeSend` sobre `ApiError` (frontend), para que Sentry solo reporte
+  errores reales del sistema (500+, excepciones de render no capturadas),
+  no comportamiento esperado.
+- **Sample rate**: 10% de trazas de performance (free tier tiene cuota
+  mensual de eventos); errores se capturan al 100%. Session Replay no está
+  habilitado (no aporta al objetivo de diagnóstico y consume cuota aparte).
+- Verificado en vivo con un error deliberado en cada lado (removido del
+  código tras confirmar en el dashboard de Sentry): `throw new Error(...)`
+  en una ruta temporal del frontend y `1/0` en un endpoint temporal del
+  backend.
+
+### `/api/comunas/poblacion` → NUEVO (2026-08-14), fuente DANE vía Alcaldía de Medellín
+
+Población, área (km²) y densidad (hab/km²) de las 21 comunas/corregimientos,
+desde las proyecciones DANE 2018-2030 (año elegido: **2024**, ver
+justificación en `backend/README.md`, sección "Fuente de
+`poblacion_por_comuna.csv`"). Habilita dos cosas nuevas:
+
+- **Dashboard y mapa**: columna de población/densidad en `ComunasTable` y
+  nueva sección en `ComunaDetailPanel`.
+- **`/api/salud/resumen-comuna` enriquecido**: cada comuna ahora trae
+  `tasa_por_1000_hab` (diagnósticos ÷ población total × 1000) junto al
+  conteo absoluto que ya existía — nunca en su reemplazo. El campo
+  `metodologia` se extendió para explicar el matiz del denominador
+  (población total DANE, no población atendida por Metrosalud). El
+  dashboard y `ComunaDetailPanel` ahora tienen un toggle "Conteo
+  absoluto" / "Tasa /1.000 hab." en la sección de salud respiratoria.
+
+**No se tocó el modelo AHP** (`app/services/ahp.py`,
+`resumen_recomendacion_por_comuna.csv`, `/api/siembra/resumen-comuna`,
+`/api/siembra/ranking-comunas`): esta integración es aditiva, igual que las
+del SAU y salud respiratoria antes.
+
+**Decisión sobre el cruce de comunas**: se evaluó migrar el cruce del
+proyecto de nombre normalizado a código DANE (Decreto 346 de 2000) y se
+decidió **no hacerlo** en esta ronda por alcance — detalle completo,
+incluyendo la justificación de por qué valdría la pena hacerlo eventualmente,
+en `backend/README.md`, sección "Cruce de comunas". Como parte de extender
+el mecanismo de nombre normalizado al nuevo dataset, se corrigió un bug real
+preexistente en `matchComuna.ts`/`comuna_join.py`: no se despojaba el
+prefijo `"Corregimiento de "`, por lo que `ComunaDetailPanel` nunca lograba
+cruzar los datos de salud respiratoria de los 5 corregimientos con la
+comuna seleccionada en el mapa.
 
 ## 2. Limitaciones conocidas (documentadas, no ocultas)
 

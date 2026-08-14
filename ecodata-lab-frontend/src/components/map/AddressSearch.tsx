@@ -40,11 +40,12 @@ export function AddressSearch() {
   const debouncedQuery = useDebouncedValue(query.trim(), DEBOUNCE_MS);
 
   useEffect(() => {
-    if (debouncedQuery.length < MIN_QUERY_LENGTH) {
-      setSuggestions([]);
-      setStatus("idle");
-      return;
-    }
+    // El caso "consulta muy corta" ya se resuelve en el `onChange` del
+    // input (reset inmediato, sin esperar el debounce): para cuando este
+    // efecto ve un `debouncedQuery` corto, `suggestions`/`status` ya están
+    // en su valor de reposo. Evita llamar `setState` sincrónicamente aquí
+    // (regla `react-hooks/set-state-in-effect`).
+    if (debouncedQuery.length < MIN_QUERY_LENGTH) return;
 
     const controller = new AbortController();
     setStatus("loading");
@@ -144,8 +145,13 @@ export function AddressSearch() {
             className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value);
+              const value = e.target.value;
+              setQuery(value);
               setOpen(true);
+              if (value.trim().length < MIN_QUERY_LENGTH) {
+                setSuggestions([]);
+                setStatus("idle");
+              }
             }}
             onFocus={() => setOpen(true)}
             onBlur={() => setOpen(false)}
