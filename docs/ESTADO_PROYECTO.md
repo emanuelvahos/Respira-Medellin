@@ -3,7 +3,38 @@
 > Inventario honesto de qué funciona, qué quedó documentado como limitación, y
 > cómo levantar todo desde cero. Escrito al cierre de la Fase 6 (entrega
 > final). Ver también `docs/GUIA_MIGRACION.md` para el contexto de por qué la
-> arquitectura es la que es.
+> arquitectura es la que es. Ver también
+> [`docs/ACTUALIZACION_DATOS.md`](./ACTUALIZACION_DATOS.md) para la cadencia
+> recomendada de refresco de cada fuente de datos.
+
+### `docs/ACTUALIZACION_DATOS.md` → NUEVO (2026-08-14)
+
+Documento único de referencia sobre cuándo/cómo refrescar cada una de las 5
+fuentes de datos del proyecto (pipeline original, zonas verdes, SAU, salud
+respiratoria, población). Para SAU y salud respiratoria (que ya tenían
+script de descarga propio con throttling) se implementó
+`.github/workflows/refresh-data.yml`: cron trimestral que corre ambos
+scripts y **abre un Pull Request** con el resultado para revisión humana
+— nunca hace merge automático. Zonas verdes y población quedan manuales
+(no tienen script, cadencia de meses/años no lo justifica); el pipeline
+original queda explícitamente fuera de alcance (recalcularlo invalidaría
+`docs/VALIDACION_SENSIBILIDAD_AHP.md` sin aviso).
+
+### `docs/VALIDACION_SENSIBILIDAD_AHP.md` → NUEVO (2026-08-14)
+
+Entregable formal (no técnico) que responde el riesgo señalado en el
+proyecto original: "los pesos del AHP están fijados sin evidencia de
+sensibilidad". Analiza 5 escenarios de pesos reales (consultados en vivo
+contra `/api/siembra/ranking-comunas`), identifica comunas "robustas"
+(Guayabal, Belén, Castilla, El Poblado — top 5 en los 5 escenarios) vs.
+"sensibles a la ponderación" (La Candelaria, Robledo), calcula correlación
+de Spearman por escenario (0.91-0.99, alta similitud) y un punto de quiebre
+en ~53% de peso a PM2.5 donde cambia el #1. No recomienda cambiar los pesos
+por defecto (siguen en 0.45/0.35/0.20, sin modificar) ni se implementó una
+sección nueva de dashboard — se evaluó y se dejó como mejora futura, dado
+que el comparador interactivo de `/dashboard` (Fase 4) ya cubre la
+exploración libre de escenarios y el documento cubre el entregable formal
+que faltaba.
 
 ## 1. Qué está 100% funcional
 

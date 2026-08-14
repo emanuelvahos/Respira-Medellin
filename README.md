@@ -19,7 +19,10 @@ sirve — queda como referencia histórica/auditable, pero ya no es el frontend
 activo ni una dependencia funcional de deploy. Ver
 [`docs/GUIA_MIGRACION.md`](./docs/GUIA_MIGRACION.md) para el detalle completo
 de esa migración, y [`docs/ESTADO_PROYECTO.md`](./docs/ESTADO_PROYECTO.md)
-para el estado actual del proyecto y cómo levantar todo desde cero.
+para el estado actual del proyecto y cómo levantar todo desde cero. Ver
+[`docs/ACTUALIZACION_DATOS.md`](./docs/ACTUALIZACION_DATOS.md) para la
+cadencia recomendada de refresco de cada fuente de datos y el checklist de
+cómo hacerlo.
 
 ## Deploy
 

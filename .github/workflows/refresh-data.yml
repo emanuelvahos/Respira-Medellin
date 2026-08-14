@@ -1,0 +1,114 @@
+name: Refresh data (trimestral)
+
+# Refresca por separado los dos datasets que ya tienen script de descarga
+# propio con throttling (SAU y salud respiratoria) y abre un Pull Request
+# con el resultado — NUNCA hace merge directo a main. Un humano revisa el
+# diff (número de filas, comunas afectadas, etc.) antes de aprobar, igual
+# que revisaría cualquier otro cambio de código.
+#
+# No toca el pipeline original (Bloque 1/2), zonas verdes, ni población:
+# ver docs/ACTUALIZACION_DATOS.md para la justificación de por qué esas
+# tres fuentes se quedan en refresco manual.
+#
+# Cron en UTC, día 1 de enero/abril/julio/octubre a las 09:00 UTC
+# (~04:00-06:00 hora Colombia según horario). "Trimestral" es suficiente
+# para ambas fuentes: ver docs/ACTUALIZACION_DATOS.md, sección de cadencia
+# recomendada por fuente, para la justificación de por qué no hace falta
+# más frecuencia.
+on:
+  schedule:
+    - cron: "0 9 1 1,4,7,10 *"
+  workflow_dispatch: {} # permite disparar manualmente desde la pestaña Actions
+
+jobs:
+  refresh-sau:
+    name: Refrescar SAU (árboles urbanos)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar fetch_sau_arboles.py
+        # Mismo throttling que en ejecución manual (--sleep por defecto,
+        # 1s entre páginas de 2000 registros): no se toca desde el workflow.
+        run: python scripts/fetch_sau_arboles.py
+
+      - name: Abrir PR si hay cambios
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(data): refrescar sau_arboles_urbanos.csv (automático, trimestral)"
+          title: "chore(data): refrescar SAU árboles urbanos"
+          body: |
+            Refresco automático trimestral de `backend/data/sau_arboles_urbanos.csv`
+            vía `backend/scripts/fetch_sau_arboles.py` (workflow `refresh-data.yml`).
+
+            **Antes de aprobar**: revisar el diff — cambios grandes o
+            inesperados en el conteo total de árboles, en la distribución
+            por comuna, o en columnas nuevas/eliminadas del servicio ArcGIS
+            fuente ameritan revisión manual antes de mergear. Este PR
+            **no se mergea automáticamente**.
+
+            Ver `docs/ACTUALIZACION_DATOS.md` para contexto de cadencia y
+            checklist de refresco.
+          branch: auto/refresh-sau-arboles
+          delete-branch: true
+          add-paths: backend/data/sau_arboles_urbanos.csv
+
+  refresh-salud:
+    name: Refrescar salud respiratoria (Metrosalud)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar fetch_salud_respiratoria.py
+        # 3 consultas SoQL agregadas del lado del servidor, nunca descarga
+        # las >1M filas crudas: mismo comportamiento que la ejecución manual.
+        run: python scripts/fetch_salud_respiratoria.py
+
+      - name: Abrir PR si hay cambios
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(data): refrescar salud_respiratoria_resumen_comuna.json (automático, trimestral)"
+          title: "chore(data): refrescar salud respiratoria (Metrosalud)"
+          body: |
+            Refresco automático trimestral de
+            `backend/data/salud_respiratoria_resumen_comuna.json` vía
+            `backend/scripts/fetch_salud_respiratoria.py` (workflow
+            `refresh-data.yml`).
+
+            **Antes de aprobar**: revisar el diff — cambios grandes en el
+            total de diagnósticos por comuna, comunas nuevas/ausentes, o
+            un cambio en el campo `metodologia` (no debería cambiar; si
+            cambió, revisar por qué) ameritan revisión manual antes de
+            mergear. Este PR **no se mergea automáticamente**.
+
+            Ver `docs/ACTUALIZACION_DATOS.md` para contexto de cadencia y
+            checklist de refresco.
+          branch: auto/refresh-salud-respiratoria
+          delete-branch: true
+          add-paths: backend/data/salud_respiratoria_resumen_comuna.json
