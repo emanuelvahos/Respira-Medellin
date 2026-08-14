@@ -1,8 +1,6 @@
 import { FlyToInterpolator } from "@deck.gl/core";
 import type { MapViewState } from "@/store/mapStore";
 
-const ciNegativeTestUnusedVar = "esto debe romper el lint";
-
 export type FlyToTarget = {
   longitude: number;
   latitude: number;
