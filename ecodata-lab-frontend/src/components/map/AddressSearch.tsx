@@ -40,15 +40,15 @@ export function AddressSearch() {
   const debouncedQuery = useDebouncedValue(query.trim(), DEBOUNCE_MS);
 
   useEffect(() => {
-    // El caso "consulta muy corta" ya se resuelve en el `onChange` del
-    // input (reset inmediato, sin esperar el debounce): para cuando este
-    // efecto ve un `debouncedQuery` corto, `suggestions`/`status` ya están
-    // en su valor de reposo. Evita llamar `setState` sincrónicamente aquí
-    // (regla `react-hooks/set-state-in-effect`).
+    // El caso "consulta muy corta" y el estado "loading" ya se resuelven en
+    // el `onChange` del input (reset/loading inmediatos, sin esperar el
+    // debounce): para cuando este efecto ve un `debouncedQuery` válido,
+    // `status` ya está en "loading". Evita llamar `setState` sincrónicamente
+    // en el cuerpo del efecto (regla `react-hooks/set-state-in-effect`) —
+    // solo se llama `setState` dentro de los callbacks async de abajo.
     if (debouncedQuery.length < MIN_QUERY_LENGTH) return;
 
     const controller = new AbortController();
-    setStatus("loading");
 
     searchMedellinPlaces(debouncedQuery, MEDELLIN_MAX_BOUNDS, controller.signal)
       .then((results) => {
@@ -151,6 +151,11 @@ export function AddressSearch() {
               if (value.trim().length < MIN_QUERY_LENGTH) {
                 setSuggestions([]);
                 setStatus("idle");
+              } else {
+                // Optimista: se sabe que se va a buscar en cuanto el
+                // debounce asiente, así que el spinner aparece de inmediato
+                // en vez de esperar los DEBOUNCE_MS antes de mostrar "loading".
+                setStatus("loading");
               }
             }}
             onFocus={() => setOpen(true)}

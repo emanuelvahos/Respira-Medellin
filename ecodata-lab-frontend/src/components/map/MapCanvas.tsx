@@ -40,7 +40,7 @@ import type { ResumenRecomendacionComuna } from "@/types/siembra";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { approximateCentroid } from "@/lib/map/geoCentroid";
 import { flyTo } from "@/lib/map/flyTo";
-import { randomPointsInPolygon } from "@/lib/map/scatterInPolygon";
+import { bboxOfGeometry, randomPointsInPolygon } from "@/lib/map/scatterInPolygon";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { TreeInstances, type TreePoint } from "@/components/trees/TreeInstances";
 import type { MapCameraState } from "@/lib/map/mapboxThreeSync";
@@ -286,35 +286,68 @@ export function MapCanvas() {
     };
   }, [treesRevealed]);
 
-  const comunaCentroid = useMemo(() => {
+  const selectedComunaFeature = useMemo(() => {
     if (!selectedComuna) return null;
-    const feature = comunasQuery.data?.features.find(
-      (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
+    return (
+      comunasQuery.data?.features.find(
+        (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
+      ) ?? null
     );
-    return feature ? approximateCentroid(feature.geometry) : null;
   }, [selectedComuna, comunasQuery.data]);
 
-  const treePoints = useMemo<TreePoint[]>(() => {
-    if (!treesRevealed || !comunaCentroid) return [];
-    const feature = comunasQuery.data?.features.find(
-      (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
-    );
-    if (!feature) return [];
+  const comunaCentroid = useMemo(
+    () => (selectedComunaFeature ? approximateCentroid(selectedComunaFeature.geometry) : null),
+    [selectedComunaFeature],
+  );
 
+  // Cuántos árboles "existentes" mostrar en 3D: mismo criterio de cap ya
+  // usado antes de esta integración (proporcional al conteo real agregado
+  // `cantidad_arboles_totales`, techo MAX_EXISTING_TREE_INSTANCES) — lo
+  // único que cambió es que ahora se piden posiciones REALES del SAU con
+  // ese mismo tope, en vez de dispersarlas sintéticamente dentro del
+  // polígono de la comuna (ver randomPointsInPolygon, todavía usado abajo
+  // solo para las zonas "recomendadas", que no son árboles reales).
+  const nExistingTrees = useMemo(() => {
+    if (!selectedComuna) return 0;
     const registrosPm25 = pm25Query.data?.filter(
       (r) => normalizeComunaName(r.comuna) === selectedComuna,
     );
     const arbolesTotales = registrosPm25?.length
       ? Math.max(...registrosPm25.map((r) => r.cantidad_arboles_totales))
       : 0;
-    // Muestra representativa (no son coordenadas reales de árboles, ver
-    // src/lib/map/scatterInPolygon.ts): la CANTIDAD sí viene de datos reales.
-    const nExisting = Math.min(
-      MAX_EXISTING_TREE_INSTANCES,
-      Math.max(20, Math.round(arbolesTotales / 25)),
-    );
-    const existingPoints = randomPointsInPolygon(feature.geometry, nExisting).map(
-      ([lon, lat]): TreePoint => ({ lon, lat, kind: "existing" }),
+    return Math.min(MAX_EXISTING_TREE_INSTANCES, Math.max(20, Math.round(arbolesTotales / 25)));
+  }, [selectedComuna, pm25Query.data]);
+
+  const comunaBbox = useMemo(
+    () => (selectedComunaFeature ? bboxOfGeometry(selectedComunaFeature.geometry) : null),
+    [selectedComunaFeature],
+  );
+
+  // Reutiliza el mismo hook que alimenta la capa clustered del SAU en el
+  // mapa (ver arbolesPuntosQuery arriba) — mismo endpoint, mismo hook,
+  // solo con un bbox de comuna completa y un `limit` acotado al cap de
+  // instancias 3D en vez del bbox de viewport + tope por defecto. El
+  // backend ya muestrea aleatoriamente cuando trunca (ver
+  // `puntos_en_bbox` en `backend/app/services/arboles.py`), así que no
+  // hace falta una segunda pasada de sub-muestreo en el cliente.
+  const arbolesExistentesQuery = useArbolesPuntos(
+    treesRevealed && nExistingTrees > 0,
+    comunaBbox,
+    nExistingTrees || undefined,
+  );
+
+  const treePoints = useMemo<TreePoint[]>(() => {
+    if (!treesRevealed || !comunaCentroid) return [];
+
+    const existingPoints: TreePoint[] = (arbolesExistentesQuery.data?.puntos ?? []).map(
+      (p): TreePoint => ({
+        lon: p.lon,
+        lat: p.lat,
+        kind: "existing",
+        especie: p.s_especie,
+        nombreComun: p.nombre_comun,
+        estado: p.s_estado_arbol,
+      }),
     );
 
     const zonasComuna =
@@ -334,7 +367,75 @@ export function MapCanvas() {
     }
 
     return [...existingPoints, ...recommendedPoints];
-  }, [treesRevealed, comunaCentroid, comunasQuery.data, selectedComuna, pm25Query.data, zonasSiembraQuery.data]);
+  }, [
+    treesRevealed,
+    comunaCentroid,
+    arbolesExistentesQuery.data,
+    selectedComuna,
+    zonasSiembraQuery.data,
+  ]);
+
+  // --- Tooltip de especie real al pasar el mouse sobre un árbol "existente" ---
+  //
+  // TreeInstances renderiza sobre un <canvas> three.js con pointer-events:none
+  // (para no bloquear el pan/zoom del mapa subyacente) — por eso el hover no
+  // se resuelve con raycasting de R3F, sino proyectando cada punto real a
+  // coordenadas de pantalla con `map.project()` (misma instancia de Mapbox
+  // que ya usa el resto de MapCanvas) y buscando el árbol más cercano al
+  // cursor dentro de un radio en píxeles. Los árboles "recomendados" no
+  // tienen especie real todavía, así que no participan de este hover.
+  const [hoveredTree, setHoveredTree] = useState<{
+    especie: string;
+    nombreComun: string | null;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const existingTreePoints = useMemo(
+    () => treePoints.filter((p) => p.kind === "existing"),
+    [treePoints],
+  );
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !treesRevealed || existingTreePoints.length === 0) {
+      setHoveredTree(null);
+      return;
+    }
+    const HOVER_RADIUS_PX = 22;
+
+    const handleMouseMove = (e: { point: { x: number; y: number } }) => {
+      let closest: { point: TreePoint; distSq: number } | null = null;
+      for (const point of existingTreePoints) {
+        const screen = map.project([point.lon, point.lat]);
+        const dx = screen.x - e.point.x;
+        const dy = screen.y - e.point.y;
+        const distSq = dx * dx + dy * dy;
+        if (distSq <= HOVER_RADIUS_PX * HOVER_RADIUS_PX && (!closest || distSq < closest.distSq)) {
+          closest = { point, distSq };
+        }
+      }
+      if (!closest) {
+        setHoveredTree(null);
+        return;
+      }
+      const screen = map.project([closest.point.lon, closest.point.lat]);
+      setHoveredTree({
+        especie: closest.point.especie ?? "Especie sin dato",
+        nombreComun: closest.point.nombreComun ?? null,
+        x: screen.x,
+        y: screen.y,
+      });
+    };
+    const handleMouseLeave = () => setHoveredTree(null);
+
+    map.on("mousemove", handleMouseMove);
+    map.on("mouseout", handleMouseLeave);
+    return () => {
+      map.off("mousemove", handleMouseMove);
+      map.off("mouseout", handleMouseLeave);
+    };
+  }, [treesRevealed, existingTreePoints]);
 
   if (!MAPBOX_TOKEN) {
     return (
@@ -442,6 +543,21 @@ export function MapCanvas() {
           points={treePoints}
           reducedMotion={reducedMotion}
         />
+      )}
+
+      {hoveredTree && (
+        <div
+          className="deck-tooltip pointer-events-none absolute z-20"
+          style={{ left: hoveredTree.x, top: hoveredTree.y, transform: "translate(-50%, -120%)" }}
+        >
+          <strong>{hoveredTree.especie}</strong>
+          {hoveredTree.nombreComun && (
+            <>
+              <br />
+              {hoveredTree.nombreComun}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

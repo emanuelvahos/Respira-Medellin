@@ -25,6 +25,18 @@ function bbox(rings: Position[][]): [number, number, number, number] {
   return [minLon, minLat, maxLon, maxLat];
 }
 
+/** Bbox de una geometría Polygon/MultiPolygon en el formato {minLon,minLat,maxLon,maxLat}
+ * que espera `/api/arboles/puntos` (ver `Bbox` en `@/lib/api/endpoints`). Usado por
+ * "Respiro Urbano" para pedir árboles reales del SAU dentro del área de una comuna. */
+export function bboxOfGeometry(
+  geometry: Geometry,
+): { minLon: number; minLat: number; maxLon: number; maxLat: number } | null {
+  const polygons = ringsOf(geometry);
+  if (!polygons.length) return null;
+  const [minLon, minLat, maxLon, maxLat] = bbox(polygons.flat());
+  return { minLon, minLat, maxLon, maxLat };
+}
+
 function pointInRing(point: [number, number], ring: Position[]): boolean {
   const [x, y] = point;
   let inside = false;

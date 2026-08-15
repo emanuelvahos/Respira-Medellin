@@ -135,7 +135,13 @@ def puntos_en_bbox(
     )
     subset = df[mask]
     truncado = len(subset) > limit
-    subset = subset.head(limit)
+    # Muestra aleatoria (no las primeras `limit` filas por orden de objectid):
+    # con un bbox grande (p. ej. una comuna completa para "Respiro Urbano",
+    # ver TreeInstances en el frontend) un corte posicional sesgaría la
+    # muestra hacia donde el dataset fuente empieza geográficamente en vez
+    # de repartirse por toda el área visible. random_state fijo: mismo bbox
+    # -> misma muestra (evita parpadeo si React Query refetchea el mismo bbox).
+    subset = subset if not truncado else subset.sample(n=limit, random_state=42)
 
     puntos = [ArbolPunto.model_validate(row) for row in subset.to_dict(orient="records")]
     return puntos, truncado

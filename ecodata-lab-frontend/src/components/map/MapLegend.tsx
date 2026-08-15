@@ -74,13 +74,19 @@ export function MapLegend() {
         <div className="flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1">
             <span className="inline-block size-2.5 rounded-full bg-vegetation" aria-hidden="true" />
-            Existentes (muestra)
+            Existentes (ubicaciones reales SAU)
           </span>
           <span className="flex items-center gap-1">
             <span className="inline-block size-2.5 rounded-full bg-chart-2" aria-hidden="true" />
-            Zonas recomendadas
+            Zonas recomendadas (aproximado)
           </span>
         </div>
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          Verde: árbol real del censo SAU, muestra acotada por rendimiento.
+          Dorado: centroide de una zona priorizada para sembrar — todavía no
+          es un árbol plantado. Pasa el mouse sobre un árbol verde para ver
+          su especie real.
+        </p>
       </div>
     </div>
   );

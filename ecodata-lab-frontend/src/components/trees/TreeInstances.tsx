@@ -13,6 +13,12 @@ export type TreePoint = {
   lon: number;
   lat: number;
   kind: "existing" | "recommended";
+  /** Especie/estado reales del SAU, solo para `kind: "existing"` (ver
+   * `MapCanvas.tsx`) — `kind: "recommended"` no tiene árbol real todavía,
+   * así que estos campos quedan `undefined`. */
+  especie?: string | null;
+  nombreComun?: string | null;
+  estado?: string | null;
 };
 
 /** Reposiciona la cámara three.js en cada cambio de estado de la cámara de Mapbox. */

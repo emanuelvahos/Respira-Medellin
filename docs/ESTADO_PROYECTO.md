@@ -289,13 +289,39 @@ datos falsos cuando no hay `resumen` para la comuna bajo el cursor. No se
 necesitó ningún cambio de código en esta ronda: el manejo ya era correcto y
 completo antes de esta investigación.
 
-### Árboles 3D: muestra, no censo completo
-`TreeInstances` no renderiza el censo real de árboles por comuna (serían
-miles de instancias); usa una muestra representativa cuyo tamaño se deriva
-del dato real (`arboles_totales / 25`, con techo `MAX_EXISTING_TREE_INSTANCES`).
-Esto es una decisión de performance explícita de la Fase 3/5, no una
-regresión — está documentado en el propio código
-(`src/components/map/MapCanvas.tsx`, comentario junto a `treePoints`).
+### Árboles 3D: ubicaciones reales del SAU (ACTUALIZADO 2026-08-14), muestra sigue siendo parcial
+
+`TreeInstances` (árboles "existentes", verdes) usaba posiciones sintéticas
+dispersas dentro del polígono de la comuna (`randomPointsInPolygon`) — el
+usuario reportó que se veían sistemáticamente sobre edificios, poco
+realista. Se reemplazó por coordenadas reales del SAU
+(`/api/arboles/puntos`, mismo endpoint/hook que ya alimenta la capa
+clustered del mapa a zoom cercano, sin lógica de consulta duplicada), pedidas
+con el bbox de la comuna completa (`bboxOfGeometry`, nuevo en
+`scatterInPolygon.ts`) y un `limit` igual al cap ya existente.
+
+Sigue sin renderizar el censo completo por comuna (serían miles de
+instancias, no viable en 3D en tiempo real): el tamaño de la muestra usa el
+mismo criterio de cap que antes (`arboles_totales / 25`, techo
+`MAX_EXISTING_TREE_INSTANCES=220`) — lo que cambió es que ahora esa muestra
+son coordenadas reales, no aproximadas. Cuando el bbox de la comuna tiene
+más árboles reales que el `limit` pedido, el backend ya devuelve una
+muestra **aleatoria** (no las primeras filas por orden de `objectid`) —
+ver `puntos_en_bbox` en `backend/app/services/arboles.py`, cambiado en esta
+misma integración para no sesgar geográficamente la muestra hacia donde
+empieza el dataset fuente.
+
+Los árboles "recomendados" (dorados, zonas de siembra) siguen siendo
+centroides aproximados — representan una recomendación futura, no un árbol
+plantado, así que no tenían por qué cambiar.
+
+**Tooltip de especie real**: pasar el mouse sobre un árbol "existente"
+ahora muestra `s_especie`/`nombre_comun` reales del individuo SAU más
+cercano al cursor (proyectando cada punto a coordenadas de pantalla vía
+`map.project()`, ver `MapCanvas.tsx` — no usa raycasting de R3F porque el
+canvas de `TreeInstances` es `pointer-events: none` a propósito, para no
+bloquear el pan/zoom del mapa). Los árboles "recomendados" no tienen
+tooltip de especie (no hay árbol real todavía).
 
 ### Favicon
 Reemplazado en la Fase 6 por un ícono de hoja estilizado (`src/app/icon.svg`

@@ -148,11 +148,15 @@ export function useArbolesClusters(enabled: boolean, cellSizeDeg?: number) {
   });
 }
 
-export function useArbolesPuntos(enabled: boolean, bbox: Bbox | null) {
+export function useArbolesPuntos(enabled: boolean, bbox: Bbox | null, limit?: number) {
   return useQuery({
-    queryKey: ["arboles-puntos", bbox?.minLon, bbox?.minLat, bbox?.maxLon, bbox?.maxLat],
+    // `limit` en la queryKey: "Respiro Urbano" (limit acotado al cap de
+    // instancias 3D) y la capa clustered de zoom cercano (sin limit, tope
+    // por defecto del backend) piden el mismo bbox con distinto `limit` y
+    // deben cachearse por separado, no compartir resultado.
+    queryKey: ["arboles-puntos", bbox?.minLon, bbox?.minLat, bbox?.maxLon, bbox?.maxLat, limit ?? "default"],
     queryFn: () =>
-      fetchAndValidate(arbolesPuntosUrl(bbox as Bbox), puntosArbolesResponseSchema),
+      fetchAndValidate(arbolesPuntosUrl(bbox as Bbox, limit), puntosArbolesResponseSchema),
     // Solo se activa a zoom cercano (nivel comuna/barrio, ver MapCanvas) y
     // solo con un bbox real del viewport actual: nunca pide puntos crudos
     // sin acotar por área.

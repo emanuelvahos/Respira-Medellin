@@ -49,13 +49,17 @@ export function arbolesClustersUrl(cellSizeDeg?: number): string {
 
 export type Bbox = { minLon: number; minLat: number; maxLon: number; maxLat: number };
 
-/** `/api/arboles/puntos` — árboles individuales reales dentro del viewport (para zoom cercano). */
-export function arbolesPuntosUrl(bbox: Bbox): string {
+/** `/api/arboles/puntos` — árboles individuales reales dentro de un bbox.
+ * Usado tanto por la capa clustered del mapa a zoom cercano (sin `limit`,
+ * usa el tope por defecto del backend) como por "Respiro Urbano"
+ * (`TreeInstances`, con `limit` acotado al cap de instancias 3D). */
+export function arbolesPuntosUrl(bbox: Bbox, limit?: number): string {
   const params = new URLSearchParams({
     min_lon: String(bbox.minLon),
     min_lat: String(bbox.minLat),
     max_lon: String(bbox.maxLon),
     max_lat: String(bbox.maxLat),
   });
+  if (limit != null) params.set("limit", String(limit));
   return `/api/arboles/puntos?${params.toString()}`;
 }
