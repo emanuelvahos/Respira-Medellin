@@ -1,10 +1,34 @@
-from fastapi import FastAPI
+import sentry_sdk
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.routers import arboles, comunas, pm25, salud, siembra, zonas_verdes
 
 settings = get_settings()
+
+
+def _before_send(event: dict, hint: dict) -> dict | None:
+    """Filtra de Sentry las HTTPException que son estados de dominio
+    esperados (503 de dataset no disponible, 422 de validación de pesos
+    AHP), no errores del sistema. Solo 500+ sin HTTPException explícita
+    (fallos no manejados) deben generar una alerta."""
+    exc_info = hint.get("exc_info")
+    if exc_info:
+        exc = exc_info[1]
+        if isinstance(exc, HTTPException) and exc.status_code < 500:
+            return None
+    return event
+
+
+if settings.sentry_dsn:
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        # Free tier: cuota mensual de eventos limitada, no hace falta
+        # tracear el 100% de requests para detectar regresiones de latencia.
+        traces_sample_rate=0.1,
+        before_send=_before_send,
+    )
 
 app = FastAPI(
     title="EcoData Lab Medellín — API",

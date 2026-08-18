@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -16,4 +17,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Solo sube source maps a Sentry si hay token de auth (build local sin
+  // cuenta de Sentry configurada no debe fallar ni requerir login).
+  silent: true,
+  // Sin org/project ni SENTRY_AUTH_TOKEN el plugin se limita a inyectar el
+  // runtime de Sentry y omite el upload de source maps (advertencia, no error).
+  widenClientFileUpload: true,
+});

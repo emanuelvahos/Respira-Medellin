@@ -65,6 +65,7 @@ Copiar `.env.local.example` a `.env.local` y completar:
 |---|---|
 | `NEXT_PUBLIC_API_URL` | URL base del backend FastAPI (ver `backend/README.md`). |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Token público de Mapbox GL JS. Sin este valor, `/mapa` muestra un aviso en vez de intentar cargar el mapa. |
+| `NEXT_PUBLIC_SENTRY_DSN` | DSN del proyecto "Next.js" en [Sentry](https://sentry.io), para monitoreo de errores en producción. Público por diseño (igual que el token de Mapbox). Sin este valor, Sentry simplemente no reporta nada. |
 
 ## Deploy (Vercel)
 
@@ -75,6 +76,7 @@ Copiar `.env.local.example` a `.env.local` y completar:
    - `NEXT_PUBLIC_API_URL`: URL pública del backend ya desplegado (ver
      `backend/README.md` para opciones de despliegue).
    - `NEXT_PUBLIC_MAPBOX_TOKEN`: token público de Mapbox.
+   - `NEXT_PUBLIC_SENTRY_DSN`: DSN del proyecto "Next.js" en Sentry.
 4. Deploy. Cualquier plataforma compatible con Next.js App Router (Netlify,
    Render static+SSR, etc.) sirve igual, siempre que soporte las mismas
    variables de entorno.

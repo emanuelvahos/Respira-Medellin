@@ -8,6 +8,7 @@ python-dotenv>=1.0
 requests>=2.31  # solo usado por backend/scripts/fetch_sau_arboles.py (ETL, no runtime de la API)
 openpyxl>=3.1  # motor de escritura .xlsx para /api/siembra/ranking-comunas/export
 reportlab>=4.2  # generación de PDF pura Python (sin dependencias de sistema como Pango/Cairo, a diferencia de weasyprint) para /api/siembra/ranking-comunas/export
+sentry-sdk[fastapi]>=2.18  # monitoreo de errores en producción (ver app/main.py)
 
 # --- Dependencias de desarrollo/test (no se instalan en producción) ---
 pytest>=8.3
