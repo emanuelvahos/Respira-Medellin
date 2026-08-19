@@ -40,6 +40,102 @@ def test_get_resumen_comuna_siembra():
     assert "ranking_prioridad" in data[0]
 
 
+def test_resumen_comuna_incluye_comunas_sin_zona_de_siembra():
+    """Las 4 comunas recalculadas (score AHP sin zona de siembra) deben venir
+    marcadas explícitamente vía `fuente_score`/`tiene_zona_siembra`, y las 11
+    originales deben seguir marcadas como `pipeline_original`/`True`."""
+    resp = client.get("/api/siembra/resumen-comuna")
+    assert resp.status_code == 200
+    data = resp.json()
+
+    por_comuna = {d["comuna"]: d for d in data}
+    assert "Santa Cruz" in por_comuna
+    assert por_comuna["Santa Cruz"]["fuente_score"] == "recalculo_zonas_verdes_reales"
+    assert por_comuna["Santa Cruz"]["tiene_zona_siembra"] is False
+    assert por_comuna["Santa Cruz"]["n_zonas_disponibles"] == 0
+
+    assert por_comuna["Guayabal"]["fuente_score"] == "pipeline_original"
+    assert por_comuna["Guayabal"]["tiene_zona_siembra"] is True
+
+    sin_zona = {d["comuna"] for d in data if d["tiene_zona_siembra"] is False}
+    assert sin_zona == {
+        "Santa Cruz",
+        "Villa Hermosa",
+        "Corregimiento de San Cristóbal",
+        "Corregimiento de Santa Elena",
+        "Popular",
+        "Manrique",
+        "Doce de Octubre",
+        "Corregimiento de Altavista",
+    }
+
+
+def test_resumen_comuna_incluye_comunas_con_pm25_interpolado_idw():
+    """Popular, Manrique y Doce de Octubre no tienen ninguna estación SIATA
+    real dentro de su polígono: su PM2.5 es un ESTIMADO por interpolación IDW,
+    marcado explícitamente vía `pm25_tipo_dato`/`pm25_confianza`/
+    `fuente_score`, distinto tanto de las 11 comunas con dato medido como de
+    las 4 comunas recalculadas (que sí tienen PM2.5 medido)."""
+    resp = client.get("/api/siembra/resumen-comuna")
+    assert resp.status_code == 200
+    data = resp.json()
+    por_comuna = {d["comuna"]: d for d in data}
+
+    for comuna in ["Popular", "Manrique", "Doce de Octubre"]:
+        assert comuna in por_comuna, comuna
+        fila = por_comuna[comuna]
+        assert fila["fuente_score"] == "interpolado_idw"
+        assert fila["pm25_tipo_dato"] == "interpolado"
+        assert fila["pm25_confianza"] in {"media", "baja"}
+        assert fila["pm25_distancia_estacion_mas_cercana_km"] is not None
+        assert fila["pm25_distancia_estacion_mas_cercana_km"] > 0
+
+    # Las 11 originales y las 4 recalculadas siguen con dato medido.
+    assert por_comuna["Guayabal"]["pm25_tipo_dato"] == "medido"
+    assert por_comuna["Guayabal"]["pm25_confianza"] is None
+    assert por_comuna["Santa Cruz"]["pm25_tipo_dato"] == "medido"
+    assert por_comuna["Santa Cruz"]["fuente_score"] == "recalculo_zonas_verdes_reales"
+
+    # San Antonio de Prado/San Sebastián de Palmitas: sin score, sin PM2.5
+    # (brecha real de monitoreo, ver docs/BRECHA_MONITOREO_AIRE.md).
+    for comuna in [
+        "Corregimiento de San Antonio de Prado",
+        "Corregimiento de San Sebastián de Palmitas",
+    ]:
+        assert comuna not in por_comuna, comuna
+
+
+def test_resumen_comuna_incluye_altavista_historico_no_vigente():
+    """Altavista: PM2.5 REAL pero NO VIGENTE (estación MED-ALTA2, inactiva),
+    cuarto nivel de confianza, marcado explícitamente vía
+    `fuente_score="historico_no_vigente"` y `pm25_tipo_dato="historico"`,
+    con `pm25_fecha_ultimo_dato` expuesto para el frontend."""
+    resp = client.get("/api/siembra/resumen-comuna")
+    assert resp.status_code == 200
+    data = resp.json()
+    por_comuna = {d["comuna"]: d for d in data}
+
+    assert "Corregimiento de Altavista" in por_comuna
+    fila = por_comuna["Corregimiento de Altavista"]
+    assert fila["fuente_score"] == "historico_no_vigente"
+    assert fila["pm25_tipo_dato"] == "historico"
+    assert fila["pm25_promedio"] is not None
+    assert fila["pm25_fecha_ultimo_dato"] == "2025-09-25"
+
+
+def test_ranking_comunas_no_incluye_comunas_sin_zona_de_siembra():
+    """El comparador AHP (`/ranking-comunas`) NO debe verse afectado por las
+    comunas nuevas (recalculadas ni interpoladas): sigue devolviendo
+    exactamente las 11 comunas originales."""
+    resp = client.get("/api/siembra/ranking-comunas")
+    assert resp.status_code == 200
+    data = resp.json()
+    comunas = {d["comuna"] for d in data}
+    assert len(data) == 11
+    assert "Santa Cruz" not in comunas
+    assert "Villa Hermosa" not in comunas
+
+
 def test_ranking_comunas_get_pesos_por_defecto():
     resp = client.get("/api/siembra/ranking-comunas")
     assert resp.status_code == 200

@@ -112,6 +112,104 @@ def load_resumen_recomendacion_comuna() -> list[ResumenRecomendacionComuna]:
 
 
 @lru_cache
+def load_scores_ahp_extendido_sin_siembra() -> list[ResumenRecomendacionComuna]:
+    """`scores_ahp_extendido_sin_siembra.csv`: comunas con score AHP calculable
+    (dato PM2.5 disponible) pero 0 zonas de siembra viables en el inventario
+    real de zonas verdes (GeoMedellín) — ver backend/README.md y
+    `backend/scripts/recalcular_siembra_zonas_verdes_reales.py`. Si el archivo
+    no existe, devuelve lista vacía (nunca 503): a diferencia del resumen
+    original, esta es una fuente complementaria opcional, no crítica.
+    """
+    settings = get_settings()
+    path = settings.data_scores_ahp_extendido_sin_siembra
+    if not path.exists():
+        return []
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df = df.astype(object).where(pd.notna(df), None)
+    df["especie_principal"] = df["especie_principal"].fillna("")
+    df["fuente_score"] = "recalculo_zonas_verdes_reales"
+    df["tiene_zona_siembra"] = False
+    df["pm25_tipo_dato"] = "medido"
+    return [ResumenRecomendacionComuna.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
+def load_scores_ahp_interpolado_idw() -> list[ResumenRecomendacionComuna]:
+    """`scores_ahp_interpolado_idw.csv`: Popular, Manrique y Doce de Octubre.
+
+    Ninguna estación SIATA real cae dentro de estas 3 comunas (verificado con
+    point-in-polygon). Su PM2.5 es un ESTIMADO por interpolación espacial IDW
+    (`backend/scripts/calcular_pm25_interpolado_idw.py`), no una medición
+    directa — y el score AHP hereda esa incertidumbre. `fuente_score` se
+    marca explícitamente como "interpolado_idw" (distinto de
+    "pipeline_original" y "recalculo_zonas_verdes_reales") y
+    `pm25_tipo_dato`/`pm25_confianza`/`pm25_distancia_estacion_mas_cercana_km`
+    se enriquecen desde `comunas_pm25_interpolado_meta.csv`. Si el archivo no
+    existe, devuelve lista vacía (fuente complementaria opcional, igual que
+    `load_scores_ahp_extendido_sin_siembra`). Ver backend/README.md.
+    """
+    settings = get_settings()
+    path = settings.data_scores_ahp_interpolado_idw
+    if not path.exists():
+        return []
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df = df.astype(object).where(pd.notna(df), None)
+    df["especie_principal"] = df["especie_principal"].fillna("")
+    df["fuente_score"] = "interpolado_idw"
+    df["tiene_zona_siembra"] = df["n_zonas_disponibles"] > 0
+    df["pm25_tipo_dato"] = "interpolado"
+
+    meta_path = settings.data_comunas_pm25_interpolado_meta
+    meta_por_comuna: dict[str, dict] = {}
+    if meta_path.exists():
+        df_meta = pd.read_csv(meta_path, encoding="utf-8-sig")
+        meta_por_comuna = {
+            row["comuna"]: row for _, row in df_meta.iterrows()
+        }
+
+    df["pm25_confianza"] = df["comuna"].map(
+        lambda c: meta_por_comuna[c]["confianza"] if c in meta_por_comuna else "media"
+    )
+    df["pm25_distancia_estacion_mas_cercana_km"] = df["comuna"].map(
+        lambda c: (
+            float(meta_por_comuna[c]["distancia_estacion_mas_cercana_km"])
+            if c in meta_por_comuna
+            else None
+        )
+    )
+    return [ResumenRecomendacionComuna.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
+def load_scores_ahp_altavista_historico() -> list[ResumenRecomendacionComuna]:
+    """`scores_ahp_altavista_historico.csv`: Altavista (cuarto nivel de confianza).
+
+    PM2.5 REAL pero NO VIGENTE: promedio del ultimo año completo de datos
+    (2024-09-25 a 2025-09-25, n=249 lecturas) de la estacion MED-ALTA2 ("IE
+    Débora Arango, Altavista"), operada por Corantioquia y reportada en
+    SISAIRE/IDEAM — fuente independiente de SIATA. La estación quedó inactiva
+    el 2025-09-25 (~11 meses antes de esta integración). `fuente_score` se
+    marca "historico_no_vigente" y `pm25_tipo_dato="historico"` (distinto de
+    "medido"/"interpolado"/"sin_dato") para que nunca se confunda con un dato
+    medido vigente o interpolado. Ver backend/README.md. Si el archivo no
+    existe, devuelve lista vacía (fuente complementaria opcional).
+    """
+    settings = get_settings()
+    path = settings.data_scores_ahp_altavista_historico
+    if not path.exists():
+        return []
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df = df.astype(object).where(pd.notna(df), None)
+    df["especie_principal"] = df["especie_principal"].fillna("")
+    df["fuente_score"] = "historico_no_vigente"
+    df["tiene_zona_siembra"] = df["n_zonas_disponibles"] > 0
+    df["pm25_tipo_dato"] = "historico"
+    df["pm25_confianza"] = None
+    df["pm25_distancia_estacion_mas_cercana_km"] = None
+    return [ResumenRecomendacionComuna.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
 def load_zonas_priorizadas_siembra_geojson() -> dict:
     settings = get_settings()
     return _read_geojson_wgs84(

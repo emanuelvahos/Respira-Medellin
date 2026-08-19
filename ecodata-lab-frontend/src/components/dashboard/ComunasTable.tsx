@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { usePoblacionComuna, useRankingComunas } from "@/lib/api/queries";
+import { usePoblacionComuna, useRankingComunas, useResumenComuna } from "@/lib/api/queries";
 import { PESOS_AHP_ORIGINALES, type PesosAhp, type RankingComunaItem } from "@/types/rankingComuna";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { cn } from "@/lib/utils";
@@ -72,6 +72,19 @@ function CambioRanking({ actual, base }: { actual: number; base: number | undefi
 type RankingComunaConPoblacion = RankingComunaItem & {
   poblacion?: number | null;
   densidad_hab_km2?: number | null;
+  /** true: comuna con score AHP calculado pero SIN zona de siembra viable
+   * identificada (recálculo con zonas verdes reales) — no forma parte del
+   * comparador de escenarios AHP (`/api/siembra/ranking-comunas`), se agrega
+   * como fila adicional para que no falte de la vista de prioridades. */
+  sinZonaSiembra?: boolean;
+  /** true: PM2.5 estimado por interpolación espacial (IDW), no medido — ver
+   * ComunaDetailPanel/MapLegend para el mismo tratamiento visual. */
+  pm25Estimado?: boolean;
+  /** true: PM2.5 real pero histórico/no vigente (Altavista, estación
+   * MED-ALTA2 inactiva) — CUARTO tratamiento, distinto de `pm25Estimado`. */
+  pm25Historico?: boolean;
+  /** Fecha (YYYY-MM-DD) del último dato real, solo si `pm25Historico`. */
+  pm25FechaUltimoDato?: string | null;
 };
 
 const columns: ColumnDef<RankingComunaConPoblacion>[] = [
@@ -79,12 +92,49 @@ const columns: ColumnDef<RankingComunaConPoblacion>[] = [
     id: "ranking_prioridad",
     accessorKey: "ranking_prioridad",
     header: "#",
-    cell: ({ row }) => <span className="tabular-nums">{row.original.ranking_prioridad}</span>,
+    cell: ({ row }) =>
+      row.original.sinZonaSiembra ? (
+        <span className="text-muted-foreground" title="No forma parte del comparador AHP (sin zona de siembra)">
+          —
+        </span>
+      ) : (
+        <span className="tabular-nums">{row.original.ranking_prioridad}</span>
+      ),
   },
   {
     accessorKey: "comuna",
     header: "Comuna",
-    cell: ({ row }) => <span className="font-medium text-foreground">{row.original.comuna}</span>,
+    cell: ({ row }) => (
+      <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
+        {row.original.comuna}
+        {row.original.sinZonaSiembra && (
+          <Badge
+            variant="outline"
+            className="border-dashed border-warning text-[10px] font-normal text-warning"
+          >
+            Sin zona de siembra
+          </Badge>
+        )}
+        {row.original.pm25Estimado && (
+          <Badge
+            variant="outline"
+            className="border-dotted border-critical text-[10px] font-normal text-critical"
+            title="PM2.5 estimado por interpolación espacial (IDW), no medido directamente"
+          >
+            ≈ PM2.5 estimado
+          </Badge>
+        )}
+        {row.original.pm25Historico && (
+          <Badge
+            variant="outline"
+            className="border-solid border-data-sky text-[10px] font-normal text-data-sky"
+            title={`PM2.5 real pero histórico, no vigente — estación activa hasta ${row.original.pm25FechaUltimoDato ?? "fecha desconocida"}`}
+          >
+            ⏱ PM2.5 histórico
+          </Badge>
+        )}
+      </span>
+    ),
   },
   {
     accessorKey: "score_total",
@@ -95,7 +145,9 @@ const columns: ColumnDef<RankingComunaConPoblacion>[] = [
     accessorKey: "pm25_promedio",
     header: "PM2.5",
     cell: ({ row }) =>
-      row.original.pm25_promedio != null ? `${row.original.pm25_promedio.toFixed(1)} µg/m³` : "—",
+      row.original.pm25_promedio != null
+        ? `${row.original.pm25Estimado ? "≈ " : row.original.pm25Historico ? "⏱ " : ""}${row.original.pm25_promedio.toFixed(1)} µg/m³`
+        : "—",
   },
   {
     accessorKey: "deficit_pct",
@@ -111,6 +163,15 @@ const columns: ColumnDef<RankingComunaConPoblacion>[] = [
   {
     accessorKey: "especie_principal",
     header: "Especie principal",
+    cell: ({ row }) =>
+      row.original.sinZonaSiembra ? (
+        <span className="italic text-muted-foreground">
+          No se identificaron zonas de siembra viables en esta comuna con los
+          datos disponibles.
+        </span>
+      ) : (
+        row.original.especie_principal
+      ),
   },
   {
     accessorKey: "poblacion",
@@ -134,6 +195,13 @@ export function ComunasTable({ pesos }: { pesos: PesosAhp }) {
   const rankingQuery = useRankingComunas(pesos);
   const baselineQuery = useRankingComunas(PESOS_AHP_ORIGINALES);
   const poblacionQuery = usePoblacionComuna();
+  // Comunas con score AHP calculado pero sin zona de siembra viable
+  // (recálculo con zonas verdes reales): no pasan por el comparador de
+  // escenarios (`useRankingComunas`, que replica exactamente el pipeline
+  // original de las 11 comunas), se agregan aparte para que la tabla de
+  // prioridades no las omita — siempre marcadas, nunca mezcladas como si
+  // tuvieran una recomendación completa.
+  const resumenQuery = useResumenComuna();
   const [sorting, setSorting] = useState<SortingState>([{ id: "ranking_prioridad", desc: false }]);
   const [busqueda, setBusqueda] = useState("");
 
@@ -154,14 +222,40 @@ export function ComunasTable({ pesos }: { pesos: PesosAhp }) {
     return map;
   }, [poblacionQuery.data]);
 
-  const data = useMemo<RankingComunaConPoblacion[]>(
-    () =>
-      (rankingQuery.data ?? []).map((r) => {
+  const data = useMemo<RankingComunaConPoblacion[]>(() => {
+    const filas = (rankingQuery.data ?? []).map((r) => {
+      const pob = poblacionPorComuna.get(normalizeComunaName(r.comuna));
+      return { ...r, poblacion: pob?.poblacion, densidad_hab_km2: pob?.densidad_hab_km2 };
+    });
+
+    const sinZona = (resumenQuery.data ?? [])
+      .filter((r) => !r.tiene_zona_siembra)
+      .map((r): RankingComunaConPoblacion => {
         const pob = poblacionPorComuna.get(normalizeComunaName(r.comuna));
-        return { ...r, poblacion: pob?.poblacion, densidad_hab_km2: pob?.densidad_hab_km2 };
-      }),
-    [rankingQuery.data, poblacionPorComuna],
-  );
+        return {
+          comuna: r.comuna,
+          ranking_prioridad: r.ranking_prioridad,
+          ranking_prioridad_original: r.ranking_prioridad,
+          score_total: r.score_multicriteria,
+          n_pm25: 0,
+          n_deficit: 0,
+          n_area: 0,
+          pm25_promedio: r.pm25_promedio,
+          deficit_pct: r.deficit_pct,
+          area_total_disponible_ha: r.area_total_disponible_ha,
+          especie_principal: r.especie_principal,
+          arboles_a_plantar_total: r.arboles_a_plantar_total,
+          poblacion: pob?.poblacion,
+          densidad_hab_km2: pob?.densidad_hab_km2,
+          sinZonaSiembra: true,
+          pm25Estimado: r.pm25_tipo_dato === "interpolado",
+          pm25Historico: r.pm25_tipo_dato === "historico",
+          pm25FechaUltimoDato: r.pm25_fecha_ultimo_dato ?? null,
+        };
+      });
+
+    return [...filas, ...sinZona];
+  }, [rankingQuery.data, resumenQuery.data, poblacionPorComuna]);
 
   const table = useReactTable({
     data,

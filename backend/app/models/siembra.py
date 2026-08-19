@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -23,7 +25,15 @@ class RecomendacionSiembraZona(BaseModel):
 
 
 class ResumenRecomendacionComuna(BaseModel):
-    """Fila de resumen_recomendacion_por_comuna.csv (score AHP agregado por comuna)."""
+    """Fila de resumen_recomendacion_por_comuna.csv (score AHP agregado por comuna).
+
+    `fuente_score` y `tiene_zona_siembra` distinguen las 11 comunas del
+    pipeline original (`resumen_recomendacion_por_comuna.csv`, con zona de
+    siembra concreta) de las 4 comunas recalculadas
+    (`scores_ahp_extendido_sin_siembra.csv`) que tienen score AHP calculable
+    (dato PM2.5 disponible) pero 0 zonas de siembra viables en el inventario
+    real de zonas verdes — ver backend/README.md.
+    """
 
     comuna: str
     ranking_prioridad: int
@@ -36,6 +46,12 @@ class ResumenRecomendacionComuna(BaseModel):
     pm25_promedio: float | None = None
     deficit_pct: float | None = None
     ratio_mitigadores: float | None = None
+    fuente_score: str = "pipeline_original"
+    tiene_zona_siembra: bool = True
+    pm25_tipo_dato: Literal["medido", "interpolado", "sin_dato", "historico"] = "medido"
+    pm25_confianza: Literal["media", "baja"] | None = None
+    pm25_distancia_estacion_mas_cercana_km: float | None = None
+    pm25_fecha_ultimo_dato: str | None = None
 
 
 class RankingComunaItem(BaseModel):

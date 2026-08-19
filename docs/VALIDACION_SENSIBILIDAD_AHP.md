@@ -7,6 +7,19 @@
 > simuladas ni de ejemplo.
 >
 > **Fecha del análisis**: 2026-08-14.
+>
+> **Nota añadida 2026-08-18**: este análisis se basó exclusivamente en las
+> 11 comunas del pipeline original (`resumen_recomendacion_por_comuna.csv`,
+> las mismas que sigue devolviendo `/api/siembra/ranking-comunas` sin
+> cambios). Desde su publicación se agregaron 7 comunas adicionales con
+> score AHP calculado — 4 con PM2.5 medido pero sin zona de siembra viable, y
+> 3 (Popular, Manrique, Doce de Octubre) con PM2.5 **estimado por
+> interpolación espacial (IDW)**, confianza media — que **no están cubiertas
+> por este análisis de sensibilidad**. Ninguna de esas 7 comunas pasa por el
+> comparador de escenarios AHP de este documento; sus conclusiones sobre
+> estabilidad/sensibilidad de los pesos no deben extrapolarse a ellas sin un
+> análisis aparte. Ver `docs/ESTADO_PROYECTO.md` y `backend/README.md` para
+> el detalle de esas 7 comunas.
 
 ## 1. Por qué existe este documento
 

@@ -70,6 +70,25 @@ export function MapCanvas() {
   const mapRef = useRef<MapRef>(null);
   const [cameraState, setCameraState] = useState<MapCameraState | null>(null);
 
+  // Memoizado: DeckGL trata un cambio de identidad de `viewState` como un
+  // movimiento de cámara real y lo reaplica sobre Mapbox (`Mapbox.setProps`
+  // -> `map._render` -> evento "move"). Sin memo, cada re-render (p. ej. los
+  // que dispara `setCameraState` en el efecto de más abajo, en cada "move")
+  // reconstruye este objeto por referencia y reinyecta el mismo movimiento,
+  // que vuelve a disparar "move" -> setCameraState -> re-render: bucle
+  // infinito ("Maximum update depth exceeded"), solo visible una vez que
+  // `treesRevealed` activa ese efecto.
+  const deckViewState = useMemo(
+    () =>
+      ({
+        ...viewState,
+        minZoom: MEDELLIN_MIN_ZOOM,
+        maxZoom: MEDELLIN_MAX_ZOOM,
+        maxBounds: MEDELLIN_MAX_BOUNDS,
+      }) as typeof viewState,
+    [viewState],
+  );
+
   const comunasQuery = useComunas();
   const resumenQuery = useResumenComuna();
   const zonasSiembraQuery = useZonasSiembraGeojson();
@@ -457,14 +476,7 @@ export function MapCanvas() {
   return (
     <div className="relative h-full w-full overflow-hidden rounded-lg border border-border">
       <DeckGL
-        viewState={
-          {
-            ...viewState,
-            minZoom: MEDELLIN_MIN_ZOOM,
-            maxZoom: MEDELLIN_MAX_ZOOM,
-            maxBounds: MEDELLIN_MAX_BOUNDS,
-          } as typeof viewState
-        }
+        viewState={deckViewState}
         onViewStateChange={({ viewState: next }) =>
           setViewState(next as typeof viewState)
         }
@@ -500,8 +512,15 @@ export function MapCanvas() {
             ? resumenPorComuna.get(normalizeComunaName(props.nombre))
             : undefined;
           if (!resumen) return null;
+          const avisoSinZona = resumen.tiene_zona_siembra
+            ? ""
+            : `<br/><span style="color:var(--warning)">Sin zona de siembra identificada</span>`;
+          const avisoHistorico =
+            resumen.pm25_tipo_dato === "historico"
+              ? `<br/><span style="color:var(--data-sky)">⏱ PM2.5 histórico, no vigente${resumen.pm25_fecha_ultimo_dato ? ` (activa hasta ${resumen.pm25_fecha_ultimo_dato})` : ""}</span>`
+              : "";
           return {
-            html: `<strong>${props.nombre ?? resumen.comuna}</strong><br/>Score AHP: ${resumen.score_multicriteria.toFixed(2)}<br/>PM2.5 promedio: ${resumen.pm25_promedio != null ? `${resumen.pm25_promedio.toFixed(1)} µg/m³` : "s/d"}`,
+            html: `<strong>${props.nombre ?? resumen.comuna}</strong><br/>Score AHP: ${resumen.score_multicriteria.toFixed(2)}<br/>PM2.5 promedio: ${resumen.pm25_promedio != null ? `${resumen.pm25_promedio.toFixed(1)} µg/m³` : "s/d"}${avisoSinZona}${avisoHistorico}`,
             className: "deck-tooltip",
           };
         }}

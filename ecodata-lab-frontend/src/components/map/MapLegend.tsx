@@ -14,7 +14,43 @@ export function MapLegend() {
         </div>
         <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
           <span className="inline-block size-2.5 shrink-0 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-          Gris plano: sin zonas de siembra priorizadas en el modelo actual
+          Gris plano: sin dato de PM2.5, sin score AHP calculado
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <span
+            className="inline-block size-2.5 shrink-0 rounded-full border-2 border-foreground bg-warning/40"
+            aria-hidden="true"
+          />
+          Relleno translúcido + borde grueso: score AHP calculado, pero{" "}
+          <strong className="font-medium text-foreground">
+            sin zona de siembra viable identificada
+          </strong>{" "}
+          en el inventario real de zonas verdes (Santa Cruz, Villa Hermosa,
+          San Cristóbal, Santa Elena)
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <span
+            className="inline-block size-2.5 shrink-0 rounded-full border-2 border-dotted border-critical bg-warning/40"
+            aria-hidden="true"
+          />
+          Borde punteado (rojo): PM2.5{" "}
+          <strong className="font-medium text-foreground">
+            estimado por interpolación espacial (IDW), NO medido
+          </strong>{" "}
+          — ninguna estación SIATA real dentro de la comuna (Popular,
+          Manrique, Doce de Octubre). Confianza media; ver panel de detalle.
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-data-sky bg-warning/40 text-[8px]" aria-hidden="true">
+            ⏱
+          </span>
+          Ícono de reloj + borde sólido azul: PM2.5{" "}
+          <strong className="font-medium text-foreground">
+            real pero histórico, NO vigente
+          </strong>{" "}
+          — estación MED-ALTA2 (Altavista, Corantioquia/SISAIRE) inactiva
+          desde 2025-09-25. Dato real, pero no representa las condiciones
+          actuales; ver panel de detalle.
         </p>
       </div>
 

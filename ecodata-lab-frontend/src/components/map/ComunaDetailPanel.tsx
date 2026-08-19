@@ -82,13 +82,82 @@ export function ComunaDetailPanel() {
             </p>
           )}
 
+          {resumen?.pm25_tipo_dato === "interpolado" && (
+            <div
+              role="note"
+              className="mb-4 rounded-md border-2 border-dotted border-critical bg-critical/10 p-3 text-sm text-foreground"
+            >
+              <p className="font-medium text-critical">
+                ⚠ PM2.5 estimado, no medido directamente
+              </p>
+              <p className="mt-1 text-xs">
+                PM2.5 estimado por interpolación espacial (IDW), no medido
+                directamente — confianza{" "}
+                <strong>{resumen.pm25_confianza ?? "media"}</strong>. Estación
+                real más cercana a{" "}
+                <strong>
+                  {resumen.pm25_distancia_estacion_mas_cercana_km != null
+                    ? `${resumen.pm25_distancia_estacion_mas_cercana_km.toFixed(1)} km`
+                    : "distancia desconocida"}
+                </strong>
+                . Este es el dato menos confiable del sistema: el score AHP de
+                esta comuna hereda esa incertidumbre.
+              </p>
+            </div>
+          )}
+
+          {resumen?.pm25_tipo_dato === "historico" && (
+            <div
+              role="note"
+              className="mb-4 rounded-md border-2 border-solid border-data-sky bg-data-sky/10 p-3 text-sm text-foreground"
+            >
+              <p className="font-medium text-data-sky">
+                ⏱ PM2.5 basado en datos históricos reales
+              </p>
+              <p className="mt-1 text-xs">
+                PM2.5 basado en datos históricos reales (estación MED-ALTA2,
+                activa hasta{" "}
+                <strong>{resumen.pm25_fecha_ultimo_dato ?? "fecha desconocida"}</strong>) —
+                sin monitoreo vigente actualmente en esta zona. Es una
+                medición directa, pero no representa necesariamente las
+                condiciones actuales.
+              </p>
+            </div>
+          )}
+
+          {resumen && !resumen.tiene_zona_siembra && (
+            <div
+              role="note"
+              className="mb-4 rounded-md border border-warning bg-warning/10 p-3 text-sm text-warning-foreground"
+            >
+              <p className="font-medium">Sin zona de siembra identificada</p>
+              <p className="mt-1 text-xs">
+                Esta comuna tiene un score AHP de prioridad calculado (dato
+                PM2.5 disponible o estimado), pero no se identificaron zonas
+                de siembra viables en el inventario real de zonas verdes.
+                Prioridad conocida, sin sitio de siembra concreto.
+              </p>
+            </div>
+          )}
+
           {resumen && (
             <dl className="grid grid-cols-2 gap-4 text-sm">
-              <div className="col-span-2 rounded-md bg-vegetation-muted p-3">
+              <div
+                className={cn(
+                  "col-span-2 rounded-md p-3",
+                  resumen.tiene_zona_siembra ? "bg-vegetation-muted" : "border-2 border-dashed border-warning bg-muted",
+                )}
+              >
                 <dt className="text-xs text-muted-foreground">
                   Score AHP (prioridad)
+                  {!resumen.tiene_zona_siembra && " · sin zona de siembra"}
                 </dt>
-                <dd className="mt-1 font-heading text-2xl font-semibold text-vegetation">
+                <dd
+                  className={cn(
+                    "mt-1 font-heading text-2xl font-semibold",
+                    resumen.tiene_zona_siembra ? "text-vegetation" : "text-warning",
+                  )}
+                >
                   {resumen.score_multicriteria.toFixed(2)}
                 </dd>
                 <dd className="text-xs text-muted-foreground">
@@ -99,10 +168,23 @@ export function ComunaDetailPanel() {
               <div>
                 <dt className="text-xs text-muted-foreground">
                   PM2.5 promedio
+                  {resumen.pm25_tipo_dato === "interpolado" && " (estimado)"}
+                  {resumen.pm25_tipo_dato === "historico" && " (histórico, no vigente)"}
                 </dt>
-                <dd className="font-medium text-foreground">
+                <dd
+                  className={cn(
+                    "font-medium",
+                    resumen.pm25_tipo_dato === "interpolado" && "text-critical",
+                    resumen.pm25_tipo_dato === "historico" && "text-data-sky",
+                    resumen.pm25_tipo_dato !== "interpolado" &&
+                      resumen.pm25_tipo_dato !== "historico" &&
+                      "text-foreground",
+                  )}
+                >
                   {resumen.pm25_promedio != null
-                    ? `${resumen.pm25_promedio.toFixed(1)} µg/m³`
+                    ? `${resumen.pm25_promedio.toFixed(1)} µg/m³${
+                        resumen.pm25_tipo_dato === "interpolado" ? " ⚠" : ""
+                      }${resumen.pm25_tipo_dato === "historico" ? " ⏱" : ""}`
                     : "Sin dato"}
                 </dd>
               </div>
@@ -138,9 +220,15 @@ export function ComunaDetailPanel() {
                 <dt className="text-xs text-muted-foreground">
                   Especie principal recomendada
                 </dt>
-                <dd className="font-medium text-foreground">
-                  {resumen.especie_principal} ({resumen.cupo_especie_principal}{" "}
-                  cupos)
+                <dd
+                  className={cn(
+                    "font-medium",
+                    resumen.tiene_zona_siembra ? "text-foreground" : "italic text-muted-foreground",
+                  )}
+                >
+                  {resumen.tiene_zona_siembra
+                    ? `${resumen.especie_principal} (${resumen.cupo_especie_principal} cupos)`
+                    : "No se identificaron zonas de siembra viables en esta comuna con los datos disponibles."}
                 </dd>
               </div>
             </dl>

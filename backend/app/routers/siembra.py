@@ -20,6 +20,9 @@ from app.services.data_loader import (
     load_integracion_pm25_arboles,
     load_recomendacion_siembra_zona,
     load_resumen_recomendacion_comuna,
+    load_scores_ahp_altavista_historico,
+    load_scores_ahp_extendido_sin_siembra,
+    load_scores_ahp_interpolado_idw,
     load_zonas_priorizadas_siembra_geojson,
 )
 from app.services.export import build_ranking_excel, build_ranking_pdf, nombre_archivo
@@ -47,8 +50,41 @@ def get_zonas_siembra_geojson() -> FeatureCollection[ZonaPriorizadaSiembraProper
 
 @router.get("/resumen-comuna", response_model=list[ResumenRecomendacionComuna])
 def get_resumen_comuna() -> list[ResumenRecomendacionComuna]:
-    """Resumen de recomendación agregado por comuna (score AHP y ranking de prioridad)."""
-    return load_resumen_recomendacion_comuna()
+    """Resumen de recomendación agregado por comuna (score AHP y ranking de prioridad).
+
+    Combina tres fuentes, distinguibles vía `fuente_score`/`tiene_zona_siembra`/
+    `pm25_tipo_dato`:
+    - Las 11 comunas del pipeline original (`resumen_recomendacion_por_comuna.csv`),
+      con zona de siembra concreta identificada (`tiene_zona_siembra=True`,
+      `pm25_tipo_dato="medido"`).
+    - 4 comunas recalculadas (`scores_ahp_extendido_sin_siembra.csv`) con score
+      AHP calculable (dato PM2.5 MEDIDO, disponible) pero SIN zona de siembra
+      viable en el inventario real de zonas verdes (`tiene_zona_siembra=False`).
+    - 3 comunas (Popular, Manrique, Doce de Octubre) SIN estación SIATA real
+      dentro de su polígono: su PM2.5 es un ESTIMADO por interpolación espacial
+      IDW (`scores_ahp_interpolado_idw.csv`, `pm25_tipo_dato="interpolado"`,
+      `pm25_confianza="media"`) — el dato menos confiable que entra al sistema
+      como estimación vigente, ver backend/README.md.
+    - Altavista (`scores_ahp_altavista_historico.csv`), CUARTO nivel de
+      confianza: PM2.5 REAL pero NO VIGENTE (`fuente_score=
+      "historico_no_vigente"`, `pm25_tipo_dato="historico"`), promedio del
+      último año de datos de la estación MED-ALTA2 (Corantioquia/SISAIRE-IDEAM)
+      antes de su inactivación el `pm25_fecha_ultimo_dato`. Nunca se presenta
+      con la misma confianza que un dato medido vigente o interpolado.
+
+    San Antonio de Prado y San Sebastián de Palmitas NO aparecen aquí: no
+    tienen score ni PM2.5 (brecha real de monitoreo, ver
+    docs/BRECHA_MONITOREO_AIRE.md) — no se fuerza un número.
+
+    NO afecta a `/ranking-comunas` (el comparador AHP), que sigue usando
+    exclusivamente `load_resumen_recomendacion_comuna()` sin cambios.
+    """
+    return [
+        *load_resumen_recomendacion_comuna(),
+        *load_scores_ahp_extendido_sin_siembra(),
+        *load_scores_ahp_interpolado_idw(),
+        *load_scores_ahp_altavista_historico(),
+    ]
 
 
 def _calcular_ranking_o_422(peso_pm25: float, peso_deficit: float, peso_area: float) -> list[RankingComunaItem]:

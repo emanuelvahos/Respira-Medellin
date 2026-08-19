@@ -100,7 +100,7 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/pm25/estaciones` | `Solicitud_PM25_DP1763941.csv` + `auditoria_estaciones_comunas.csv` | Última lectura real de PM2.5 por estación SIATA (no agregada por comuna); pensado para capas que necesitan variación espacial genuina, p. ej. partículas animadas |
 | GET | `/api/siembra/zonas?comuna=` | `recomendacion_siembra_por_zona.csv` | Recomendación de siembra por zona (~1.649 filas) |
 | GET | `/api/siembra/zonas/geojson` | `zonas_priorizadas_siembra.geojson` | Geometría de zonas priorizadas (GeoJSON, WGS84) |
-| GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` | Score AHP y ranking agregado por comuna |
+| GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` + `scores_ahp_extendido_sin_siembra.csv` + `scores_ahp_interpolado_idw.csv` + `scores_ahp_altavista_historico.csv` | Score AHP y ranking agregado por comuna (11 comunas con zona de siembra + 4 comunas con score pero sin zona + 3 comunas con PM2.5 **interpolado, no medido** + Altavista con PM2.5 **histórico, no vigente** — ver "Comunas con score AHP pero sin zona de siembra", "PM2.5 interpolado (IDW)" y "Altavista — PM2.5 histórico real, no vigente" abajo) |
 | GET | `/api/siembra/ranking-comunas?peso_pm25=&peso_deficit=&peso_area=` | recalculado (ver abajo) | Ranking AHP con pesos custom (comparador de escenarios, Fase 4) |
 | GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | Inventario real de zonas verdes (48.348 polígonos) — ver "Fuente de `inventario_zonas_verdes.geojson`" abajo |
 | GET | `/api/arboles/resumen-comuna` | `sau_arboles_urbanos.csv` | Conteo real por comuna, top 5 especies y % de estado fitosanitario (SAU) — agregado liviano para el dashboard |
@@ -153,6 +153,245 @@ ranking = orden descendente por score_total
   `ranking_prioridad` del CSV original.
 - No se re-ejecuta el spatial join ni se relee ningún archivo fuera de lo
   que el backend ya expone en otros endpoints.
+
+## Comunas con score AHP pero sin zona de siembra: `scores_ahp_extendido_sin_siembra.csv`
+
+**Añadido 2026-08-18.** `resumen_recomendacion_por_comuna.csv` (pipeline
+original) solo lista 11 comunas: las que tienen tanto dato PM2.5 como al
+menos una zona verde priorizada para siembra. Al cruzar el inventario REAL de
+zonas verdes (`inventario_zonas_verdes.geojson`, GeoMedellín) con las 21
+comunas/corregimientos, se identificaron 4 comunas más que SÍ tienen dato
+PM2.5 (y por tanto score AHP calculable) pero **0 zonas de siembra viables**
+dentro de su polígono en ese inventario: **Santa Cruz, Villa Hermosa,
+Corregimiento de San Cristóbal y Corregimiento de Santa Elena**.
+
+- **Script**: `backend/scripts/recalcular_siembra_zonas_verdes_reales.py`
+  reimplementa fielmente el Bloque 2 del pipeline original
+  (`bloque2_recomendador_siembra.py`: filtro de zonas viables por cobertura
+  apta + categoría no excluida + área ≥ 25 m², spatial join a comuna,
+  normalización Min-Max y score AHP ponderado 0.45/0.35/0.20) corriéndolo
+  sobre las 21 comunas en vez de solo las que ya aparecían en el CSV.
+- **Validación cruzada**: para las 7 comunas del CSV original que tienen tanto
+  PM2.5 como zona, el recálculo reproduce el score original con diferencia
+  máxima **≤ 0.0037** y **0 cambios de ranking** (las otras 4 comunas del CSV
+  original — Aranjuez, Buenos Aires, Laureles Estadio, San Javier — no tienen
+  PM2.5 y quedan con el mismo centinela `score=0`/`ranking=99`).
+- **Persistencia**: el script escribe SOLO las 4 comunas nuevas (con score
+  pero sin zona) en `backend/data/scores_ahp_extendido_sin_siembra.csv` — un
+  archivo separado y nuevo. **`resumen_recomendacion_por_comuna.csv` nunca se
+  sobrescribe** (es la fuente intocable usada por el comparador de
+  sensibilidad AHP, ver sección anterior).
+- **Endpoint**: `/api/siembra/resumen-comuna` combina ambas fuentes y agrega
+  dos campos a cada fila para que el consumidor (frontend) distinga siempre
+  el origen del dato, nunca solo por inspección visual del score:
+  - `fuente_score`: `"pipeline_original"` (11 comunas) o
+    `"recalculo_zonas_verdes_reales"` (4 comunas nuevas).
+  - `tiene_zona_siembra`: `true` para las 11 originales, `false` para las 4
+    nuevas — estas 4 tienen `n_zonas_disponibles=0`,
+    `area_total_disponible_ha=0`, `arboles_a_plantar_total=0` y
+    `especie_principal=""` (nunca una especie inventada).
+- **`/api/siembra/ranking-comunas`** (comparador de escenarios AHP, ver
+  sección anterior) **NO se modificó** y sigue usando exclusivamente
+  `load_resumen_recomendacion_comuna()` (las 11 comunas originales,
+  comportamiento idéntico al validado en el reporte de sensibilidad).
+- **Limitación explícita**: estas 4 comunas tienen prioridad AHP conocida
+  (score PM2.5-driven) pero **ningún sitio de siembra concreto identificado**
+  con los datos disponibles — no debe interpretarse ni mostrarse como
+  equivalente a una recomendación completa.
+
+## PM2.5 interpolado (IDW): `scores_ahp_interpolado_idw.csv`
+
+**Añadido 2026-08-18.** Además de las 4 comunas de la sección anterior, hay 6
+comunas/corregimientos sin ninguna estación SIATA real dentro de su polígono
+(confirmado con point-in-polygon real sobre `limite_catastral_de_comun.geojson`,
+EPSG:9377, contra las 14 estaciones conocidas de `auditoria_estaciones_comunas.csv`
+y también contra las ~12 estaciones adicionales de la red metropolitana SIATA
+que no están en ese CSV). Se dividieron en dos grupos por distancia real a la
+estación más cercana:
+
+- **Popular, Manrique, Doce de Octubre**: 1.5–2.1 km de la estación más
+  cercana, en zona urbana continua — interpolación defendible, confianza
+  **"media"**. Son las 3 comunas de esta sección.
+- **Altavista, San Antonio de Prado, San Sebastián de Palmitas**: 6.6–6.7 km,
+  terreno de ladera/rural — **NO se generó ningún número para estas 3**;
+  siguen en su estado "sin datos en la fuente" sin ningún cambio. No se debe
+  forzar una interpolación cuando la distancia real invalida el supuesto de
+  homogeneidad espacial local que sostiene el IDW.
+
+### ⚠️ Este es el dato menos confiable que ha entrado al sistema
+
+El PM2.5 de Popular, Manrique y Doce de Octubre **NO es una medición real**:
+es un **estimado por interpolación espacial (IDW)** a partir de estaciones
+reales cercanas, no una lectura de ningún sensor dentro de la comuna. El
+score AHP de estas 3 comunas hereda esa incertidumbre completa — es una
+estimación derivada de una estimación. Se etiqueta explícitamente en cada
+capa del sistema (API, mapa, panel de detalle, dashboard) para que nunca se
+vea ni se use como equivalente a un dato medido.
+
+### Metodología IDW exacta
+
+Script: `backend/scripts/calcular_pm25_interpolado_idw.py` (solo cálculo +
+persistencia en los 3 archivos nuevos listados abajo; nunca toca
+`resumen_recomendacion_por_comuna.csv` ni `Solicitud_PM25_DP1763941.csv`).
+
+1. **Centroide real** de cada comuna: `geopandas` calcula el centroide sobre
+   el CRS proyectado original del shapefile (EPSG:9377, metros — geométricamente
+   correcto), luego se reproyecta a WGS84 solo para el cálculo de distancia.
+2. **Valor base por estación**: última lectura horaria no nula de
+   `Solicitud_PM25_DP1763941.csv` (misma función que
+   `load_estaciones_pm25` en `app/services/data_loader.py`, replicada en
+   pandas puro).
+3. **Vecinas**: las **4** estaciones SIATA reales (de las 14 conocidas) más
+   cercanas al centroide por distancia geodésica (fórmula de Haversine, km).
+   No se filtra por comuna asignada (`comuna_por_gis`): solo importa la
+   distancia geográfica real.
+4. **Peso e interpolación** — IDW clásico con **exponente p=2** (inverso de
+   la distancia al cuadrado, no p=1): se eligió p=2 porque penaliza con más
+   fuerza la influencia de estaciones lejanas, apropiado dado que ya se
+   confirmó que ninguna estación cae realmente dentro de la comuna (se
+   prioriza la estación más cercana sobre un suavizado más plano):
+
+   ```
+   peso_i = 1 / distancia_i²
+   pm25_interpolado = Σ(peso_i · valor_i) / Σ(peso_i)
+   ```
+
+5. **Sanity check obligatorio** (el script se detiene con `SystemExit` si
+   falla para cualquier comuna): el valor interpolado debe caer dentro de
+   `[min, max]` de las 4 estaciones vecinas usadas — propiedad matemática
+   garantizada de cualquier promedio ponderado con pesos positivos, así que
+   una falla indica un bug real, no ruido de datos.
+
+**Resultado (fecha del cálculo: 2026-08-18, con la última lectura disponible
+en `Solicitud_PM25_DP1763941.csv` en ese momento)**:
+
+| Comuna | PM2.5 IDW (µg/m³) | Estaciones usadas | Distancia mínima | Rango vecinas |
+|---|---|---|---|---|
+| Doce de Octubre | 28.9665 | MED-PBLQ, MED-ARAN, MED-FISC, MED-UNNV | 1.616 km | [27.00, 41.00] |
+| Popular | 27.1240 | MED-ARAN, MED-VILL, MED-FISC, MED-PBLQ | 1.357 km | [16.65, 30.00] |
+| Manrique | 21.9549 | MED-VILL, MED-ARAN, MED-FISC, CEN-TRAF | 1.452 km | [16.65, 31.00] |
+
+Los 3 sanity checks pasaron (valor IDW dentro del rango de sus vecinas en los
+3 casos).
+
+**Limitación explícita adicional**: la estación `MED-UNNV` (usada para Doce de
+Octubre) figura como **"Inactiva"** en `auditoria_estaciones_comunas.csv` y su
+última lectura disponible es de **2020-02-25** (mucho más antigua que las
+demás estaciones, casi todas con lectura de 2026-02-28) — su peso en el IDW es
+el más bajo de las 4 (la más lejana), pero igual introduce un dato
+desactualizado en el cálculo. Se documenta aquí en vez de excluirla en
+silencio: excluirla habría dejado a Doce de Octubre con solo 3 vecinas,
+inconsistente con las otras 2 comunas de este grupo.
+
+### Score AHP para estas 3 comunas
+
+Mismos pesos y fórmula que `recalcular_siembra_zonas_verdes_reales.py`
+(`W_PM25=0.45, W_DEF=0.35, W_AREA=0.20`, Min-Max + score ponderado), con dos
+diferencias:
+
+- `pm25_promedio` = el valor IDW de la tabla anterior (no una lectura real).
+- `deficit_pct`/`ratio_mitigadores` se calculan aquí mismo desde el
+  inventario arbóreo real (`sau_arboles_urbanos.csv`, filtrado a estas 3
+  comunas) cruzado con el catálogo de especies mitigadoras de PM2.5
+  (`Visualizacion-de-datos/base_datos_arboles/ARBOLES/Data_Clean/ARBOLES.xlsx`,
+  hoja `ESPECIE_REDUCEN`) — la misma fuente y método que usa el script del
+  Bloque 1 para las 11 comunas originales, no un método inventado aparte.
+- La normalización Min-Max corre **solo sobre estas 3 comunas** (población
+  separada, no mezclada con las 11 ni con las 4 de la sección anterior) — por
+  eso `ranking_prioridad`/`score_multicriteria` de estas 3 filas **no es
+  comparable directamente** con el de las otras 15 comunas con score.
+- Las 3 comunas resultaron con `n_zonas_disponibles=0` (mismo patrón que las
+  4 comunas de la sección anterior: 0 zonas viables del inventario real de
+  zonas verdes dentro de su polígono), confirmado con el mismo spatial join
+  (`predicate="within"`) ya usado en `recalcular_siembra_zonas_verdes_reales.py`.
+
+**Persistencia** — 2 archivos nuevos, nunca mezclados con datos reales:
+
+- `backend/data/pm25_interpolado_idw.csv`: solo el resultado IDW crudo
+  (comuna, valor, estaciones usadas, distancias, confianza).
+- `backend/data/scores_ahp_interpolado_idw.csv`: score AHP completo (mismas
+  columnas que `scores_ahp_extendido_sin_siembra.csv`) — **no** se agregó a
+  ese archivo porque su nombre significa específicamente "score sin zona de
+  siembra pero con PM2.5 medido"; mezclar rompería esa semántica.
+- `backend/data/comunas_pm25_interpolado_meta.csv`: metadatos que el loader
+  usa para poblar `pm25_confianza`/`pm25_distancia_estacion_mas_cercana_km`
+  en la respuesta del API.
+
+**Endpoint**: `/api/siembra/resumen-comuna` agrega estas 3 filas con:
+
+- `fuente_score = "interpolado_idw"` (distinto de `"pipeline_original"` y de
+  `"recalculo_zonas_verdes_reales"`).
+- `pm25_tipo_dato = "interpolado"` (las demás comunas: `"medido"`).
+- `pm25_confianza = "media"` (única confianza usada aquí; `"baja"` está
+  reservada para el modelo pero no se usa en ninguna fila actual — ver
+  restricción dura de no generar número para Altavista/San Antonio de
+  Prado/San Sebastián de Palmitas).
+- `pm25_distancia_estacion_mas_cercana_km`: la distancia real calculada
+  arriba (1.357/1.452/1.616 km), nunca un placeholder.
+
+`/api/siembra/ranking-comunas` (el comparador AHP) **no se modificó** y sigue
+devolviendo exactamente las 11 comunas originales — ver test
+`test_ranking_comunas_no_incluye_comunas_sin_zona_de_siembra`.
+
+## Altavista — PM2.5 histórico real, no vigente: `scores_ahp_altavista_historico.csv`
+
+**Integrado: 2026-08-18.**
+
+Investigación en SISAIRE/IDEAM (fuente independiente de SIATA) encontró una
+estación de monitoreo de PM2.5 real dentro del polígono de Altavista que no
+estaba en el CSV local del proyecto: **MED-ALTA2** ("IE Débora Arango,
+Altavista"), operada por **Corantioquia**, activa 2021-10-17 a 2025-09-25
+(confirmada por point-in-polygon real contra el límite catastral de la
+comuna).
+
+### Metodología
+
+- Se descargó la serie diaria completa de MED-ALTA2 desde SISAIRE
+  (`backend/data/raw_sisaire_med_alta2_pm25_diario.csv`, 1.184 filas,
+  2021-10-17 a 2025-09-25).
+- **Valor representativo usado**: promedio del **último año completo de
+  datos antes de la inactivación** (2024-09-25 a 2025-09-25) =
+  **14.6834639424498 µg/m³**, con n=249 lecturas diarias de 365 posibles
+  (~68% completitud — huecos normales en monitoreo real). Se prefiere sobre
+  el promedio de toda la serie de 4 años (18.66 µg/m³, contexto histórico
+  únicamente) por ser más representativo del estado reciente de la comuna.
+- Persistido en `backend/data/pm25_historico_altavista.csv` (archivo
+  separado, nunca mezclado con datos vigentes), con la fecha del último dato
+  real (`fecha_ultimo_dato_real=2025-09-25`) visible en el propio archivo.
+- Score AHP completo calculado con
+  `backend/scripts/calcular_score_ahp_altavista_historico.py`, reutilizando
+  la misma lógica Min-Max + combinación ponderada de
+  `recalcular_siembra_zonas_verdes_reales.py`: PM2.5 histórico agregado a la
+  población de normalización de las 11 comunas originales, y área/zonas
+  verdes reales calculadas con el mismo spatial join
+  (`predicate="within"`) sobre `inventario_zonas_verdes.geojson`. El
+  `deficit_pct`/`ratio_mitigadores` se calculó cruzando el inventario SAU de
+  Altavista (3.441 árboles) contra el mismo catálogo de especies mitigadoras
+  de PM2.5 (`ARBOLES.xlsx`, hoja `ESPECIE_REDUCEN`) que usa el Bloque 1 para
+  las 11 comunas originales.
+- Resultado: `n_zonas_disponibles=0` (mismo patrón que las 4 comunas "sin
+  zona de siembra"), persistido en
+  `backend/data/scores_ahp_altavista_historico.csv`.
+
+### ⚠️ Limitación explícita: dato real pero NO vigente
+
+La estación MED-ALTA2 lleva **~11 meses inactiva** (desde 2025-09-25). Este
+PM2.5 es una medición real y directa, pero **no representa necesariamente
+las condiciones actuales** de Altavista. Por eso nunca se presenta con la
+misma confianza visual que un dato medido vigente (las 11 comunas
+originales) ni que uno interpolado (Popular/Manrique/Doce de Octubre): tiene
+su propia categoría, un cuarto nivel de confianza.
+
+**Endpoint**: `/api/siembra/resumen-comuna` agrega esta fila con:
+
+- `fuente_score = "historico_no_vigente"` (distinto de `"pipeline_original"`,
+  `"recalculo_zonas_verdes_reales"` e `"interpolado_idw"`).
+- `pm25_tipo_dato = "historico"` (cuarto valor del `Literal`, junto a
+  `"medido"`/`"interpolado"`/`"sin_dato"`).
+- `pm25_fecha_ultimo_dato = "2025-09-25"`: para que el frontend muestre
+  "activa hasta [fecha]" en vez de un placeholder fijo.
+
+`/api/siembra/ranking-comunas` (el comparador AHP) **no se modificó**.
 
 ## Fuente de `inventario_zonas_verdes.geojson`
 

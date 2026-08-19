@@ -1,0 +1,4 @@
+﻿comuna,pm25_interpolado_ug_m3,distancia_estacion_mas_cercana_km,confianza,estaciones_usadas,exponente_idw
+Popular,27.124,1.357,media,MED-ARAN;MED-VILL;MED-FISC;MED-PBLQ,2
+Manrique,21.9549,1.452,media,MED-VILL;MED-ARAN;MED-FISC;CEN-TRAF,2
+Doce de Octubre,28.9665,1.616,media,MED-PBLQ;MED-ARAN;MED-FISC;MED-UNNV,2

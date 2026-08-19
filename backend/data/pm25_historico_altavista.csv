@@ -1,0 +1,2 @@
+comuna,estacion_origen,operador,pm25_promedio_ultimo_anio,periodo_promedio_inicio,periodo_promedio_fin,n_lecturas,fecha_ultimo_dato_real,pm25_promedio_serie_completa_ug_m3,periodo_serie_completa_inicio,periodo_serie_completa_fin,fuente
+Corregimiento de Altavista,MED-ALTA2,Corantioquia,14.6834639424498,2024-09-25,2025-09-25,249,2025-09-25,18.66,2021-10-17,2025-09-25,SISAIRE/IDEAM

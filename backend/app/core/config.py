@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     data_relaciones_bloque2: Path
     data_recomendacion_siembra_zona: Path
     data_resumen_recomendacion_comuna: Path
+    data_scores_ahp_extendido_sin_siembra: Path = Path("./data/scores_ahp_extendido_sin_siembra.csv")
+    data_scores_ahp_interpolado_idw: Path = Path("./data/scores_ahp_interpolado_idw.csv")
+    data_comunas_pm25_interpolado_meta: Path = Path("./data/comunas_pm25_interpolado_meta.csv")
+    data_scores_ahp_altavista_historico: Path = Path("./data/scores_ahp_altavista_historico.csv")
     data_zonas_priorizadas_siembra: Path
     data_limite_catastral_comunas: Path
     data_inventario_zonas_verdes: Path

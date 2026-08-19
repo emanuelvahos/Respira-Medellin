@@ -1,0 +1,4 @@
+﻿comuna,pm25_interpolado_ug_m3,n_estaciones_usadas,estaciones_usadas,distancia_estacion_mas_cercana_km,distancia_estacion_mas_lejana_usada_km,valor_min_vecinas_ug_m3,valor_max_vecinas_ug_m3,exponente_idw,metodo,confianza
+Popular,27.124,4,MED-ARAN;MED-VILL;MED-FISC;MED-PBLQ,1.357,4.402,16.6451,30.0,2,"IDW 1/distancia^2, 4 estaciones SIATA reales mas cercanas (haversine)",media
+Manrique,21.9549,4,MED-VILL;MED-ARAN;MED-FISC;CEN-TRAF,1.452,3.519,16.6451,31.0,2,"IDW 1/distancia^2, 4 estaciones SIATA reales mas cercanas (haversine)",media
+Doce de Octubre,28.9665,4,MED-PBLQ;MED-ARAN;MED-FISC;MED-UNNV,1.616,3.975,27.0,41.0,2,"IDW 1/distancia^2, 4 estaciones SIATA reales mas cercanas (haversine)",media

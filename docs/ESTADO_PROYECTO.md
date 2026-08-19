@@ -249,6 +249,11 @@ Veredicto comuna por comuna para las 10 ausentes:
 | Corregimiento de San Sebastián de Palmitas | Sí (`CORRE_SAN_SEBASTIAN.xlsx`) | Sí | Sin datos en la fuente |
 | Corregimiento de Altavista | Sí (`CORRE_ALTAVISTA.xlsx`) | Sí | Sin datos en la fuente |
 
+**San Antonio de Prado**: Existen estaciones históricas de monitoreo (PM10)
+en esta zona (campañas SISAIRE 2010-2011 y 2017), pero nunca midieron
+PM2.5 — el contaminante relevante para este modelo no tiene cobertura
+histórica ni vigente aquí. Ver `docs/BRECHA_MONITOREO_AIRE.md`.
+
 Es decir: **ninguna de las 10 comunas sin score falta por un bug de cruce de
 nombres** — los 19 archivos Excel existen para todas ellas y sus nombres
 normalizados coinciden exactamente con el diccionario `GEOJSON_NOMBRE_MAP`
@@ -288,6 +293,82 @@ los datos fuente disponibles" cuando `resumenQuery.isSuccess && !resumen`.
 datos falsos cuando no hay `resumen` para la comuna bajo el cursor. No se
 necesitó ningún cambio de código en esta ronda: el manejo ya era correcto y
 completo antes de esta investigación.
+
+**ACTUALIZADO 2026-08-18 — de las 10 comunas sin dato, 4 ya tienen score AHP
+calculado.** Al cruzar el inventario REAL de zonas verdes
+(`inventario_zonas_verdes.geojson`, GeoMedellín) en vez de depender del
+archivo de zonas candidatas ausente, se confirmó que **4 comunas con prioridad
+AHP calculada pero sin sitio de siembra específico (Santa Cruz, Villa Hermosa,
+San Cristóbal, Santa Elena)** sí tienen dato PM2.5 y por tanto score AHP
+calculable — solo carecían de una zona verde viable dentro de su polígono en
+el inventario real. Persistidas en
+`backend/data/scores_ahp_extendido_sin_siembra.csv` y servidas combinadas con
+las 11 originales en `/api/siembra/resumen-comuna` (campos
+`fuente_score`/`tiene_zona_siembra`; ver `backend/README.md`, sección
+"Comunas con score AHP pero sin zona de siembra"). El comparador de
+sensibilidad AHP (`/api/siembra/ranking-comunas`) no se tocó y sigue
+devolviendo exactamente las 11 comunas originales. Quedan **6 comunas aún sin
+datos de PM2.5 (Manrique, Popular, Doce de Octubre, San Antonio de Prado, San
+Sebastián de Palmitas, Altavista) — pendiente de cobertura de estaciones** —
+esas 6 no cambiaron y siguen mostrando su estado "sin datos" tal cual antes.
+
+**ACTUALIZADO 2026-08-18 (segunda ronda) — panorama honesto y completo de
+las 21 comunas/corregimientos.** Se hizo point-in-polygon real (contra
+`limite_catastral_de_comun.geojson`, EPSG:9377) para confirmar que ninguna
+estación SIATA (ni las 14 conocidas de `auditoria_estaciones_comunas.csv`, ni
+las ~12 adicionales de la red metropolitana descubiertas en el endpoint
+público del SIATA) cae dentro de las 6 comunas restantes. De esas 6, se
+dividieron en dos grupos según distancia real a la estación más cercana:
+
+- **Popular, Manrique, Doce de Octubre** (1.5–2.1 km, zona urbana continua):
+  se calculó PM2.5 por interpolación espacial IDW (4 estaciones SIATA reales
+  más cercanas, exponente 1/distancia²) y su score AHP completo, con
+  confianza **"media"** marcada explícitamente en toda la UI. Ver
+  `backend/README.md`, sección "PM2.5 interpolado (IDW)", y
+  `backend/scripts/calcular_pm25_interpolado_idw.py`.
+- **Altavista, San Antonio de Prado, San Sebastián de Palmitas** (6.6–6.7 km,
+  terreno de ladera/rural): la distancia real a las estaciones SIATA
+  invalida el supuesto de homogeneidad espacial local que sostiene el IDW,
+  así que **no se generó ningún número por interpolación** para ninguna de
+  las 3. Ver siguiente actualización para Altavista.
+
+**ACTUALIZADO 2026-08-18 (tercera ronda) — PM2.5 histórico real para
+Altavista, y confirmación de brecha de monitoreo para las 2 comunas
+restantes.** Investigación en SISAIRE/IDEAM (fuente independiente de SIATA)
+encontró una estación real de PM2.5 dentro de Altavista — **MED-ALTA2** ("IE
+Débora Arango, Altavista"), operada por Corantioquia, activa 2021-10-17 a
+2025-09-25 — que no estaba en el CSV local del proyecto. Se calculó su score
+AHP completo con el promedio del último año de datos antes de la
+inactivación (14.6834639424498 µg/m³, n=249 lecturas), marcado
+explícitamente como **cuarto nivel de confianza**: dato real pero **no
+vigente** (`fuente_score="historico_no_vigente"`,
+`pm25_tipo_dato="historico"`, la estación lleva ~11 meses inactiva). Ver
+`backend/README.md`, sección "Altavista — PM2.5 histórico real, no vigente".
+
+Para San Antonio de Prado y San Sebastián de Palmitas se confirmó, cruzando
+dos fuentes independientes (SIATA + SISAIRE/IDEAM), que es una **brecha real
+de infraestructura de monitoreo** — no una limitación de este proyecto. San
+Antonio de Prado tuvo 2 estaciones históricas (SISAIRE 2010-2011 y 2017)
+pero **solo midieron PM10, nunca PM2.5**. San Sebastián de Palmitas no tiene
+ninguna estación de ninguna autoridad ambiental registrada en SISAIRE para
+Medellín. Ver `docs/BRECHA_MONITOREO_AIRE.md` (hallazgo de política pública,
+insumo para la Secretaría de Medio Ambiente). **No se generó ningún número**
+para ninguna de las 2.
+
+**Resumen final de las 21 comunas/corregimientos (5 niveles de confianza)**:
+
+| Categoría | Cuántas | Comunas | `fuente_score` / `pm25_tipo_dato` |
+|---|---|---|---|
+| Dato real medido, con zona de siembra | 11 | Belén, Robledo, Aranjuez, Castilla, Guayabal, Laureles Estadio, El Poblado, La América, San Javier, Buenos Aires, La Candelaria | `pipeline_original` / `medido` |
+| Score AHP calculado, sin zona de siembra viable (PM2.5 medido) | 4 | Santa Cruz, Villa Hermosa, San Cristóbal, Santa Elena | `recalculo_zonas_verdes_reales` / `medido` |
+| Score AHP calculado, PM2.5 **interpolado** (IDW, confianza media) | 3 | Popular, Manrique, Doce de Octubre | `interpolado_idw` / `interpolado` |
+| Score AHP calculado, PM2.5 **histórico real, no vigente** (estación inactiva ~11 meses) | 1 | Altavista | `historico_no_vigente` / `historico` |
+| Sin ningún dato — brecha real de monitoreo (documentada, no se fuerza un número) | 2 | San Antonio de Prado, San Sebastián de Palmitas | — |
+
+11 + 4 + 3 + 1 + 2 = 21. `/api/siembra/ranking-comunas` (comparador de
+sensibilidad AHP) sigue devolviendo exactamente las 11 comunas de la primera
+fila — nunca se tocó, confirmado con test automatizado
+(`test_ranking_comunas_no_incluye_comunas_sin_zona_de_siembra`).
 
 ### Árboles 3D: ubicaciones reales del SAU (ACTUALIZADO 2026-08-14), muestra sigue siendo parcial
 

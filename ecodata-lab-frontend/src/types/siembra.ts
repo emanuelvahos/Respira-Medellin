@@ -37,6 +37,30 @@ export const resumenRecomendacionComunaSchema = z.object({
   pm25_promedio: z.number().nullable(),
   deficit_pct: z.number().nullable(),
   ratio_mitigadores: z.number().nullable(),
+  /**
+   * "pipeline_original" (11 comunas con zona) | "recalculo_zonas_verdes_reales"
+   * (4 comunas sin zona, PM2.5 medido) | "interpolado_idw" (3 comunas sin
+   * estación SIATA real dentro de su polígono, PM2.5 ESTIMADO por
+   * interpolación espacial — Popular, Manrique, Doce de Octubre) |
+   * "historico_no_vigente" (Altavista: PM2.5 real pero de una estación hoy
+   * inactiva — MED-ALTA2/Corantioquia vía SISAIRE-IDEAM).
+   */
+  fuente_score: z.enum([
+    "pipeline_original",
+    "recalculo_zonas_verdes_reales",
+    "interpolado_idw",
+    "historico_no_vigente",
+  ]),
+  /** false: comuna con score AHP calculado pero SIN zona de siembra viable identificada. */
+  tiene_zona_siembra: z.boolean(),
+  /** "medido": lectura real de estación SIATA. "interpolado": estimado IDW, no medido. "historico": real pero de estación ya inactiva. "sin_dato": ninguno. */
+  pm25_tipo_dato: z.enum(["medido", "interpolado", "sin_dato", "historico"]),
+  /** Solo aplica cuando pm25_tipo_dato === "interpolado". */
+  pm25_confianza: z.enum(["media", "baja"]).nullable(),
+  /** Distancia real (km) a la estación SIATA real más cercana usada en el IDW. Solo aplica si pm25_tipo_dato === "interpolado". */
+  pm25_distancia_estacion_mas_cercana_km: z.number().nullable(),
+  /** Fecha (YYYY-MM-DD) del último dato real disponible. Solo aplica cuando pm25_tipo_dato === "historico" (Altavista). */
+  pm25_fecha_ultimo_dato: z.string().nullable().optional(),
 });
 export type ResumenRecomendacionComuna = z.infer<
   typeof resumenRecomendacionComunaSchema
