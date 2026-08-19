@@ -52,6 +52,22 @@ integración que agregue un campo `Path` obligatorio a `Settings`, diff
 `render.yaml` contra `.env.example` explícitamente — ver nota espejo en
 `backend/README.md`, sección Deploy.
 
+**Nota (mismo día, después del push)**: tras agregar las variables en
+`render.yaml` y en el dashboard de Render, un deploy mostró el mismo
+`ValidationError` — resultó ser un log de un intento previo a que Render
+terminara de aplicar la configuración nueva, no un segundo bug distinto
+(se descartó explícitamente la hipótesis de `ModuleNotFoundError` por
+dependencia faltante en `requirements.txt`: el traceback real seguía
+siendo la misma `ValidationError` de Pydantic, no un `ImportError`). Un
+**Manual Deploy** disparado a mano con la configuración ya vigente resolvió
+todo sin cambios de código adicionales. Confirmado en producción real:
+`/health`, `/api/arboles/puntos`, `/api/salud/resumen-comuna` y
+`/api/comunas/poblacion` responden `200`. Lección: si un log de error en
+Render parece inconsistente con la configuración ya verificada en el
+dashboard, disparar un Manual Deploy fresco antes de asumir una causa
+nueva — Render no siempre re-despliega automáticamente al guardar una
+variable de entorno.
+
 ### `docs/ACTUALIZACION_DATOS.md` → NUEVO (2026-08-14)
 
 Documento único de referencia sobre cuándo/cómo refrescar cada una de las 5
