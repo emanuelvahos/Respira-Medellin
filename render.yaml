@@ -28,6 +28,12 @@ services:
         value: ./data/inventario_zonas_verdes.geojson
       - key: DATA_SOLICITUD_PM25_ESTACIONES
         value: ./data/Solicitud_PM25_DP1763941.csv
+      - key: DATA_SAU_ARBOLES_URBANOS
+        value: ./data/sau_arboles_urbanos.csv
+      - key: DATA_SALUD_RESPIRATORIA_RESUMEN_COMUNA
+        value: ./data/salud_respiratoria_resumen_comuna.json
+      - key: DATA_POBLACION_POR_COMUNA
+        value: ./data/poblacion_por_comuna.csv
       - key: CORS_ALLOWED_ORIGINS
         sync: false
       - key: SENTRY_DSN

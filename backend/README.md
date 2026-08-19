@@ -655,6 +655,16 @@ carpeta. Root Directory a configurar en la plataforma: **`backend`**.
      desplegado en Vercel + `SENTRY_DSN` (proyecto "Python/FastAPI" en
      [Sentry](https://sentry.io), monitoreo de errores en producción — sin
      este valor, Sentry simplemente no se inicializa).
+     **`render.yaml` NO se actualiza solo** cuando se agrega un campo
+     obligatorio (sin default) a `Settings` en `app/core/config.py` — ver
+     incidente documentado en `docs/ESTADO_PROYECTO.md` (2026-08-18:
+     `DATA_SAU_ARBOLES_URBANOS`, `DATA_SALUD_RESPIRATORIA_RESUMEN_COMUNA` y
+     `DATA_POBLACION_POR_COMUNA` se agregaron a `Settings`/`.env` local en
+     integraciones sucesivas pero nunca a `render.yaml`, y Render solo lo
+     reveló al fallar `Settings()` con `ValidationError` en el arranque —
+     404 en producción, no un crash visible). Antes de dar por cerrada
+     cualquier integración que agregue un campo `Path` obligatorio a
+     `Settings`, diff `render.yaml` contra `.env.example` explícitamente.
    - **Trade-off del plan Free**: el servicio se duerme tras 15 minutos sin
      tráfico; el primer request tras dormir tarda ~30-50s (cold start) en
      responder mientras el contenedor arranca. Es una decisión consciente de

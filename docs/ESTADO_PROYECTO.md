@@ -7,6 +7,51 @@
 > [`docs/ACTUALIZACION_DATOS.md`](./ACTUALIZACION_DATOS.md) para la cadencia
 > recomendada de refresco de cada fuente de datos.
 
+### Incidente: deploy de Render caído por `ValidationError` de `Settings` → CORREGIDO (2026-08-18)
+
+Los árboles 3D dejaban de mostrarse en ubicaciones reales del SAU y el
+tooltip nunca mostraba especie, en producción, pese a funcionar en local.
+Diagnóstico con evidencia real de Network (no suposición): `GET
+/api/arboles/puntos` y `GET /api/salud/resumen-comuna` devolvían **404** en
+`https://ecodata-backend.onrender.com`, mientras `/api/comunas`, `/api/pm25`
+y `/api/siembra/resumen-comuna` respondían `200` con normalidad. Causa raíz:
+`Settings` (`backend/app/core/config.py`) ganó 3 campos `Path` obligatorios
+(`data_sau_arboles_urbanos`, `data_salud_respiratoria_resumen_comuna`,
+`data_poblacion_por_comuna`) en integraciones sucesivas (SAU, salud
+respiratoria, población), pero **`render.yaml` nunca se actualizó con las
+variables de entorno correspondientes** — solo vivían en `.env`/`.env.example`
+locales. Render fallaba `Settings()` con `ValidationError` al arrancar
+(3 variables faltantes), lo que en la práctica se veía como rutas 404 (el
+servicio corría una versión previa a esas 3 integraciones, la última que
+había logrado arrancar con éxito), no como un crash visible.
+
+Corrección: se agregaron las 3 variables a `render.yaml` con el mismo patrón
+ya usado (rutas relativas `./data/...`, valores idénticos a `.env.example`);
+se confirmó que `backend/data/sau_arboles_urbanos.csv`,
+`salud_respiratoria_resumen_comuna.json` y `poblacion_por_comuna.csv` están
+versionados en git (no ignorados) y se simuló el set exacto de variables de
+`render.yaml` localmente (sin `.env`) para confirmar que `app.main` importa
+sin `ValidationError` antes de hacer push.
+
+**Decisión de diseño (obligatorias, no opcionales con default)**: estas 3
+variables se dejaron como campos `Path` obligatorios en `Settings`, igual
+que `data_zonas_priorizadas_siembra`/`data_limite_catastral_comunas` — NO se
+les dio un valor por defecto en Python (a diferencia de
+`data_scores_ahp_extendido_sin_siembra`/`data_scores_ahp_interpolado_idw`/etc.,
+que sí son opcionales porque son fuentes complementarias secundarias de
+integraciones de recálculo AHP). SAU, salud respiratoria y población son
+datasets core usados en el flujo principal del producto, no enriquecimiento
+opcional — la falla fuerte y visible en el arranque (`ValidationError` en
+los logs de build) es preferible a un backend que arranca "a medias" sin
+avisar. La ausencia del *archivo en disco* (no de la variable) sigue
+manejada con 503 controlado vía `_require_file()`, patrón ya establecido
+para zonas verdes — esa capa no cambió.
+
+**Lección para futuras integraciones**: antes de dar por cerrada cualquier
+integración que agregue un campo `Path` obligatorio a `Settings`, diff
+`render.yaml` contra `.env.example` explícitamente — ver nota espejo en
+`backend/README.md`, sección Deploy.
+
 ### `docs/ACTUALIZACION_DATOS.md` → NUEVO (2026-08-14)
 
 Documento único de referencia sobre cuándo/cómo refrescar cada una de las 5
