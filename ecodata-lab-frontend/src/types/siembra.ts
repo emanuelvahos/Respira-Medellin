@@ -24,6 +24,73 @@ export type RecomendacionSiembraZona = z.infer<
   typeof recomendacionSiembraZonaSchema
 >;
 
+/** Refleja app.models.siembra.FichaEspecie (backend, Fase E2). Ficha
+ * botánica real — ver backend/data/fichas_especies.json y backend/README.md
+ * sección "Detalle de zona de siembra (Fase E2)" para la fuente exacta. */
+export const fichaEspecieSchema = z.object({
+  nombre_comun: z.string(),
+  familia: z.string(),
+  origen: z.string(),
+  distribucion_geografica: z.string(),
+  altura_max_m: z.number(),
+  amplitud_copa: z.string(),
+  copa_min_m: z.number(),
+  margen_seguridad_m: z.number(),
+  densidad_follaje: z.string(),
+  tasa_crecimiento: z.string(),
+  longevidad: z.string(),
+  rango_altitudinal_msnm: z.tuple([z.number(), z.number()]),
+  tipo_suelo: z.array(z.string()),
+  requerimiento_luminosidad: z.string(),
+  pm25_eficiencia: z.string(),
+  funcion: z.array(z.string()),
+  usos_espacio_publico: z.array(z.string()),
+  estado_conservacion: z.string(),
+  fuentes: z.string(),
+});
+export type FichaEspecie = z.infer<typeof fichaEspecieSchema>;
+
+/** Refleja app.models.siembra.EspecieDiversificacion (backend, Fase E3).
+ * Propuesta EXPLORATORIA de este proyecto, NUNCA la recomendación oficial
+ * del pipeline — ver `diversificacion_disponible` en `ZonaSiembraDetalle`. */
+export const especieDiversificacionSchema = z.object({
+  especie: z.string(),
+  individuos_estimado: z.number().int(),
+  proporcion: z.number(),
+});
+export type EspecieDiversificacion = z.infer<typeof especieDiversificacionSchema>;
+
+/** Refleja app.models.siembra.ZonaSiembraDetalle (backend, Fase E2 + E3). */
+export const zonaSiembraDetalleSchema = z.object({
+  id_poligono: z.number().int(),
+  comuna: z.string(),
+  categoria: z.string(),
+  cobertura_actual: z.string(),
+  area_m2: z.number(),
+  area_ha: z.number(),
+  especie_recomendada: z.string(),
+  nombre_comun_especie: z.string(),
+  arboles_cupo_estimado: z.number().int(),
+  separacion_minima_m: z.number(),
+  eficiencia_pm25: z.string(),
+  especies_alternativas: z.string(),
+  fuentes_botanicas: z.string(),
+  /** `null` si la especie no tiene ficha en `fichas_especies.json` — el
+   * panel debe comunicarlo honestamente, nunca inventar contenido. */
+  ficha_especie: fichaEspecieSchema.nullable(),
+  /** Fase E3 — `true` solo si hay 2+ especies compatibles reales Y el cupo
+   * de la zona es >= 10 individuos (ver backend/README.md). */
+  diversificacion_disponible: z.boolean(),
+  propuesta_diversificacion: z.array(especieDiversificacionSchema).nullable(),
+  /** Cuántas de las 5 especies documentadas son compatibles con esta
+   * categoría de zona (rango altitudinal + categoria) — `null` si el
+   * archivo de análisis de diversificación no existe en el entorno.
+   * Distingue "solo 1 especie compatible" de "cupo insuficiente" cuando
+   * `diversificacion_disponible` es `false`. */
+  n_especies_compatibles: z.number().int().nullable(),
+});
+export type ZonaSiembraDetalle = z.infer<typeof zonaSiembraDetalleSchema>;
+
 /** Refleja app.models.siembra.ResumenRecomendacionComuna (backend). */
 export const resumenRecomendacionComunaSchema = z.object({
   comuna: z.string(),
@@ -79,6 +146,18 @@ export const zonaPriorizadaSiembraPropertiesSchema = z
     nombre_comun_especie: z.string(),
     arboles_cupo_estimado: z.number().int(),
     eficiencia_pm25: z.string(),
+    /**
+     * Fase D — auditoría de viabilidad (backend/scripts/auditar_viabilidad_siembra.py),
+     * inyectada por id_poligono al servir el endpoint, no viene del archivo
+     * original en disco. `null`/`undefined` si la auditoría no se ha corrido
+     * en el entorno que sirve la API. Ver backend/README.md.
+     */
+    viabilidad_auditada: z
+      .enum(["consistente", "posible_no_viable", "sin_solape_con_inventario_real"])
+      .nullable()
+      .optional(),
+    /** Motivo legible solo cuando viabilidad_auditada === "posible_no_viable". */
+    viabilidad_motivo: z.string().nullable().optional(),
   })
   .passthrough();
 export type ZonaPriorizadaSiembraProperties = z.infer<

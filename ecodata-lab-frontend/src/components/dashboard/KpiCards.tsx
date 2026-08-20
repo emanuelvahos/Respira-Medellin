@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useResumenComuna } from "@/lib/api/queries";
 
 function KpiCard({
@@ -31,12 +32,19 @@ export function KpiCards() {
   const resumenQuery = useResumenComuna();
 
   if (resumenQuery.isLoading) {
+    // Misma estructura de CardHeader + CardTitle + CardContent que la tarjeta
+    // real (título + valor grande + hint) — reserva la misma altura para que
+    // nada de lo que está debajo salte al llegar los datos (CLS).
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
-            <CardContent className="py-6">
-              <div className="h-8 w-24 animate-pulse rounded bg-muted" />
+            <CardHeader>
+              <Skeleton className="h-4 w-32" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="mt-2 h-3 w-40" />
             </CardContent>
           </Card>
         ))}

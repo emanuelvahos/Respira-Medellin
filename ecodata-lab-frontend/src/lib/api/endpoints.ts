@@ -1,5 +1,6 @@
 export const endpoints = {
   comunas: "/api/comunas",
+  comunasNombres: "/api/comunas/nombres",
   auditoriaEstaciones: "/api/comunas/estaciones/auditoria",
   pm25: "/api/pm25",
   pm25Estaciones: "/api/pm25/estaciones",
@@ -12,6 +13,11 @@ export const endpoints = {
   saludResumenComuna: "/api/salud/resumen-comuna",
   poblacionComuna: "/api/comunas/poblacion",
 } as const;
+
+/** `/api/siembra/zona/{id}/detalle` (Fase E2) — detalle real de una zona (área, especie, ficha botánica). */
+export function zonaSiembraDetalleUrl(idPoligono: number): string {
+  return `/api/siembra/zona/${idPoligono}/detalle`;
+}
 
 /** `/api/siembra/ranking-comunas` toma pesos como query params — no es una ruta estática. */
 export function rankingComunasUrl(pesos: {

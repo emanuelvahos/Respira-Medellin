@@ -22,10 +22,18 @@ services:
         value: ./data/resumen_recomendacion_por_comuna.csv
       - key: DATA_ZONAS_PRIORIZADAS_SIEMBRA
         value: ./data/zonas_priorizadas_siembra.geojson
+      - key: DATA_AUDITORIA_VIABILIDAD_SIEMBRA
+        value: ./data/auditoria_viabilidad_siembra.geojson
+      - key: DATA_FICHAS_ESPECIES
+        value: ./data/fichas_especies.json
+      - key: DATA_DIVERSIFICACION_ESPECIES_SIEMBRA
+        value: ./data/diversificacion_especies_siembra.geojson
       - key: DATA_LIMITE_CATASTRAL_COMUNAS
         value: ./data/limite_catastral_de_comun.geojson
       - key: DATA_INVENTARIO_ZONAS_VERDES
         value: ./data/inventario_zonas_verdes.geojson
+      - key: DATA_INVENTARIO_ZONAS_VERDES_PROCESADO
+        value: ./data/zonas_verdes_procesado.geojson
       - key: DATA_SOLICITUD_PM25_ESTACIONES
         value: ./data/Solicitud_PM25_DP1763941.csv
       - key: DATA_SAU_ARBOLES_URBANOS

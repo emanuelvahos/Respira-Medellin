@@ -221,6 +221,19 @@ export function TreeInstances({
         // frameloop "demand" en reduced-motion: solo redibuja si cambian props,
         // sin loop continuo de rAF (menos movimiento y menos consumo de batería).
         frameloop={reducedMotion ? "demand" : "always"}
+        // @react-three/fiber pone `pointer-events: auto` inline en su propio
+        // canvas y en los divs que crea internamente (para su sistema de
+        // raycasting) — SOBRESCRIBE el `pointer-events-none` heredado del div
+        // padre de arriba, porque un estilo inline gana a uno heredado. Sin
+        // este `style` explícito, este canvas queda encima de deck.gl/Mapbox
+        // en el DOM y se traga TODOS los clicks reales del mapa (comunas,
+        // zonas de siembra, etc.) mientras los árboles están visibles — bug
+        // real encontrado en Fase D.1 al verificar en navegador que el click
+        // en una zona de siembra nunca abría su panel estando en modo "Por
+        // comuna" (el modo default). El pan/zoom con mouse seguía funcionando
+        // porque Mapbox GL escucha en su propio canvas por debajo, pero
+        // cualquier interacción por click en deck.gl quedaba bloqueada.
+        style={{ pointerEvents: "none" }}
       >
         <CameraRig origin={origin} cameraState={cameraState} />
         <TreeGroup points={points} origin={origin} reducedMotion={reducedMotion} />

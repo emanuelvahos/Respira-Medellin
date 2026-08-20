@@ -20,6 +20,33 @@ export type MapViewState = {
 export type MapLayerId = "comunas" | "zonasSiembra" | "zonasVerdes" | "pm25" | "arbolesSau";
 
 /**
+ * Modo explícito de visualización de árboles reales del SAU:
+ * - "comuna": conos 3D reales (`TreeInstances`), solo visibles al seleccionar
+ *   una comuna (comportamiento histórico, sigue siendo el default).
+ * - "ciudad": capa de clusters/puntos a nivel de toda Medellín (equivalente
+ *   al toggle `layers.arbolesSau` que existía antes de este selector).
+ * Mutuamente excluyentes: mostrar ambas representaciones del mismo
+ * inventario a la vez es visualmente confuso y redundante (ver `setTreeMode`).
+ */
+export type TreeMode = "comuna" | "ciudad";
+
+/**
+ * Estilo base del mapa Mapbox. "satellite" (imagen satelital real) existe
+ * como herramienta de auditoría visual rápida — Fase D: al marcar una zona
+ * de siembra como `posible_no_viable` (se solapa con una cancha/plaza según
+ * el inventario de GeoMedellín), el panel de esa zona ofrece un atajo que
+ * cambia a este estilo y centra la cámara ahí, para verificar a simple
+ * vista si en efecto es una superficie no sembrable. También accesible
+ * manualmente desde `MapLayerToggles` para cualquier otro uso.
+ */
+export type MapStyle = "dark" | "satellite";
+
+export const MAP_STYLE_URLS: Record<MapStyle, string> = {
+  dark: "mapbox://styles/mapbox/dark-v11",
+  satellite: "mapbox://styles/mapbox/satellite-streets-v12",
+};
+
+/**
  * Zoom a partir del cual la capa de árboles del SAU cambia de clusters (grid
  * agregado) a puntos individuales reales por viewport — mismo patrón visual
  * que el propio visor del SAU al acercar el mapa. Por debajo de este umbral,
@@ -91,15 +118,30 @@ type MapState = {
   isFlyingTo: boolean;
   /** true una vez el flyTo termina: dispara la revelación de TreeInstances. */
   treesRevealed: boolean;
+  /** Elección explícita entre árboles 3D "por comuna" o clusters "ciudad completa". */
+  treeMode: TreeMode;
   searchMarker: SearchMarker;
+  mapStyle: MapStyle;
+  /**
+   * Fase E1: por defecto `false` — las zonas `posible_no_viable` (auditoría
+   * de Fase D) quedan fuera de la recomendación activa que se ve en el mapa.
+   * No es un toggle de capa independiente (`MapLayerId`): solo tiene efecto
+   * mientras `layers.zonasSiembra` ya está activa, así que vive como su
+   * propio campo en vez de mezclarse con `layers`.
+   */
+  mostrarZonasDescartadas: boolean;
   setSelectedComuna: (comuna: string | null) => void;
   setHoveredComuna: (comuna: string | null) => void;
   toggleLayer: (layer: MapLayerId) => void;
   setViewState: (viewState: MapViewState) => void;
   toggleParticlesPaused: () => void;
+  toggleMostrarZonasDescartadas: () => void;
   setIsFlyingTo: (flying: boolean) => void;
   setTreesRevealed: (revealed: boolean) => void;
+  setTreeMode: (mode: TreeMode) => void;
   setSearchMarker: (marker: SearchMarker) => void;
+  setMapStyle: (style: MapStyle) => void;
+  toggleMapStyle: () => void;
 };
 
 export const useMapStore = create<MapState>((set) => ({
@@ -122,7 +164,10 @@ export const useMapStore = create<MapState>((set) => ({
   particlesPaused: false,
   isFlyingTo: false,
   treesRevealed: false,
+  treeMode: "comuna",
   searchMarker: null,
+  mapStyle: "dark",
+  mostrarZonasDescartadas: false,
   setSelectedComuna: (comuna) =>
     set({
       selectedComuna: comuna,
@@ -137,7 +182,26 @@ export const useMapStore = create<MapState>((set) => ({
   setViewState: (viewState) => set({ viewState }),
   toggleParticlesPaused: () =>
     set((state) => ({ particlesPaused: !state.particlesPaused })),
+  toggleMostrarZonasDescartadas: () =>
+    set((state) => ({ mostrarZonasDescartadas: !state.mostrarZonasDescartadas })),
   setIsFlyingTo: (flying) => set({ isFlyingTo: flying }),
   setTreesRevealed: (revealed) => set({ treesRevealed: revealed }),
+  // Decisión de UX (verificada en navegador): "por comuna" y "ciudad
+  // completa" son mutuamente excluyentes. Mostrar los conos 3D reales de
+  // una comuna a la vez que la capa de clusters/puntos de toda la ciudad
+  // resulta visualmente confuso y redundante (ambas son el mismo
+  // inventario SAU, solo con densidad y nivel de detalle distintos), y
+  // además duplicaría fetches innecesarios. Al activar "ciudad" se apagan
+  // los árboles 3D; al volver a "comuna" se re-revelan de inmediato si ya
+  // había una comuna seleccionada (sin esperar un nuevo flyTo).
+  setTreeMode: (mode) =>
+    set((state) => ({
+      treeMode: mode,
+      layers: { ...state.layers, arbolesSau: mode === "ciudad" },
+      treesRevealed: mode === "comuna" ? state.selectedComuna !== null : false,
+    })),
   setSearchMarker: (marker) => set({ searchMarker: marker }),
+  setMapStyle: (style) => set({ mapStyle: style }),
+  toggleMapStyle: () =>
+    set((state) => ({ mapStyle: state.mapStyle === "dark" ? "satellite" : "dark" })),
 }));

@@ -22,7 +22,11 @@ from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
 from app.models.poblacion import PoblacionComuna
-from app.models.siembra import RecomendacionSiembraZona, ResumenRecomendacionComuna
+from app.models.siembra import (
+    FichaEspecie,
+    RecomendacionSiembraZona,
+    ResumenRecomendacionComuna,
+)
 from app.services.comuna_join import normalize_comuna_name
 
 WGS84 = "EPSG:4326"
@@ -96,6 +100,46 @@ def load_recomendacion_siembra_zona() -> list[RecomendacionSiembraZona]:
         "DATA_RECOMENDACION_SIEMBRA_ZONA",
     )
     return [RecomendacionSiembraZona.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
+def load_fichas_especies() -> dict[str, FichaEspecie]:
+    """`fichas_especies.json` (Fase E2): fichas botánicas reales por especie,
+    indexadas por nombre científico exacto (mismo string que
+    `especie_recomendada` en `recomendacion_siembra_por_zona.csv`). Ver
+    backend/README.md. Opcional: si el archivo no existe, el endpoint de
+    detalle de zona sigue funcionando sin `ficha_especie` (None)."""
+    settings = get_settings()
+    path = settings.data_fichas_especies
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    return {
+        nombre: FichaEspecie.model_validate(datos)
+        for nombre, datos in raw.get("especies", {}).items()
+    }
+
+
+@lru_cache
+def load_diversificacion_especies_por_id() -> dict[int, dict]:
+    """`diversificacion_especies_siembra.geojson` (Fase E3): propuesta
+    EXPLORATORIA de reparto de individuos entre varias especies compatibles
+    por zona, indexada por `id_poligono` — tabla sin geometría, igual patrón
+    que `_auditoria_viabilidad_siembra_por_id`. Opcional: si el archivo no
+    existe, el endpoint de detalle sigue funcionando con
+    `diversificacion_disponible=False`. Ver
+    backend/scripts/analizar_diversificacion_especies.py."""
+    settings = get_settings()
+    path = settings.data_diversificacion_especies_siembra
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    return {
+        int(feature["properties"]["id_poligono"]): feature["properties"]
+        for feature in raw["features"]
+    }
 
 
 @lru_cache
@@ -210,12 +254,43 @@ def load_scores_ahp_altavista_historico() -> list[ResumenRecomendacionComuna]:
 
 
 @lru_cache
-def load_zonas_priorizadas_siembra_geojson() -> dict:
+def _auditoria_viabilidad_siembra_por_id() -> dict[int, dict]:
+    """`auditoria_viabilidad_siembra.geojson` (Fase D,
+    `backend/scripts/auditar_viabilidad_siembra.py`): tabla de auditoría
+    SIN geometría propia, indexada por `id_poligono` — nunca reemplaza ni
+    modifica `zonas_priorizadas_siembra.geojson`, solo se cruza por id al
+    servir el endpoint (ver `load_zonas_priorizadas_siembra_geojson`).
+    Opcional: si el archivo no existe (auditoría no corrida todavía), el
+    endpoint sigue funcionando sin el campo `viabilidad_auditada` — no es
+    una fuente crítica, es un enriquecimiento de calidad de datos."""
     settings = get_settings()
-    return _read_geojson_wgs84(
-        settings.data_zonas_priorizadas_siembra,
+    path = settings.data_auditoria_viabilidad_siembra
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    return {
+        int(feature["properties"]["id_poligono"]): feature["properties"]
+        for feature in raw["features"]
+    }
+
+
+@lru_cache
+def load_zonas_priorizadas_siembra_geojson() -> dict:
+    geojson = _read_geojson_wgs84(
+        get_settings().data_zonas_priorizadas_siembra,
         "DATA_ZONAS_PRIORIZADAS_SIEMBRA",
     )
+    auditoria = _auditoria_viabilidad_siembra_por_id()
+    if not auditoria:
+        return geojson
+    for feature in geojson["features"]:
+        aud = auditoria.get(int(feature["properties"]["id_poligono"]))
+        feature["properties"]["viabilidad_auditada"] = (
+            aud["viabilidad_auditada"] if aud else "sin_solape_con_inventario_real"
+        )
+        feature["properties"]["viabilidad_motivo"] = aud["viabilidad_motivo"] if aud else None
+    return geojson
 
 
 @lru_cache
@@ -296,9 +371,9 @@ _ZONAS_VERDES_PROPERTIES = [
 ]
 
 
-@lru_cache
-def load_inventario_zonas_verdes_geojson() -> dict:
-    """48.348 polígonos (fuente GeoMedellín, ver backend/README.md).
+def procesar_zonas_verdes_geojson(path: Path) -> dict:
+    """Reproyecta, simplifica y recorta el inventario CRUDO de zonas verdes
+    (48.348 polígonos, fuente GeoMedellín, ver backend/README.md).
 
     Tres optimizaciones para que el payload sea manejable en el mapa:
     1. simplify(tolerance=0.5m) en el CRS proyectado original (EPSG:9377,
@@ -309,11 +384,13 @@ def load_inventario_zonas_verdes_geojson() -> dict:
     3. Se descartan las columnas *_subcategoria/*_componente/*_elemento de
        subsistemas (ap_/so_/ree_/sh_) que en la práctica son casi siempre
        "No aplica" y no se usan para colorear ni en el popup del mapa.
-    """
-    settings = get_settings()
-    path = settings.data_inventario_zonas_verdes
-    _require_file(path, "DATA_INVENTARIO_ZONAS_VERDES")
 
+    Este cálculo tarda ~55s en frío — por eso NUNCA se corre en el camino de
+    un request HTTP (causaba 502 en Render por timeout: ver backend/README.md,
+    sección "Por qué /api/zonas-verdes sirve un archivo precomputado"). Se
+    ejecuta una sola vez con `backend/scripts/preprocesar_zonas_verdes.py`,
+    cuyo resultado consume `load_inventario_zonas_verdes_geojson` de abajo.
+    """
     gdf = gpd.read_file(path)
     gdf["geometry"] = gdf.geometry.simplify(tolerance=0.5, preserve_topology=True)
     if gdf.crs is not None and str(gdf.crs) != WGS84:
@@ -322,6 +399,20 @@ def load_inventario_zonas_verdes_geojson() -> dict:
 
     gdf = gdf[_ZONAS_VERDES_PROPERTIES]
     return json.loads(gdf.to_json(drop_id=True))
+
+
+@lru_cache
+def load_inventario_zonas_verdes_geojson() -> dict:
+    """Sirve el GeoJSON YA preprocesado por
+    `backend/scripts/preprocesar_zonas_verdes.py` (ver
+    `procesar_zonas_verdes_geojson` arriba para el detalle de las
+    optimizaciones aplicadas). Solo lee y parsea JSON — nunca reproyecta ni
+    simplifica geometría en el camino de un request HTTP."""
+    settings = get_settings()
+    path = settings.data_inventario_zonas_verdes_procesado
+    _require_file(path, "DATA_INVENTARIO_ZONAS_VERDES_PROCESADO")
+    with path.open(encoding="utf-8") as f:
+        return json.load(f)
 
 
 @lru_cache

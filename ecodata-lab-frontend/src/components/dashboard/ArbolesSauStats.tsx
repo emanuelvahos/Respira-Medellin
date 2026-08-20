@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useArbolesResumenComuna } from "@/lib/api/queries";
 
 const FECHA_DESCARGA_SAU = "2026-08-12";
@@ -9,10 +10,30 @@ export function ArbolesSauStats() {
   const query = useArbolesResumenComuna();
 
   if (query.isLoading) {
+    // Mismo layout que la tarjeta real (header con título+descripción, dos
+    // columnas de 5 filas cada una) — el salto de una tarjeta de una sola
+    // línea a esta tarjeta de dos columnas era uno de los mayores
+    // contribuyentes al CLS de /dashboard (ver docs/ESTADO_PROYECTO.md).
     return (
       <Card>
-        <CardContent className="py-6">
-          <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+        <CardHeader>
+          <Skeleton className="h-5 w-56" />
+          <Skeleton className="mt-2 h-4 w-full max-w-xl" />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, col) => (
+            <div key={col}>
+              <Skeleton className="mb-2 h-4 w-40" />
+              <ul className="space-y-1.5">
+                {Array.from({ length: 5 }).map((_, row) => (
+                  <li key={row} className="flex items-center justify-between gap-2">
+                    <Skeleton className="h-3.5 w-32" />
+                    <Skeleton className="h-3.5 w-10" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </CardContent>
       </Card>
     );

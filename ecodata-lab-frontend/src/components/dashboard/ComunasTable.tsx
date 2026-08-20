@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePoblacionComuna, useRankingComunas, useResumenComuna } from "@/lib/api/queries";
 import { PESOS_AHP_ORIGINALES, type PesosAhp, type RankingComunaItem } from "@/types/rankingComuna";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
@@ -273,7 +274,41 @@ export function ComunasTable({ pesos }: { pesos: PesosAhp }) {
   });
 
   if (rankingQuery.isLoading) {
-    return <div className="h-64 animate-pulse rounded-md bg-muted" />;
+    // Mismo layout que la tabla real (barra de búsqueda + badge, header de
+    // columnas, filas placeholder) — un solo bloque de 256px de alto sin
+    // estructura era uno de los mayores contribuyentes al CLS de
+    // /dashboard: la tabla real con ~14 filas mide bastante más que eso.
+    const columnasSkeleton = columns.length + 1;
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <Skeleton className="h-9 w-full max-w-xs" />
+          <Skeleton className="h-5 w-40 shrink-0" />
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {Array.from({ length: columnasSkeleton }).map((_, i) => (
+                <TableHead key={i}>
+                  <Skeleton className="h-3.5 w-12" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 8 }).map((_, row) => (
+              <TableRow key={row}>
+                {Array.from({ length: columnasSkeleton }).map((_, col) => (
+                  <TableCell key={col}>
+                    <Skeleton className="h-4 w-full max-w-20" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
   }
   if (rankingQuery.isError) {
     return (

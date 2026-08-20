@@ -31,6 +31,23 @@ def get_comunas() -> FeatureCollection[ComunaProperties]:
     return FeatureCollection[ComunaProperties].model_validate(raw)
 
 
+@router.get("/nombres", response_model=list[str])
+def get_nombres_comunas() -> list[str]:
+    """Nombres de las 21 comunas/corregimientos, SIN geometría.
+
+    Investigación de rendimiento (docs/ESTADO_PROYECTO.md, "Aislar la caída
+    de Lighthouse"): `/dashboard` (`ComunaComparator`) solo necesita la lista
+    de nombres para el selector de comparación, pero llamaba a `useComunas()`
+    — el mismo endpoint que sirve el mapa, con la geometría completa de los
+    21 polígonos (~3.5 MB, el recurso más pesado de toda la página, más
+    grande que todo el JS junto). Este endpoint reutiliza el mismo loader
+    cacheado (`load_limite_catastral_comunas_geojson`, ya en memoria — no
+    hay costo de cómputo adicional) y descarta la geometría antes de
+    responder: mismo dato, ~3.2 KB en vez de ~3.5 MB."""
+    raw = load_limite_catastral_comunas_geojson()
+    return sorted(feature["properties"]["nombre"] for feature in raw["features"])
+
+
 @router.get("/{nombre}", response_model=FeatureCollection[ComunaProperties])
 def get_comuna_by_nombre(nombre: str) -> FeatureCollection[ComunaProperties]:
     """Filtra el límite catastral por nombre de comuna (case-insensitive)."""

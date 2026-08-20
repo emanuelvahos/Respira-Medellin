@@ -21,6 +21,7 @@ import {
   COMUNA_FLYTO_BEARING,
   COMUNA_FLYTO_PITCH,
   COMUNA_FLYTO_ZOOM,
+  MAP_STYLE_URLS,
   MEDELLIN_MAX_BOUNDS,
   MEDELLIN_MAX_ZOOM,
   MEDELLIN_MIN_ZOOM,
@@ -28,7 +29,8 @@ import {
 } from "@/store/mapStore";
 import type { Bbox } from "@/lib/api/endpoints";
 import { createComunasLayer } from "@/components/map/layers/comunasLayer";
-import { createZonasSiembraLayer } from "@/components/map/layers/zonasSiembraLayer";
+import { createZonasSiembraLayer, type ZonaSiembraFeature } from "@/components/map/layers/zonasSiembraLayer";
+import { ZonaSiembraDetailPanel } from "@/components/map/ZonaSiembraDetailPanel";
 import { createZonasVerdesLayer } from "@/components/map/layers/zonasVerdesLayer";
 import { createArbolesClustersLayer, createArbolesPuntosLayer } from "@/components/map/layers/arbolesSauLayer";
 import {
@@ -63,7 +65,11 @@ export function MapCanvas() {
     setIsFlyingTo,
     treesRevealed,
     setTreesRevealed,
+    treeMode,
     searchMarker,
+    mapStyle,
+    setMapStyle,
+    mostrarZonasDescartadas,
   } = useMapStore();
 
   const reducedMotion = usePrefersReducedMotion();
@@ -153,12 +159,22 @@ export function MapCanvas() {
     [layers.comunas, comunasQuery.data, resumenPorComuna, selectedComuna, hoveredComuna, setSelectedComuna, setHoveredComuna],
   );
 
+  // --- Panel de la zona de siembra seleccionada (Fase D: auditoría de
+  // viabilidad) — click para fijar, mismo patrón que `selectedComuna` pero
+  // con estado local: no necesita persistir en el store global ni afectar
+  // otras vistas (dashboard, URL) como sí hace la comuna seleccionada.
+  const [selectedZonaSiembra, setSelectedZonaSiembra] = useState<ZonaSiembraFeature | null>(null);
+
   const zonasSiembraLayer = useMemo(
     () =>
       layers.zonasSiembra
-        ? createZonasSiembraLayer({ data: zonasSiembraQuery.data })
+        ? createZonasSiembraLayer({
+            data: zonasSiembraQuery.data,
+            mostrarDescartadas: mostrarZonasDescartadas,
+            onClick: setSelectedZonaSiembra,
+          })
         : null,
-    [layers.zonasSiembra, zonasSiembraQuery.data],
+    [layers.zonasSiembra, zonasSiembraQuery.data, mostrarZonasDescartadas],
   );
 
   const zonasVerdesLayer = useMemo(
@@ -227,8 +243,17 @@ export function MapCanvas() {
       [
         zonasVerdesLayer,
         pm25Layer,
-        zonasSiembraLayer,
+        // `zonasSiembraLayer` DESPUÉS de `comunasLayer`: deck.gl resuelve
+        // picking por orden del array (el último gana), no solo por
+        // profundidad real. Con `comunasLayer` al final, un click sobre una
+        // zona de siembra dentro de una comuna ya seleccionada (extrusión
+        // baja/ausente cerca de la cámara) quedaba sombreado por el polígono
+        // plano de la comuna por debajo — el panel de zona nunca se abría.
+        // Verificado en navegador (Fase D.1): con este orden, el click
+        // selecciona la zona de siembra cuando cae sobre ella, y sigue
+        // seleccionando la comuna en cualquier otro punto de su polígono.
         comunasLayer,
+        zonasSiembraLayer,
         arbolesClustersLayer,
         arbolesPuntosLayer,
       ].filter(Boolean),
@@ -253,6 +278,9 @@ export function MapCanvas() {
   // que es quien realmente anima la cámara compartida por deck.gl + Mapbox.
   useEffect(() => {
     if (!selectedComuna || !isFlyingTo) return;
+    // En modo "ciudad" no se revelan los árboles 3D por comuna (ver
+    // `setTreeMode` en el store): el flyTo de cámara igual ocurre al hacer
+    // click en una comuna, pero `setTreesRevealed` de más abajo se omite.
 
     const feature = comunasQuery.data?.features.find(
       (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
@@ -277,7 +305,7 @@ export function MapCanvas() {
 
     const timeout = setTimeout(() => {
       setIsFlyingTo(false);
-      setTreesRevealed(true);
+      if (treeMode === "comuna") setTreesRevealed(true);
     }, duration + 50);
 
     return () => clearTimeout(timeout);
@@ -285,18 +313,43 @@ export function MapCanvas() {
   }, [selectedComuna, isFlyingTo]);
 
   // Cámara en vivo (para sincronizar TreeInstances) mientras los árboles están visibles.
+  //
+  // Guard de igualdad de valores (no solo de referencia): DeckGL resincroniza
+  // su prop `viewState` controlado sobre la instancia de Mapbox en cada
+  // render (no solo cuando el usuario interactúa), y esa resincronización
+  // dispara el evento "move" de Mapbox incluso si las coordenadas no
+  // cambiaron. Sin este guard, `setCameraState` crea un objeto nuevo en cada
+  // "move" -> re-render -> DeckGL vuelve a resincronizar -> nuevo "move" ->
+  // bucle síncrono ("Maximum update depth exceeded"), reproducible al
+  // seleccionar cualquier comuna (justo cuando `treesRevealed` activa este
+  // efecto). Comparar valores con epsilon antes de actualizar el estado
+  // rompe el ciclo sin perder la sincronización real de cámara.
+  const lastCameraStateRef = useRef<MapCameraState | null>(null);
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map || !treesRevealed) return;
 
+    const CAMERA_EPSILON = 1e-6;
+    const camerasEqual = (a: MapCameraState, b: MapCameraState) =>
+      Math.abs(a.center[0] - b.center[0]) < CAMERA_EPSILON &&
+      Math.abs(a.center[1] - b.center[1]) < CAMERA_EPSILON &&
+      Math.abs(a.zoom - b.zoom) < CAMERA_EPSILON &&
+      Math.abs(a.pitch - b.pitch) < CAMERA_EPSILON &&
+      Math.abs(a.bearing - b.bearing) < CAMERA_EPSILON;
+
     const updateCameraState = () => {
       const center = map.getCenter();
-      setCameraState({
+      const next: MapCameraState = {
         center: [center.lng, center.lat],
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
-      });
+      };
+      if (lastCameraStateRef.current && camerasEqual(lastCameraStateRef.current, next)) {
+        return;
+      }
+      lastCameraStateRef.current = next;
+      setCameraState(next);
     };
     updateCameraState();
     map.on("move", updateCameraState);
@@ -369,9 +422,15 @@ export function MapCanvas() {
       }),
     );
 
+    // Fase E1: los conos "recomendados" de Respiro Urbano son otra forma de
+    // presentar la misma recomendación de siembra que `zonasSiembraLayer` —
+    // por defecto excluyen las zonas `posible_no_viable` igual que el mapa
+    // 2D, y respetan el mismo toggle "Mostrar zonas descartadas".
     const zonasComuna =
       zonasSiembraQuery.data?.features.filter(
-        (f) => normalizeComunaName(f.properties.comuna) === selectedComuna,
+        (f) =>
+          normalizeComunaName(f.properties.comuna) === selectedComuna &&
+          (mostrarZonasDescartadas || f.properties.viabilidad_auditada !== "posible_no_viable"),
       ) ?? [];
     const totalCupo = zonasComuna.reduce((acc, f) => acc + f.properties.arboles_cupo_estimado, 0) || 1;
     const recommendedPoints: TreePoint[] = [];
@@ -392,6 +451,7 @@ export function MapCanvas() {
     arbolesExistentesQuery.data,
     selectedComuna,
     zonasSiembraQuery.data,
+    mostrarZonasDescartadas,
   ]);
 
   // --- Tooltip de especie real al pasar el mouse sobre un árbol "existente" ---
@@ -498,6 +558,22 @@ export function MapCanvas() {
             };
           }
 
+          if (layer?.id === "zonas-siembra") {
+            // `object` es el Feature completo (GeoJsonLayer), no sus
+            // properties directamente — sin `.properties` aquí todos los
+            // campos salían `undefined` en el tooltip (bug encontrado en
+            // Fase D.1 al verificar en navegador).
+            const zona = (object as ZonaSiembraFeature).properties;
+            const dudosa = zona.viabilidad_auditada === "posible_no_viable";
+            const avisoViabilidad = dudosa
+              ? `<br/><span style="color:var(--critical)">⚠ Posible falso positivo — verificar en terreno</span>`
+              : "";
+            return {
+              html: `<strong>${zona.nombre_comun_especie}</strong> (${zona.especie_recomendada})<br/>Cupo estimado: ${zona.arboles_cupo_estimado} árboles<br/>Comuna: ${zona.comuna}${avisoViabilidad}`,
+              className: "deck-tooltip",
+            };
+          }
+
           if (layer?.id === "arboles-sau-clusters") {
             const cluster = object as { cantidad?: number };
             return {
@@ -528,7 +604,7 @@ export function MapCanvas() {
         <MapGL
           ref={mapRef}
           mapboxAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v11"
+          mapStyle={MAP_STYLE_URLS[mapStyle]}
           maxBounds={MEDELLIN_MAX_BOUNDS}
           reuseMaps
         >
@@ -555,12 +631,30 @@ export function MapCanvas() {
         </div>
       )}
 
-      {treesRevealed && comunaCentroid && cameraState && (
+      {treeMode === "comuna" && treesRevealed && comunaCentroid && cameraState && (
         <TreeInstances
           origin={comunaCentroid}
           cameraState={cameraState}
           points={treePoints}
           reducedMotion={reducedMotion}
+        />
+      )}
+
+      {selectedZonaSiembra && (
+        <ZonaSiembraDetailPanel
+          zona={selectedZonaSiembra}
+          onClose={() => setSelectedZonaSiembra(null)}
+          onVerEnMapaCompleto={() => {
+            const centroid = approximateCentroid(selectedZonaSiembra.geometry);
+            if (centroid) {
+              flyTo(
+                setViewState,
+                { longitude: centroid[0], latitude: centroid[1], zoom: 18.5, pitch: 0, bearing: 0 },
+                reducedMotion,
+              );
+            }
+            setMapStyle("satellite");
+          }}
         />
       )}
 

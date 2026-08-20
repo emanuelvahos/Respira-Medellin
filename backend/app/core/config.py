@@ -17,8 +17,14 @@ class Settings(BaseSettings):
     data_comunas_pm25_interpolado_meta: Path = Path("./data/comunas_pm25_interpolado_meta.csv")
     data_scores_ahp_altavista_historico: Path = Path("./data/scores_ahp_altavista_historico.csv")
     data_zonas_priorizadas_siembra: Path
+    data_auditoria_viabilidad_siembra: Path = Path("./data/auditoria_viabilidad_siembra.geojson")
+    data_fichas_especies: Path = Path("./data/fichas_especies.json")
+    data_diversificacion_especies_siembra: Path = Path(
+        "./data/diversificacion_especies_siembra.geojson"
+    )
     data_limite_catastral_comunas: Path
     data_inventario_zonas_verdes: Path
+    data_inventario_zonas_verdes_procesado: Path = Path("./data/zonas_verdes_procesado.geojson")
     data_solicitud_pm25_estaciones: Path
     data_sau_arboles_urbanos: Path
     data_salud_respiratoria_resumen_comuna: Path

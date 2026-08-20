@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MainContainer } from "@/components/layout/MainContainer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCards } from "@/components/dashboard/KpiCards";
 import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
@@ -109,18 +110,82 @@ function DashboardInner() {
   );
 }
 
+/**
+ * Fallback del límite Suspense de nivel de página (ver `DashboardClient`
+ * abajo) — reproduce la forma general del dashboard real (KPIs, gráficas,
+ * tarjetas), no un simple texto de una línea.
+ *
+ * Investigación real (docs/ESTADO_PROYECTO.md, "Corregir CLS del footer en
+ * /dashboard"): dar skeleton propio a cada componente individual (KpiCards,
+ * ArbolesSauStats, etc.) NO cambió el CLS medido en absoluto — porque
+ * ninguno de esos skeletons llegaba a pintarse antes de este salto. El
+ * fallback de este Suspense de nivel superior era literalmente un solo
+ * `<p>` de una línea: cuando `useSearchParams()` resolvía, TODO el
+ * contenido del dashboard (~6.845px de alto en el viewport móvil que usa
+ * Lighthouse) aparecía de golpe en un único salto — el footer entero
+ * saltando de golpe era ese evento, no la suma de los saltos pequeños por
+ * componente. Este esqueleto de página completa es el fix real.
+ */
+function DashboardPageSkeleton() {
+  return (
+    <MainContainer className="space-y-8 py-8">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-full max-w-2xl" />
+          <Skeleton className="h-4 w-3/4 max-w-2xl" />
+        </div>
+        <Skeleton className="h-9 w-40 shrink-0" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-4 w-32" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="mt-2 h-3 w-40" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-5 w-56" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-72 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {Array.from({ length: 4 }).map((_, i) => (
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-5 w-72" />
+            <Skeleton className="mt-2 h-4 w-full max-w-md" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-56 w-full" />
+          </CardContent>
+        </Card>
+      ))}
+    </MainContainer>
+  );
+}
+
 export function DashboardClient() {
   // `useSearchParams` (dentro de DashboardInner) requiere un límite
   // Suspense explícito: sin él, Next.js falla el build estático de esta
   // ruta ("useSearchParams() should be wrapped in a suspense boundary").
   return (
-    <Suspense
-      fallback={
-        <MainContainer className="py-8">
-          <p className="text-sm text-muted-foreground">Cargando dashboard…</p>
-        </MainContainer>
-      }
-    >
+    <Suspense fallback={<DashboardPageSkeleton />}>
       <DashboardInner />
     </Suspense>
   );

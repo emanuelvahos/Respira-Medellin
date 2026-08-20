@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MethodologyNote } from "@/components/dashboard/MethodologyNote";
 import {
-  useComunas,
+  useComunasNombres,
   useResumenComuna,
   useArbolesResumenComuna,
   useSaludResumenComuna,
@@ -40,7 +40,7 @@ function useSeleccionInicial(): string | null {
 }
 
 export function ComunaComparator() {
-  const comunasQuery = useComunas();
+  const comunasQuery = useComunasNombres();
   const resumenQuery = useResumenComuna();
   const arbolesQuery = useArbolesResumenComuna();
   const saludQuery = useSaludResumenComuna();
@@ -53,10 +53,7 @@ export function ComunaComparator() {
   ]);
 
   const nombres = useMemo(
-    () =>
-      (comunasQuery.data?.features ?? [])
-        .map((f) => f.properties.nombre)
-        .sort((a, b) => a.localeCompare(b)),
+    () => [...(comunasQuery.data ?? [])].sort((a, b) => a.localeCompare(b)),
     [comunasQuery.data],
   );
 

@@ -555,6 +555,578 @@ automatización del navegador). Se solicitó al usuario medirlo manualmente
 de la Fase 6; **pendiente de actualizar este documento con el número real**
 una vez lo confirme.
 
+### Diagnóstico de rendimiento 2026-08-18 — modo "Ciudad completa" en `/mapa`
+
+Investigación disparada por un reporte de lentitud general y un caso concreto:
+zoom a nivel de calle en modo "Ciudad completa" (`TreeModeSelector`) se siente
+lento. Metodología: medición real (curl con timing, `pnpm run lighthouse`
+contra el build de producción, `pnpm build` para el reporte de bundle), no
+inspección de código sola. La revisión de código previa (misma fecha) ya
+había confirmado que `useMemo` en las capas de deck.gl, `@lru_cache` en
+`data_loader.py` y el cap de 3000 puntos en `puntos_en_bbox` ya existen; esta
+sección añade los números que faltaban.
+
+**Limitación de esta corrida**: la extensión de Chrome (`claude-in-chrome`) no
+estaba conectada en este entorno, así que no se pudo capturar el Network real
+del gesto de zoom en vivo (cuántas requests a `/api/arboles/puntos` dispara un
+zoom continuo hasta calle, con qué timing exacto). Queda pendiente para quien
+tenga la extensión conectada. Lo que sí se confirmó por código (ver revisión
+previa) es que el trigger es el evento `moveend` de Mapbox — que dispara una
+vez por gesto completo, no en cada tick de `move`/`zoom` — así que la
+hipótesis de "request sin debounce en cada tick" no tiene soporte en el
+código tal cual está.
+
+**1. Backend — tiempos reales con `curl -w "%{time_total}"` (bbox de zoom de
+calle en el centro de Medellín, `min_lon=-75.5720&min_lat=6.2400&max_lon=-75.5620&max_lat=6.2480`):**
+
+| Endpoint | Local (cold, primera carga del dataset) | Local (warm, `lru_cache` caliente) | Render (warm) |
+|---|---|---|---|
+| `/api/arboles/puntos` (bbox calle) | 1.13 s | **0.16 s** — payload 333 KB | 0.76–1.24 s — payload 333 KB |
+| `/api/zonas-verdes` (23 MB completo) | **55.0 s** | 1.83 s (payload sigue siendo 23 MB) | **502 en ~1 s** (ver hallazgo abajo) |
+
+- `arboles/puntos` con `lru_cache` caliente responde en 160 ms local y bajo
+  1.3 s contra Render — la diferencia Local↔Render (~0.6–1 s) es latencia de
+  red pura, no cómputo: el backend de Render **no** está en cold-start ahora
+  mismo (si lo estuviera, el timeout de 90 s del propio curl lo habría hecho
+  evidente, como sí pasó con zonas-verdes). Esto descarta el "cold start de
+  Render de 30-50 s documentado en otro lado" como causa del caso reportado,
+  al menos para este endpoint.
+- **Hallazgo nuevo, no relacionado con el caso reportado pero real**:
+  `/api/zonas-verdes` devuelve **502 en producción (Render)**. La primera
+  carga local del mismo endpoint tarda 55 s en construir el DataFrame/GeoJSON
+  de 23 MB desde cero (una sola vez, gracias a `@lru_cache` — la segunda
+  petición local baja a 1.8 s), pero en el plan gratuito de Render esa misma
+  construcción parece exceder el timeout del proxy/worker antes de completarse,
+  y el 502 se sirve casi instantáneo en reintentos (probablemente cacheado por
+  el borde de Render, no reintentado contra la app). Como la capa de zonas
+  verdes está apagada por defecto (confirmado en la sección de Lighightouse de
+  Fase 6 arriba), esto no afecta la carga inicial de `/mapa`, pero si un
+  usuario la activa en producción, probablemente falla. **No corregido en esta
+  sesión** — está fuera del alcance del caso reportado (modo "Ciudad completa"
+  de árboles) y merece su propia investigación (¿subir a un plan con más
+  memoria/timeout, paginar la respuesta, o precomputar y servir el GeoJSON
+  desde almacenamiento estático?).
+
+**2. Lighthouse — `pnpm run lighthouse` contra el build de producción real
+(`pnpm build && pnpm start`), apuntando `NEXT_PUBLIC_API_URL` a Render
+(`.env.local` tal cual está en el repo):**
+
+| Página | Performance (Fase 6, 2026-08-04) | Performance (2026-08-18) | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|
+| `/` | 36 | **42** | 96 | 77 | 100 |
+| `/mapa` | 39 | **32** | 97 | 77 | 100 |
+| `/dashboard` | 61 | **20** | 100 | 77 | 100 |
+
+`/` mejoró levemente; `/mapa` bajó 7 puntos; `/dashboard` cayó fuerte, de 61 a
+20. Mirando los audits crudos de esta corrida:
+
+- `/dashboard`: LCP 10.2 s, TBT 5,380 ms, CLS 0.343 (antes no reportado en el
+  doc de Fase 6). El salto de score no tiene una causa de código identificada
+  en esta sesión — no se tocó `/dashboard` en cambios recientes del repo
+  (los commits recientes son sobre el mapa y Sentry). Candidatos sin
+  confirmar: latencia real de Render sirviendo los datos de los gráficos
+  (`ranking-comunas`, `salud-resumen-comuna`, etc. — varias requests
+  secuenciales a un backend en Ohio/Oregon desde esta máquina), o ruido del
+  entorno local (el propio doc de Fase 6 ya documentó interferencia de
+  Kaspersky inflando TBT en local). No se puede distinguir sin repetir la
+  corrida en un entorno limpio o contra el backend local — **queda como
+  hallazgo abierto, no como regresión confirmada de código**.
+- `/mapa`: LCP 13.9 s, TBT 14,950 ms, TTI 26.2 s — igual de imposible de achacar
+  a un cuello de botella específico del modo "Ciudad completa" (Lighthouse
+  audita la carga inicial de la página, no el gesto de zoom del caso
+  reportado; el modo árboles no está activo por defecto). "Reduce unused
+  JavaScript" (~1 MB) y "Avoid enormous network payloads" (5.2 MB total)
+  siguen siendo los mismos issues estructurales ya documentados en Fase 6
+  (mapbox-gl + deck.gl + three.js cargados de forma inmersiva a propósito).
+- Nuevo en las tres rutas: **"Browser errors were logged to the console"**
+  (Best Practices, score 0) — no estaba en el reporte de Fase 6. No se
+  investigó el contenido exacto del error en esta sesión (sin Chrome
+  conectado no se pudo leer la consola en vivo) — queda pendiente.
+
+**3. Bundle / code-splitting (`pnpm build`, Next 16.2.12 + Turbopack):**
+
+Build en modo Turbopack de este Next.js ya no imprime la tabla de tamaño por
+ruta (`First Load JS`) que sí mostraba Webpack — no hay números comparables
+directos contra un baseline de Fase 6 con este comando. Verificado en su
+lugar por grep + inspección de `.next/static/chunks/`:
+
+- Los únicos `next/dynamic(...)` en el árbol de componentes siguen siendo
+  `src/components/landing/HomeClient.tsx` y `src/components/map/MapaClient.tsx`
+  — son los que cargan `MapCanvas` (mapbox-gl + deck.gl + three.js). No se
+  coló ningún import estático nuevo de esas libs en código compartido fuera de
+  los archivos ya esperados (`MapCanvas.tsx`, `layers/*.ts`, `TreeInstances.tsx`,
+  `flyTo.ts`, y los componentes de gráficos de `/dashboard` que importan
+  `recharts` directamente, que es el patrón ya documentado). El code-splitting
+  por ruta sigue intacto.
+- El chunk JS más grande generado es de **1.83 MB** (`.next/static/chunks/`,
+  vendor de mapbox-gl/deck.gl/three), seguido de uno de 1.41 MB — consistente
+  con "Avoid enormous network payloads: 5.2 MB total" que reportó Lighthouse
+  para `/mapa`.
+
+**Conclusión y decisión — no se aplicó ninguna de las 4 optimizaciones
+candidatas del prompt original:**
+
+- **Debounce de zoom**: descartado por código — `moveend` ya no dispara por
+  tick.
+- **Memoización de capas deck.gl**: ya existe, confirmada intacta tras los
+  cambios de modo dual.
+- **Caché backend**: ya existe (`@lru_cache` en 13+ loaders); el 502 de
+  zonas-verdes en Render es un problema de infraestructura/timeout del plan
+  gratuito, no de falta de caché — cachear más no lo arregla, porque el
+  cómputo ya está cacheado y el problema es el primer cómputo en frío bajo el
+  límite de tiempo de Render.
+- **Bajar el límite de puntos en "Ciudad completa"**: sin poder capturar el
+  Network real del gesto de zoom (Chrome no conectado), no hay evidencia de
+  que el cuello de botella percibido sea el repintado de buffers WebGL de
+  deck.gl con 3000 puntos — el payload (333 KB) y el tiempo de respuesta
+  cacheado (160 ms local) no sugieren que sea ahí. Bajar el límite sin esa
+  evidencia violaría la restricción explícita de "no reduzcas volumen/calidad
+  de datos hasta agotar lo demás primero, y no optimices sin evidencia".
+
+**Siguiente paso recomendado, no ejecutado en esta sesión**: repetir el punto
+2 del diagnóstico (captura de Network en vivo del gesto de zoom, con la
+extensión de Chrome conectada) para confirmar o descartar la hipótesis de
+costo de repintado WebGL, y decidir desde ahí si el límite de puntos en
+"Ciudad completa" necesita bajar. Investigar aparte el 502 de
+`/api/zonas-verdes` en Render (fuera del alcance del caso reportado). Repetir
+la corrida de Lighthouse de `/dashboard` contra el backend local (sin latencia
+de Render) para aislar si la caída de 61→20 es red o código.
+
+### Seguimiento 2026-08-19 — los dos pendientes de la Fase C
+
+Con la extensión de Chrome conectada, se resolvieron los dos pendientes
+dejados arriba.
+
+**1. Captura de Network en vivo del gesto de zoom en "Ciudad completa"**
+(`pnpm build && pnpm start`, backend real de Render, `claude-in-chrome`
+navegando `/mapa`, activando "Ciudad completa" y haciendo zoom hasta nivel
+de calle):
+
+- Se confirma por comportamiento real, no solo por código: cada gesto de
+  zoom/pan completo (una vez que la cámara se asienta, `moveend`) dispara
+  **exactamente un** request a `/api/arboles/puntos` con el bbox del
+  viewport en ese momento — no uno por tick de scroll ni un request
+  duplicado por bbox idéntico. Dos gestos consecutivos (p. ej. seleccionar
+  una comuna con doble-click y luego ajustar el zoom con scroll) producen
+  dos requests, cada uno con un bbox **distinto** (verificado comparando
+  hash de la query string de cada request vía `performance.getEntriesByType`),
+  consistente con dos `moveend` reales, no con un fetch duplicado.
+- **Nota sobre un falso positivo encontrado primero**: en `pnpm dev` (no en
+  el build de producción) sí se observó `/api/arboles/puntos` disparado dos
+  veces con el bbox **idéntico**, ~100 ms aparte. Se investigó y es
+  `reactStrictMode: true` (`next.config.ts`) — React vuelve a invocar
+  efectos dos veces solo en desarrollo para detectar side-effects impuros,
+  nunca en producción. Repetir la misma secuencia contra `pnpm start` (build
+  de producción real, lo que corre en Render) no mostró el duplicado. No es
+  un bug real de cara al usuario — quede documentado para que nadie lo
+  vuelva a investigar creyendo que es nuevo.
+- **Tamaño/tiempo real por request** (medido con `curl` contra Render para
+  los mismos bbox observados en el navegador):
+  - `/api/arboles/clusters` (vista de ciudad completa, zoom < 15): **15 KB,
+    2.24 s**.
+  - `/api/arboles/puntos` (bbox de calle en una zona densa de El Poblado/La
+    Candelaria, cerca del cap de 3000 puntos — banner "se muestran 3000
+    máx." visible en el mapa): **682 KB, 1.21 s**. Compatible con el rango
+    333 KB–700 KB ya documentado arriba según densidad de árboles de la
+    zona.
+  - Ningún request individual se acerca a un problema de timeout — el
+    cuello de botella de UX percibido, si existe, no está en el network.
+- **Conclusión**: no hay evidencia de requests redundantes ni de payloads
+  desproporcionados causando la lentitud percibida en "Ciudad completa". La
+  hipótesis de costo de repintado WebGL (deck.gl recreando buffers con hasta
+  3000 puntos) sigue sin confirmarse ni descartarse — esta captura de
+  Network no mide FPS/tiempo de frame, solo tráfico HTTP. Si se quiere
+  cerrar esa pregunta, el siguiente paso sería perfilar con el panel
+  Performance de Chrome DevTools durante el gesto de zoom, no Network.
+
+**2. Segunda corrida de `pnpm run lighthouse`** (mismo setup: `pnpm build &&
+pnpm start`, `NEXT_PUBLIC_API_URL` apuntando a Render vía `.env.local`, sin
+tocar código entre corridas):
+
+| Página | Fase 6 (2026-08-04) | 2026-08-18 | 2026-08-19 (esta corrida) |
+|---|---|---|---|
+| `/` | 36 | 42 | **28** |
+| `/mapa` | 39 | 32 | **29** |
+| `/dashboard` | 61 | 20 | **15** |
+
+La caída de `/dashboard` **no fue ruido de la medición anterior** — se
+repite, y en esta corrida incluso bajó un poco más (20→15), no rebotó hacia
+61. Las otras dos páginas también bajaron frente al 2026-08-18, lo que
+apunta a una causa compartida entre las tres rutas (más consistente con
+variabilidad de esta máquina/red hacia Render que con algo específico del
+código de `/dashboard` — ninguna de las tres tiene commits recientes propios
+que expliquen una regresión de código). **Sigue sin ejecutarse** el paso ya
+recomendado de repetir Lighthouse contra el backend local (sin latencia de
+Render) para aislar definitivamente red vs. código — con dos corridas ya
+mostrando la misma caída fuerte y consistente, ese aislamiento es ahora más
+urgente que antes de descartarlo como ruido.
+
+### Fase D (2026-08-19) — Auditoría de viabilidad de zonas de siembra
+
+**Hallazgo de calidad de datos.** Un usuario reportó zonas de siembra
+recomendadas (`zonas_priorizadas_siembra.geojson`) cayendo sobre canchas o
+parques. Se investigó y se confirmó: el pipeline original filtra por
+`cober_dom` (Grama/Tierra) y excluye `categoria` privada, pero nunca miró
+`subcategoria` (Plaza/Plazoleta/Plazuela/Parqueaderos) ni
+`infraestructura`/`equipamiento` (nombre del predio, p. ej. "Unidad
+Deportiva Atanasio Girardot") — dos columnas del inventario real de
+GeoMedellín que sí distinguen una cancha de una zona verde real. **Nota**:
+se descartó primero la hipótesis de que el pipeline usaba un dataset menos
+detallado — es falsa; el script original ya usaba este mismo inventario
+como fuente (verificado: las 1.648 zonas comparten `id_poligono` y
+`Shape_Area` exactos con su contraparte en el inventario completo).
+
+Se construyó una auditoría por overlay espacial
+(`backend/scripts/auditar_viabilidad_siembra.py`, metodología completa en
+`backend/README.md` sección "Auditoría de viabilidad de zonas de siembra")
+que **NO modifica** `zonas_priorizadas_siembra.geojson` — marca cada zona
+con `viabilidad_auditada` (`consistente` | `posible_no_viable` |
+`sin_solape_con_inventario_real`), servido como capa adicional que
+`/api/siembra/zonas/geojson` inyecta por `id_poligono`.
+
+| `viabilidad_auditada` | Zonas | % |
+|---|---|---|
+| `consistente` | 1.514 | 91.9% |
+| `posible_no_viable` | 134 | 8.1% |
+| `sin_solape_con_inventario_real` | 0 | 0.0% |
+
+**8.1% de las zonas recomendadas** se solapan con infraestructura
+deportiva/recreativa dura o con subcategoría de plaza/plazoleta —
+principalmente dentro de la Unidad Deportiva Atanasio Girardot (56 zonas) y
+la Unidad Deportiva de Belén (22 zonas). Estas zonas **no se eliminaron ni
+se excluyeron**: la decisión de qué hacer con cada una queda para revisión
+humana de la Secretaría, no automatizada (restricción explícita del
+prompt). En el mapa (`/mapa`), estas zonas se ven con borde rojo grueso (sin
+ocultar el relleno) y, al hacer click, un panel explica el motivo y ofrece
+un atajo "Ver en satelital" que cambia el estilo del mapa y centra la
+cámara ahí para verificar a simple vista.
+
+**Nota sobre el toggle satelital**: el prompt de Fase D asumía que ya
+existía "de una fase anterior" — se verificó (código + `git log`) que no
+existía ningún estilo satelital ni toggle en el proyecto hasta esta sesión;
+se construyó desde cero (`mapStore.ts`: `mapStyle`/`toggleMapStyle`,
+`MapLayerToggles`) en vez de solo "confirmarlo".
+
+### Fase E1 (2026-08-19) — Excluir zonas no viables de la recomendación activa
+
+**Cambio de comportamiento, no de datos**: hasta la Fase D, las 134 zonas
+marcadas `posible_no_viable` por la auditoría (se solapan con cancha/plaza/
+unidad deportiva real) se mostraban en el mapa igual que las demás, solo con
+borde rojo de advertencia — decisión deliberada en su momento para no
+alterar el output del pipeline original sin instrucción explícita. En esta
+sesión el **dueño del proyecto tomó esa decisión explícitamente**: que las
+134 zonas dejen de presentarse como recomendación activa por defecto.
+
+**No es un cambio automático del sistema ni una decisión tomada por
+Claude** — se documenta así porque es importante que quede claro que la
+exclusión respondió a una instrucción directa del dueño del proyecto, no a
+una inferencia de "esto probablemente es lo que quieren". El principio de
+"no ocultar, marcar" de la Fase D se mantiene: los datos en disco
+(`zonas_priorizadas_siembra.geojson`, `auditoria_viabilidad_siembra.geojson`)
+no cambiaron un byte — esto es un filtro de presentación en
+`zonasSiembraLayer.ts`, reversible con un toggle.
+
+**Qué cambió**:
+- `createZonasSiembraLayer` (`zonasSiembraLayer.ts`) recibe un parámetro
+  `mostrarDescartadas` (default `false`): cuando es `false`, filtra las
+  features `posible_no_viable` antes de pasarlas a deck.gl — no llegan ni a
+  renderizarse.
+- Nuevo toggle **"Mostrar zonas descartadas (auditoría)"** en
+  `MapLayerToggles`, anidado bajo "Zonas priorizadas de siembra" (solo
+  visible si esa capa está activa) — apagado por defecto. Al activarlo,
+  las 134 zonas reaparecen con el mismo tratamiento visual ya construido en
+  la Fase D y la miniatura satelital (borde rojo, tooltip de aviso, panel
+  con miniatura al click): no se duplicó ninguna lógica, el toggle solo
+  controla qué llega al array de features de la capa.
+- Los conos 3D "recomendados" de Respiro Urbano (`MapCanvas.tsx`, dentro de
+  `treePoints`) respetan el mismo filtro/toggle — son otra representación
+  visual de la misma recomendación, no tenía sentido excluir las zonas del
+  mapa 2D pero seguir mostrando sus conos 3D.
+- Nota de conteo en `MapLayerToggles`: "N zonas recomendadas (M
+  adicionales descartadas por auditoría de terreno — activa este toggle
+  para verlas)", calculada en el propio frontend desde el GeoJSON que ya
+  alimenta el mapa — no esconde el hallazgo, solo dice claramente que esas
+  M no forman parte de la recomendación activa por defecto.
+- `MapLegend.tsx` actualizado: aclara que el borde rojo ya no es visible
+  por defecto y cómo activarlo.
+
+**Qué NO cambió (confirmado explícitamente)**: `resumen.n_zonas_disponibles`
+en `ComunaDetailPanel` (el "Zonas priorizadas" del panel de comuna) sigue
+viniendo tal cual del resumen AHP del backend
+(`resumen_recomendacion_por_comuna.csv` / las fuentes complementarias) — es
+un dato del pipeline original, calculado en el servidor, sin relación con
+qué esté visible en el mapa del cliente en un momento dado. El comparador
+AHP (`/api/siembra/ranking-comunas`) tampoco se tocó: sigue usando
+`recomendacion_siembra_por_zona.csv` completo en el backend, ajeno a este
+filtro de presentación del mapa. La nota de conteo nueva vive en
+`MapLayerToggles` precisamente para no mezclarse con esos números del
+backend ni sugerir que están relacionados.
+
+### Fase E2 (2026-08-19) — Panel rico de zona de siembra (área, especie, justificación)
+
+Al hacer click en una zona de siembra viable, el mapa ahora abre un panel
+(`ZonaSiembraDetailPanel`, mismo lugar/estilo que el panel de zona dudosa de
+la Fase D) con: **área** real (m² o ha, lo que sea más legible), **especie
+recomendada**, **por qué esa especie** (rango altitudinal y tipo de suelo
+reales de su ficha botánica) y **beneficio esperado** (individuos
+recomendados × eficiencia de mitigación de PM2.5 — cualitativa, no un
+número inventado).
+
+**Fuente de datos real**: el catálogo `ESPECIES` embebido en el script
+original `Visualizacion-de-datos/scripts/bloque_2/bloque2_recomendador_siembra.py`
+(la fuente que el modelo AHP ya usa para elegir especie por zona), cruzado
+con las fichas scrapeadas del Catálogo de Flora del Valle de Aburrá (EIA) —
+todo consolidado en `backend/data/fichas_especies.json`. Nuevo endpoint
+`GET /api/siembra/zona/{id}/detalle`. Metodología completa (fórmula de
+individuos recomendados, por qué NO se calcula un número de PM2.5
+mitigado) en `backend/README.md`, sección "Detalle de zona de siembra
+(Fase E2)".
+
+**Hallazgo de cobertura**: 5 especies documentadas (todo el catálogo
+`ESPECIES` del pipeline). De ellas, **3 de 3 (100%)** son la especie
+recomendada de alguna zona real (Zygia longifolia, Calliandra
+haematocephala, Inga densiflora — 1.648 zonas en total); las otras 2
+(Bauhinia picta, Retrophyllum rospigliosii) solo aparecen como especies
+alternativas, nunca como recomendación principal. Cobertura completa: no
+hay ninguna zona activa cuyo panel deba mostrar "sin ficha disponible" hoy
+— pero el panel maneja ese caso explícitamente (`ficha_especie: null`) por
+si el pipeline recomienda una especie nueva sin ficha en el futuro.
+
+**Restricción respetada explícitamente**: no existe en ninguna fuente real
+del proyecto un valor numérico de PM2.5 mitigado por individuo (µg/año) —
+solo la calificación cualitativa `pm25_eficiencia` (Alta/Media/Baja) que el
+propio pipeline deriva de la densidad de follaje. Se investigó y se
+descartó explícitamente inventar una fórmula de µg × cupo de árboles: el
+panel muestra la calificación cualitativa real en vez de un número
+inexistente.
+
+### Fase E3 (2026-08-19) — Diversificación de especies por zona (exploratoria)
+
+Medimos, con los mismos criterios reales que usa el pipeline
+(`especie_para_zona()`: rango altitudinal + `categoria` de la zona — nunca
+tipo de suelo, que no es evaluable por falta de dato comparable por zona),
+cuántas de las 5 especies documentadas (Fase E2) son compatibles con cada
+una de las 1.648 zonas — no solo la que el pipeline ya eligió como
+"óptima". Metodología completa, incluyendo por qué se usó la constante de
+altitud única del pipeline (`ALTITUD_MEDELLIN=1495`) en vez de inventar
+altitud por zona, en `backend/README.md`, sección "Diversificación de
+especies por zona (Fase E3)".
+
+**Hallazgo principal**: 62.3% de las zonas (1.027 de 1.648) tienen 2+
+especies compatibles — mucho más margen del que anticipaba la premisa
+pesimista del prompt original. Pero el cuello de botella real resultó ser
+otro: 881 de esas 1.027 zonas tienen menos de 10 individuos de cupo (umbral
+mínimo documentado para que diversificar tenga sentido ecológico) y quedan
+excluidas. Resultado final: **solo 146 zonas (8.9%) reciben una propuesta
+de diversificación real** (`backend/data/diversificacion_especies_siembra.geojson`,
+reparto equitativo con método de mayor resto, documentado en el README).
+
+**Recomendación explícita entregada**: NO priorizar la Fase E4 (más fuentes
+de especies) todavía — la escasez de especies documentadas no es hoy el
+cuello de botella real (ya hay 2+ opciones en el 62.3% de las zonas con
+solo 5 especies). Si se quiere ampliar el alcance de esta función, revisar
+primero si el umbral de 10 individuos es demasiado conservador (decisión de
+la Secretaría, no técnica) antes de invertir en documentar más especies.
+
+**Frontend**: en el panel de zona (`ZonaSiembraDetailPanel`), sección
+plegable "Ver propuesta de diversificación" — solo visible cuando aplica,
+etiquetada explícitamente como "Propuesta exploratoria de este proyecto, no
+la recomendación oficial del modelo original". Si no aplica, muestra el
+motivo real (solo 1 especie compatible, o cupo insuficiente) en vez de
+ocultar la sección sin explicación. `zonas_priorizadas_siembra.geojson` y
+`recomendacion_siembra_por_zona.csv` sin cambios (verificado por hash).
+
+### Fase E4 (2026-08-19) — Biodiversidad de fauna (GBIF/SiB Colombia): EVALUADA, pospuesta conscientemente
+
+**Estado: no integrada — decisión explícita del dueño del proyecto, no un
+olvido.** Igual que con el estrato socioeconómico (ver "Limitaciones
+conocidas" arriba), esta idea se investigó con datos reales antes de
+decidir, en vez de descartarla o aceptarla sin evidencia. Queda este
+registro para que nadie la vuelva a investigar desde cero creyendo que
+nunca se exploró.
+
+**Qué se investigó**: se consultó en vivo la API pública de GBIF
+(`api.gbif.org`, sin token, sin costo) contra el mismo bounding box de
+Medellín ya usado en el proyecto. Hallazgos reales:
+- 732.943 registros de aves, 86.874 de insectos, 18.022 de mamíferos con
+  coordenadas dentro del área de la ciudad.
+- 76,6% de los registros de aves vienen de eBird (observación ciudadana
+  vía app) — sesgo real confirmado: más registros donde hay más
+  observadores (parques y senderos populares), no necesariamente donde hay
+  más biodiversidad real.
+- Hallazgo positivo real: dos datasets institucionales confiables y
+  recientes (2017-2025) sí existen — uno publicado por la propia
+  **Secretaría de Medio Ambiente del Distrito de Medellín** (55.920
+  registros de aves con coordenadas reales) y otro del **Área Metropolitana
+  del Valle de Aburrá** sobre conectividad ecológica. SiB Colombia resultó
+  ser el nodo GBIF que ya endosa estos datasets colombianos — consultarlo
+  aparte de GBIF habría sido redundante, no complementario.
+- **Ninguna fuente disponible (GBIF, SiB Colombia, ni las 5 fichas de
+  especies de la Fase E2) documenta una relación ecológica específica
+  entre una especie de árbol recomendada y la fauna que se beneficiaría de
+  ella** — son repositorios de avistamientos, no de relaciones
+  ecológicas. Presentar esa relación causal en el panel habría sido
+  narrativa inventada, no un dato real.
+
+**Por qué se pospone, no se descarta**: el dueño del proyecto determinó que
+no es accionable para el enfoque central del proyecto (mitigación de
+PM2.5) — agregaría una fuente externa más para mantener (recencia,
+disponibilidad de la API, sesgo de observación que hay que seguir
+explicando) sin cambiar ninguna decisión real que el sistema ya soporta
+(dónde sembrar, qué especie, cuánta prioridad por comuna). El reporte
+completo de la exploración (metodología, números exactos por dataset,
+comparación GBIF vs. SiB Colombia, y qué se necesitaría para reabrirlo)
+quedó entregado en la conversación de esta fase — si en el futuro se quiere
+retomar, el punto de partida ya está resuelto: no haría falta repetir la
+investigación, solo decidir el alcance de integración (comuna, no zona
+individual, para no sobre-precisar un dato con sesgo de observación
+conocido).
+
+### Aislar la caída de Lighthouse en `/dashboard` (2026-08-19) — 61 → 20 → 15
+
+**Pregunta que este trabajo respondió**: la caída sostenida de Performance
+en `/dashboard` (y en menor medida `/` y `/mapa`) en dos corridas
+consecutivas contra Render, ¿era latencia/variabilidad de red hacia el
+backend remoto, o una regresión real de código? Nunca se había aislado la
+variable — este trabajo lo hizo con evidencia real, no repitiendo la misma
+corrida contra el mismo backend remoto una tercera vez.
+
+**Método**: backend local (`uvicorn`, sin Render) + frontend en modo
+producción real (`pnpm build && pnpm start`, no `pnpm dev`) +
+`NEXT_PUBLIC_API_URL=http://localhost:8000` temporal + 3 corridas de
+`pnpm run lighthouse` seguidas (no una sola).
+
+**Resultado — NO es (solo) latencia de red hacia Render**, contra la
+hipótesis de trabajo: 3 corridas locales dieron Dashboard **24, 25, 25** —
+prácticamente idéntico a la corrida más reciente contra Render (15) y muy
+lejos del baseline original (61). Si fuera solo latencia de red, el score
+local debería haber vuelto a acercarse a 61; no lo hizo, de forma
+consistente en las 3 corridas (sin ruido apreciable entre ellas).
+
+**Causa raíz real encontrada y corregida**: `ComunaComparator.tsx` (el
+comparador de comunas en `/dashboard`) llamaba a `useComunas()` —el mismo
+hook que usa el mapa— solo para leer `f.properties.nombre` de los 21
+polígonos. Ese endpoint (`/api/comunas`) devuelve la geometría completa de
+las 21 comunas: **3.495 KB, el recurso más pesado de toda la página**, más
+grande que todo el JavaScript junto. Se agregó
+`GET /api/comunas/nombres` (reutiliza el mismo loader cacheado, sin costo
+de cómputo adicional, solo descarta la geometría antes de responder — ver
+`backend/app/routers/comunas.py`) y se cambió `ComunaComparator` para
+usarlo. Verificado: el payload total de `/dashboard` bajó de 5.493 KB a
+1.898 KB (-65%), y el endpoint pesado (`/api/comunas`) desapareció por
+completo de las requests de esa página.
+
+**Hallazgo honesto — el fix no movió el score de Lighthouse** (25 → 25 en
+las 3 corridas post-fix): el ahorro de payload es real y vale la pena
+igual (menos datos para cualquier usuario real, especialmente en conexión
+lenta), pero no era el factor dominante del score específico de Lighthouse
+para esta página. Diagnóstico de qué sí domina, con evidencia:
+
+- **Kaspersky (antivirus local de esta máquina) inyecta un script en cada
+  página** que consume **2.134 ms de 6.147 ms de tiempo total de arranque
+  de scripts — 35%**. Esto ya se había mencionado como sospecha en el doc
+  de Fase 6 ("interferencia de Kaspersky inflando TBT en local"); esta
+  corrida lo cuantifica con precisión por primera vez. Es un artefacto del
+  entorno de medición de esta máquina — **no es código del proyecto ni
+  latencia de Render**, y no aparecería corriendo Lighthouse en CI o en una
+  máquina limpia.
+- **CLS real de 0.343** (score 0.32) causado por el `<footer>` de la
+  página, que se desplaza hacia abajo cuando el contenido de arriba
+  (tabla/gráficas con datos async) termina de cargar y crece. Es un
+  hallazgo real y potencialmente corregible (reservar altura o usar
+  skeletons mientras carga la tabla/gráficas), pero queda **fuera de
+  alcance de este prompt** — la instrucción explícita fue no optimizar
+  especulativamente más allá del culpable confirmado, y este es un segundo
+  hallazgo distinto, no la causa de la caída original que se pidió aislar.
+- Costo real de ejecución de JS del bundle principal (~2,8 s de scripting)
+  — esperable para un dashboard con `recharts` + varias fuentes de datos
+  renderizando tablas/gráficas, no investigado más a fondo en este prompt.
+
+**Conclusión para no repetir esta investigación desde cero**: la caída de
+61 a ~15-25 es real y reproducible, tanto contra Render como en local —
+**no es principalmente latencia de red** (se descarta con evidencia). Sí
+había una causa de código real y ya corregida (`/api/comunas` innecesario
+en `/dashboard`), pero no era la dominante para el número de Lighthouse en
+sí. El resto de la brecha se explica por un artefacto de esta máquina
+(Kaspersky, 35% del tiempo de arranque de scripts) y por un CLS real
+identificado pero no corregido en este prompt (footer desplazándose). Si se
+quiere seguir subiendo el score, el candidato más prometedor ahora es el
+CLS del footer, no más optimizaciones de payload — pero eso queda como
+decisión explícita para un prompt futuro, no una extensión no pedida de
+este.
+
+### Corregir CLS del footer en `/dashboard` (2026-08-19) — 0.343 → 0.000
+
+Continuación directa del hallazgo anterior: Lighthouse marcaba un CLS real
+de 0.343 en `/dashboard`, con el `<footer>` como único elemento
+responsable (`layout-shifts` audit, score 0.343 en un solo evento).
+
+**Primer intento — no funcionó, y eso también es información real**: se
+revisaron los 7 componentes de `/dashboard` que renderizan según
+`isLoading` (`KpiCards`, `Pm25BarChart`, `Pm25TrendChart`, `ArbolesSauStats`,
+`SaludRespiratoriaBarChart`, `Pm25SaludComparacion`, `ComunaComparator`,
+`ComunasTable`). Tres de ellos (`Pm25BarChart`, `Pm25TrendChart`,
+`SaludRespiratoriaBarChart`) ya reservaban la altura correcta (`h-72`/`h-64`
+igual en loading y con datos). Los otros tres sí tenían un salto real:
+`ArbolesSauStats` (una línea de 32px → tarjeta de 2 columnas), `Pm25SaludComparacion`
+(bloque de 48px → tarjeta con 2 listas de 8 filas) y `ComunasTable` (bloque
+de 256px → tabla con ~14 filas + buscador). Se les agregaron skeletons
+reales con `src/components/ui/skeleton.tsx` (primitivo nuevo, no existía en
+el proyecto — mismo patrón shadcn/ui que el resto de `components/ui/`),
+del mismo tamaño aproximado que su contenido final. **Medido después: CLS
+sin cambiar, 0.343 exacto** — la causa real estaba en otro lugar.
+
+**Causa raíz real**: `DashboardClient.tsx` envuelve toda la página en un
+único `<Suspense>` (necesario porque `useSearchParams()` lo exige) cuyo
+`fallback` era un solo `<p>Cargando dashboard…</p>` — una línea de texto.
+Cuando ese Suspense resuelve, TODO el contenido de la página
+(~6.845px de alto en el viewport móvil que usa Lighthouse por defecto)
+aparece de golpe en un único salto masivo — eso es lo que Lighthouse
+atribuía al `<footer>` (el elemento que más se mueve cuando todo lo de
+arriba aparece de una vez), y por eso ningún fix a nivel de componente
+individual lo tocaba: ninguno de esos componentes llega a pintar nada
+hasta después de que este Suspense de nivel superior ya resolvió.
+
+**Fix real**: se reemplazó el fallback de una línea por
+`DashboardPageSkeleton`, que reproduce la forma general de la página
+completa (título + KPIs en grid + 2 tarjetas de gráfica + 4 tarjetas
+genéricas), usando el mismo primitivo `Skeleton`. No necesita ser pixel
+perfecto — solo evitar el salto de "una línea de texto" a "6.845px de
+contenido real".
+
+**Resultado medido** (mismo método que el prompt anterior: backend local,
+`pnpm build && pnpm start`, 3 corridas de `pnpm run lighthouse` contra
+`http://localhost:8000`):
+
+| Corrida | CLS | Performance Dashboard |
+|---|---|---|
+| Antes del fix (3 corridas) | 0.343 / 0.343 / 0.343 | 24 / 25 / 25 |
+| Después del fix (3 corridas) | **0.000 / 0.000 / 0.000** | **41 / 42 / 41** |
+
+CLS eliminado por completo (0.343 → 0.000, muy por debajo del umbral
+"bueno" de Google de 0.1). El score de Performance de Dashboard también
+subió de forma consistente (~25 → ~41) — mejora real, no ruido, verificada
+en 3 corridas idénticas en ambos lados.
+
+**Kaspersky sigue interfiriendo, como en el prompt anterior — no se
+confunde con la mejora real**: el antivirus local de esta máquina sigue
+representando ~32% del tiempo total de arranque de scripts (2.165 ms de
+6.781 ms) en las corridas post-fix. La mejora de CLS y de Performance
+reportada arriba es adicional a ese ruido de entorno, no lo reemplaza — el
+score real en una máquina limpia o en CI sería más alto que el 41-42
+medido aquí.
+
+**Alcance en `/` y `/mapa`** (revisión rápida, no una auditoría nueva, tal
+como pedía el prompt): no se encontró un patrón comparable. `/mapa` es un
+canvas de altura fija (`h-[calc(100dvh-4rem)]`) con paneles
+`position: absolute` — no pueden empujar nada en el flujo del documento.
+`/` (landing) tiene una sección (`ScrollSection`, `min-h-screen`) donde el
+texto de un KPI cambia de "Cargando…" a una oración completa, pero la
+sección ya reserva pantalla completa de alto vía `min-h-screen` y el
+contenido inicia en `opacity: 0` (revelado por scroll) — no hay evidencia
+de un salto de página comparable al de `/dashboard`. No se tocó código en
+ninguna de las dos rutas.
+
 ## 3. Cómo correr todo desde cero
 
 ### Requisitos

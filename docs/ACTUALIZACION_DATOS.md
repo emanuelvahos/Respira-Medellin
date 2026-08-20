@@ -71,18 +71,39 @@ Detalle de cada una a continuación.
      verdes (mismo dataset usado en la descarga original, ver
      `backend/README.md` para el nombre exacto).
   2. Descargar como GeoJSON.
-  3. Reemplazar `backend/data/inventario_zonas_verdes.geojson`.
+  3. Reemplazar `backend/data/inventario_zonas_verdes.geojson` (el archivo
+     CRUDO, sin procesar).
   4. Confirmar que `app/models/zona_verde.py` (`ZonaVerdeInventarioProperties`,
      `extra="allow"`) sigue aceptando las columnas del nuevo archivo — si el
      portal cambió el esquema (columnas renombradas/eliminadas), revisar
-     también `load_inventario_zonas_verdes_geojson` en `data_loader.py`
+     también `procesar_zonas_verdes_geojson` en `data_loader.py`
      (usa `tipologia`, `categoria`, `cober_dom`, etc. explícitamente).
-  5. Correr `pytest` en `backend/` y `pnpm build` en el frontend para
+  5. **Correr `python backend/scripts/preprocesar_zonas_verdes.py`** —
+     regenera `backend/data/zonas_verdes_procesado.geojson` (reproyección +
+     simplify de los ~48k polígonos, ~10-15s). Este paso es obligatorio: el
+     endpoint `/api/zonas-verdes` sirve el archivo procesado directamente y
+     NUNCA reprocesa el crudo en tiempo de request (ver backend/README.md,
+     sección "Por qué /api/zonas-verdes sirve un archivo precomputado") —
+     olvidar este paso deja el mapa mostrando el inventario viejo aunque el
+     crudo ya se haya reemplazado.
+  6. **Correr `python backend/scripts/auditar_viabilidad_siembra.py`** —
+     regenera `backend/data/auditoria_viabilidad_siembra.geojson` (Fase D,
+     ver backend/README.md sección "Auditoría de viabilidad de zonas de
+     siembra"). También obligatorio si cambió el inventario: el campo
+     `viabilidad_auditada` que sirve `/api/siembra/zonas/geojson` queda
+     desincronizado en silencio si no se regenera. Corre en segundos (overlay
+     espacial de ~1.650 zonas contra el inventario).
+  7. Corre este mismo paso 6 también si lo que cambió es
+     `zonas_priorizadas_siembra.geojson` (sección 1, aunque esa fuente esté
+     fuera de alcance de refresco rutinario) — la auditoría cruza ambos
+     archivos, así que un cambio en cualquiera de los dos la invalida.
+  8. Correr `pytest` en `backend/` y `pnpm build` en el frontend para
      confirmar que nada rompe.
 - **Riesgo/esfuerzo**: medio. ~10-15 minutos, posible necesidad de cuenta
   en el portal según cómo esté configurada la descarga; el mayor riesgo no
   es el proceso de descarga sino un cambio de esquema no detectado (por
-  eso el paso 4 explícito arriba).
+  eso el paso 4 explícito arriba) o el olvido de los pasos 5-6 (regenerar
+  el archivo procesado y la auditoría de viabilidad).
 
 ## 3. Árboles urbanos SAU (ArcGIS REST, Alcaldía de Medellín)
 

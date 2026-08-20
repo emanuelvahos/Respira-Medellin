@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MethodologyNote } from "@/components/dashboard/MethodologyNote";
 import { useResumenComuna, useSaludResumenComuna } from "@/lib/api/queries";
 
@@ -32,10 +33,32 @@ export function Pm25SaludComparacion() {
   }, [saludQuery.data]);
 
   if (resumenQuery.isLoading || saludQuery.isLoading) {
+    // Misma estructura que la tarjeta real (header, nota de metodología, dos
+    // columnas de TOP_N filas) — sin esto el salto de una tarjeta de 48px a
+    // esta era uno de los mayores contribuyentes al CLS de /dashboard.
     return (
       <Card>
-        <CardContent className="py-6">
-          <div className="h-48 animate-pulse rounded-md bg-muted" />
+        <CardHeader>
+          <Skeleton className="h-5 w-64" />
+          <Skeleton className="mt-2 h-4 w-full max-w-md" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-14 w-full rounded-md" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, col) => (
+              <div key={col}>
+                <Skeleton className="mb-2 h-4 w-44" />
+                <ol className="space-y-1.5">
+                  {Array.from({ length: TOP_N }).map((_, row) => (
+                    <li key={row} className="flex items-center justify-between gap-2">
+                      <Skeleton className="h-3.5 w-36" />
+                      <Skeleton className="h-3.5 w-14" />
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     );

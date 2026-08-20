@@ -7,6 +7,7 @@ from app.models.siembra import (
     RankingComunaItem,
     RecomendacionSiembraZona,
     ResumenRecomendacionComuna,
+    ZonaSiembraDetalle,
 )
 from app.models.zona_verde import FeatureCollection, ZonaPriorizadaSiembraProperties
 from app.services.ahp import (
@@ -17,6 +18,8 @@ from app.services.ahp import (
     calcular_ranking_comunas,
 )
 from app.services.data_loader import (
+    load_diversificacion_especies_por_id,
+    load_fichas_especies,
     load_integracion_pm25_arboles,
     load_recomendacion_siembra_zona,
     load_resumen_recomendacion_comuna,
@@ -46,6 +49,48 @@ def get_zonas_siembra_geojson() -> FeatureCollection[ZonaPriorizadaSiembraProper
     """Geometría de las zonas verdes priorizadas para siembra (GeoJSON, WGS84)."""
     raw = load_zonas_priorizadas_siembra_geojson()
     return FeatureCollection[ZonaPriorizadaSiembraProperties].model_validate(raw)
+
+
+@router.get("/zona/{id_poligono}/detalle", response_model=ZonaSiembraDetalle)
+def get_zona_siembra_detalle(id_poligono: int) -> ZonaSiembraDetalle:
+    """Detalle real de una zona de siembra (Fase E2): área, especie
+    recomendada y su ficha botánica real (rango altitudinal, tipo de suelo,
+    eficiencia de mitigación de PM2.5 cualitativa, función, fuentes) — para
+    el panel de "por qué esta especie" del mapa. Ver backend/README.md,
+    sección "Detalle de zona de siembra (Fase E2)" para qué se calcula y qué
+    NO se calcula (no existe un valor numérico real de PM2.5 mitigado por
+    individuo en ninguna fuente del proyecto)."""
+    zona = next((z for z in load_recomendacion_siembra_zona() if z.id_poligono == id_poligono), None)
+    if zona is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No existe zona de siembra con id_poligono={id_poligono}.",
+        )
+    ficha = load_fichas_especies().get(zona.especie_recomendada)
+    diversificacion = load_diversificacion_especies_por_id().get(zona.id_poligono)
+    return ZonaSiembraDetalle(
+        id_poligono=zona.id_poligono,
+        comuna=zona.comuna,
+        categoria=zona.categoria,
+        cobertura_actual=zona.cobertura_actual,
+        area_m2=zona.area_m2,
+        area_ha=zona.area_ha,
+        especie_recomendada=zona.especie_recomendada,
+        nombre_comun_especie=zona.nombre_comun_especie,
+        arboles_cupo_estimado=zona.arboles_cupo_estimado,
+        separacion_minima_m=zona.separacion_minima_m,
+        eficiencia_pm25=zona.eficiencia_pm25,
+        especies_alternativas=zona.especies_alternativas,
+        fuentes_botanicas=zona.fuentes_botanicas,
+        ficha_especie=ficha,
+        diversificacion_disponible=bool(diversificacion and diversificacion["diversificacion_disponible"]),
+        propuesta_diversificacion=(
+            diversificacion["propuesta_diversificacion"]
+            if diversificacion and diversificacion["diversificacion_disponible"]
+            else None
+        ),
+        n_especies_compatibles=diversificacion["n_especies_compatibles"] if diversificacion else None,
+    )
 
 
 @router.get("/resumen-comuna", response_model=list[ResumenRecomendacionComuna])

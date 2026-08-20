@@ -1,7 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiFetch } from "@/lib/api/client";
-import { arbolesClustersUrl, arbolesPuntosUrl, endpoints, rankingComunasUrl, type Bbox } from "@/lib/api/endpoints";
+import {
+  arbolesClustersUrl,
+  arbolesPuntosUrl,
+  endpoints,
+  rankingComunasUrl,
+  zonaSiembraDetalleUrl,
+  type Bbox,
+} from "@/lib/api/endpoints";
 import {
   comunasFeatureCollectionSchema,
   estacionAuditoriaSchema,
@@ -13,6 +20,7 @@ import { rankingComunaItemSchema, type PesosAhp } from "@/types/rankingComuna";
 import {
   recomendacionSiembraZonaSchema,
   resumenRecomendacionComunaSchema,
+  zonaSiembraDetalleSchema,
   zonasPriorizadasSiembraFeatureCollectionSchema,
 } from "@/types/siembra";
 import { zonasVerdesFeatureCollectionSchema } from "@/types/zonaVerde";
@@ -42,6 +50,17 @@ export function useComunas() {
     queryKey: ["comunas"],
     queryFn: () =>
       fetchAndValidate(endpoints.comunas, comunasFeatureCollectionSchema),
+  });
+}
+
+/** Solo nombres de las 21 comunas, SIN geometría (~3.2 KB vs. los ~3.5 MB de
+ * `useComunas()`) — para vistas que solo necesitan el nombre (ej. el
+ * selector de `ComunaComparator` en `/dashboard`), nunca para el mapa. Ver
+ * docs/ESTADO_PROYECTO.md, "Aislar la caída de Lighthouse". */
+export function useComunasNombres() {
+  return useQuery({
+    queryKey: ["comunas-nombres"],
+    queryFn: () => fetchAndValidate(endpoints.comunasNombres, z.array(z.string())),
   });
 }
 
@@ -98,6 +117,18 @@ export function useZonasSiembraGeojson() {
         endpoints.zonasSiembraGeojson,
         zonasPriorizadasSiembraFeatureCollectionSchema,
       ),
+  });
+}
+
+/** Fase E2 — detalle real (área, especie, ficha botánica) de una zona de
+ * siembra específica, cargado al hacer click sobre ella en el mapa.
+ * `idPoligono: null` desactiva la query (panel cerrado). */
+export function useZonaSiembraDetalle(idPoligono: number | null) {
+  return useQuery({
+    queryKey: ["zona-siembra-detalle", idPoligono],
+    queryFn: () =>
+      fetchAndValidate(zonaSiembraDetalleUrl(idPoligono as number), zonaSiembraDetalleSchema),
+    enabled: idPoligono !== null,
   });
 }
 

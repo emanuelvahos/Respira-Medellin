@@ -31,6 +31,13 @@ class ZonaPriorizadaSiembraProperties(BaseModel):
     extra="allow": el archivo fuente trae columnas adicionales (p. ej.
     Shape_Area) que se documentan aquí solo parcialmente; se preservan sin
     truncar la respuesta.
+
+    `viabilidad_auditada`/`viabilidad_motivo`: NO vienen del archivo fuente
+    en disco — se inyectan en `load_zonas_priorizadas_siembra_geojson`
+    cruzando por `id_poligono` contra `auditoria_viabilidad_siembra.geojson`
+    (Fase D, ver `backend/scripts/auditar_viabilidad_siembra.py` y
+    backend/README.md). `viabilidad_auditada` es `None` si la auditoría
+    todavía no se ha corrido en este entorno — no es un campo garantizado.
     """
 
     model_config = {"extra": "allow"}
@@ -45,6 +52,10 @@ class ZonaPriorizadaSiembraProperties(BaseModel):
     nombre_comun_especie: str
     arboles_cupo_estimado: int
     eficiencia_pm25: str
+    viabilidad_auditada: (
+        Literal["consistente", "posible_no_viable", "sin_solape_con_inventario_real"] | None
+    ) = None
+    viabilidad_motivo: str | None = None
 
 
 class ComunaProperties(BaseModel):

@@ -92,6 +92,7 @@ python scripts/fetch_sau_arboles.py
 | Método | Ruta | Fuente | Descripción |
 |---|---|---|---|
 | GET | `/api/comunas` | `limite_catastral_de_comun.geojson` | Límite catastral de comunas + corregimientos (GeoJSON, WGS84) |
+| GET | `/api/comunas/nombres` | idem (sin geometría) | Solo los 21 nombres, sin geometría (~3.2 KB vs. ~3.5 MB de `/api/comunas`) — para vistas que no necesitan el mapa, ver docs/ESTADO_PROYECTO.md "Aislar la caída de Lighthouse en /dashboard" |
 | GET | `/api/comunas/{nombre}` | idem | Filtra por nombre de comuna |
 | GET | `/api/comunas/estaciones/auditoria` | `auditoria_estaciones_comunas.csv` | Trazabilidad estación SIATA → comuna |
 | GET | `/api/comunas/poblacion` | `poblacion_por_comuna.csv` | Población, área (km²) y densidad (hab/km²) de las 21 comunas/corregimientos — ver "Fuente de `poblacion_por_comuna.csv`" abajo |
@@ -99,7 +100,8 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/pm25/relaciones-anuales?comuna=&anio=` | `relaciones_v2_bloque2.csv` | Relaciones anuales comuna × vulnerabilidad |
 | GET | `/api/pm25/estaciones` | `Solicitud_PM25_DP1763941.csv` + `auditoria_estaciones_comunas.csv` | Última lectura real de PM2.5 por estación SIATA (no agregada por comuna); pensado para capas que necesitan variación espacial genuina, p. ej. partículas animadas |
 | GET | `/api/siembra/zonas?comuna=` | `recomendacion_siembra_por_zona.csv` | Recomendación de siembra por zona (~1.649 filas) |
-| GET | `/api/siembra/zonas/geojson` | `zonas_priorizadas_siembra.geojson` | Geometría de zonas priorizadas (GeoJSON, WGS84) |
+| GET | `/api/siembra/zonas/geojson` | `zonas_priorizadas_siembra.geojson` + `auditoria_viabilidad_siembra.geojson` | Geometría de zonas priorizadas (GeoJSON, WGS84), con `viabilidad_auditada`/`viabilidad_motivo` inyectados por id — ver "Auditoría de viabilidad de zonas de siembra (Fase D)" abajo |
+| GET | `/api/siembra/zona/{id_poligono}/detalle` | `recomendacion_siembra_por_zona.csv` + `fichas_especies.json` + `diversificacion_especies_siembra.geojson` | Detalle real de una zona: área, especie recomendada, su ficha botánica y (si aplica) una propuesta exploratoria de diversificación — ver "Detalle de zona de siembra (Fase E2)" y "Diversificación de especies por zona (Fase E3)" abajo. 404 si el `id_poligono` no existe |
 | GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` + `scores_ahp_extendido_sin_siembra.csv` + `scores_ahp_interpolado_idw.csv` + `scores_ahp_altavista_historico.csv` | Score AHP y ranking agregado por comuna (11 comunas con zona de siembra + 4 comunas con score pero sin zona + 3 comunas con PM2.5 **interpolado, no medido** + Altavista con PM2.5 **histórico, no vigente** — ver "Comunas con score AHP pero sin zona de siembra", "PM2.5 interpolado (IDW)" y "Altavista — PM2.5 histórico real, no vigente" abajo) |
 | GET | `/api/siembra/ranking-comunas?peso_pm25=&peso_deficit=&peso_area=` | recalculado (ver abajo) | Ranking AHP con pesos custom (comparador de escenarios, Fase 4) |
 | GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | Inventario real de zonas verdes (48.348 polígonos) — ver "Fuente de `inventario_zonas_verdes.geojson`" abajo |
@@ -393,6 +395,252 @@ su propia categoría, un cuarto nivel de confianza.
 
 `/api/siembra/ranking-comunas` (el comparador AHP) **no se modificó**.
 
+## Detalle de zona de siembra (Fase E2)
+
+**Motivación**: al hacer click en una zona de siembra en el mapa, el
+usuario pidió ver algo más que "especie X, N árboles" — área aproximada,
+POR QUÉ se recomienda esa especie ahí (no solo su nombre), y qué beneficio
+real documenta la fuente. Todo debe salir de datos reales ya existentes en
+el proyecto, no de narrativa inventada.
+
+**Fuente de las fichas** (`backend/data/fichas_especies.json`): el catálogo
+`ESPECIES` embebido en el script original
+`Visualizacion-de-datos/scripts/bloque_2/bloque2_recomendador_siembra.py`
+(la fuente de verdad que el modelo AHP ya usa para elegir especie por zona),
+cruzado con las fichas scrapeadas del Catálogo de Flora del Valle de Aburrá
+(EIA) en `Visualizacion-de-datos/scripts/caracteristicas_especies/*.txt`
+para campos descriptivos adicionales. El archivo JSON documenta la fuente y
+la cobertura en sus propios campos `_fuente`/`_cobertura`/`_nota_pm25` — no
+se duplica esa explicación aquí para que no se desincronice.
+
+**Cobertura real**: 5 especies documentadas (las 5 del catálogo
+`ESPECIES`). De ellas, **3 de 3 (100%)** son la `especie_recomendada` de
+alguna de las 1.648 zonas de `recomendacion_siembra_por_zona.csv` (Zygia
+longifolia, Calliandra haematocephala, Inga densiflora) — las otras 2
+(Bauhinia picta, Retrophyllum rospigliosii) solo aparecen como
+`especies_alternativas`, nunca como recomendación principal, pero se
+documentan igual por transparencia. Si en el futuro el pipeline
+recomendara una especie sin ficha, `ficha_especie` en la respuesta sería
+simplemente `null` — el frontend debe mostrar ese caso honestamente (ver
+`ZonaSiembraDetallePanel` en el frontend), nunca rellenar con contenido
+genérico.
+
+**Por qué NO se calcula un número de PM2.5 mitigado**: se investigó si
+alguna fuente real del proyecto (el catálogo `ESPECIES`, las fichas del
+Catálogo de Flora del Valle de Aburrá) cuantifica la mitigación de PM2.5 en
+un valor numérico por individuo (p. ej. µg/año) — **no existe tal valor en
+ninguna fuente real disponible**. Lo único real es `pm25_eficiencia`, una
+calificación cualitativa (Alta/Media/Baja) que el propio pipeline deriva de
+la densidad de follaje de la especie (comentario `# captura de PM2.5 por
+densidad follaje` en el código fuente original). Inventar una fórmula de
+µg/individuo × cupo de árboles habría sido presentar un número inexistente
+como si fuera un cálculo real — se descartó explícitamente por eso. Lo que
+sí se expone, con base real: `arboles_cupo_estimado` (ya calculado por el
+pipeline, fórmula documentada abajo) junto con la calificación cualitativa
+de eficiencia por individuo.
+
+**Fórmula real de individuos recomendados** (ya calculada por el pipeline,
+solo se expone aquí, no se recalcula):
+```
+separacion_min = copa_min_m + margen_seguridad_m   # de la ficha de la especie
+capacidad_zona = floor(area_util_m2 / separacion_min²)
+```
+Plantación en cuadrícula (el layout más conservador) — ver
+`capacidad_zona()` en el script fuente para el detalle completo.
+
+**Endpoint**: `GET /api/siembra/zona/{id_poligono}/detalle` — busca la fila
+de esa zona en `recomendacion_siembra_por_zona.csv` (ya cargado por
+`load_recomendacion_siembra_zona`, mismo loader que `/api/siembra/zonas`) y
+le agrega `ficha_especie` cruzando por `especie_recomendada` contra
+`fichas_especies.json`. 404 si el `id_poligono` no existe en el CSV.
+
+## Diversificación de especies por zona (Fase E3)
+
+**Motivación**: el pipeline original asigna el 100% del cupo de cada zona a
+UNA sola especie "óptima" (`especie_para_zona()` puntúa candidatas y se
+queda con la de mayor puntaje). El usuario quiso medir cuánto margen real
+hay para repartir esa capacidad entre varias especies compatibles, en vez
+de monocultivo — con la limitación honesta ya anticipada de que solo hay 5
+especies documentadas (Fase E2).
+
+**Criterios de compatibilidad usados** (`backend/scripts/analizar_diversificacion_especies.py`)
+— idénticos a los que ya usa `especie_para_zona()` en el pipeline original,
+no inventados:
+1. **Rango altitudinal**: el pipeline original **no tiene altitud por
+   zona individual** — usa una única constante `ALTITUD_MEDELLIN=1495` msnm
+   para las 1.648 zonas por igual. El análisis usa la misma constante por
+   honestidad metodológica (inventar una altitud por zona sería un dato
+   falso). Esto implica que el criterio altitudinal es prácticamente
+   constante entre especies (4 de las 5 especies incluyen 1.495 msnm en su
+   rango; solo Retrophyllum rospigliosii, con rango 1.501-3.000, queda
+   excluida siempre).
+2. **`categoria` de la zona** debe estar en `categorias_aptas` de la
+   especie — este SÍ varía zona a zona y es, en la práctica, el
+   diferenciador real de compatibilidad.
+
+**Tipo de suelo NO se evalúa**: no existe un campo de tipo de suelo por
+zona comparable al dato de la especie (`cober_dom` mide cobertura vegetal
+— Grama/Tierra —, una dimensión distinta). Se trata explícitamente como
+"no evaluable" en vez de asumir compatibilidad — restricción explícita del
+prompt de esta fase.
+
+**Hallazgo real** (corrida sobre las 1.648 zonas):
+
+| Especies compatibles | Zonas | % |
+|---|---|---|
+| 1 | 621 | 37.7% |
+| 2 | 89 | 5.4% |
+| 3 | 420 | 25.5% |
+| 4 | 518 | 31.4% |
+
+62.3% de las zonas (1.027) tienen 2+ especies compatibles por categoría —
+mucho más margen del que anticipaba la premisa pesimista del prompt. Pero
+el cuello de botella real es otro: al aplicar el umbral de cupo mínimo
+(`UMBRAL_MIN_INDIVIDUOS = 10` — dividir menos de 10 individuos entre 2+
+especies no tiene sentido ecológico ni práctico, resultarían en grupos de
+1-4 individuos), **881 de esas 1.027 zonas quedan excluidas** por tener muy
+pocos individuos. Al final, **solo 146 zonas (8.9% del total) reciben una
+propuesta de diversificación real** — la compatibilidad por categoría
+sobra, pero el tamaño de las zonas (área → cupo de árboles) es el límite
+real con los datos actuales.
+
+**Método de reparto** (solo para las 146 zonas elegibles): **equitativo
+simple** entre las especies compatibles, con método de mayor resto para
+que la suma sea exacta al cupo real. Se descartó ponderar por "cercanía
+del rango altitudinal de la especie al punto medio de la zona" (alternativa
+sugerida en el prompt original) porque, al ser la altitud una constante
+única para las 1.648 zonas, ese peso sería idéntico para un mismo conjunto
+de especies en cualquier zona — no aportaría información específica de la
+zona, sería precisión falsa. El reparto equitativo es la alternativa
+honesta cuando no hay una base real por zona para ponderar de otra forma.
+
+**Archivo generado**: `backend/data/diversificacion_especies_siembra.geojson`
+(tabla sin geometría, mismo patrón que `auditoria_viabilidad_siembra.geojson`,
+indexada por `id_poligono`) — nunca se tocó `zonas_priorizadas_siembra.geojson`
+ni `recomendacion_siembra_por_zona.csv`. Se inyecta en
+`/api/siembra/zona/{id}/detalle` vía `diversificacion_disponible` /
+`propuesta_diversificacion` / `n_especies_compatibles` (este último permite
+al frontend distinguir "solo 1 especie compatible" de "cupo insuficiente
+para diversificar" cuando `diversificacion_disponible` es `false`).
+
+**Recomendación explícita sobre priorizar la Fase E4** (más fuentes de
+especies/biodiversidad): **no es urgente por el motivo que anticipaba el
+prompt** — la escasez de especies documentadas (5) NO es hoy el cuello de
+botella real, dado que 62.3% de las zonas ya tienen 2+ opciones compatibles
+por categoría con esas 5. El cuello de botella real es el tamaño de las
+zonas (881 de 1.027 zonas diversificables quedan excluidas solo por tener
+cupo bajo 10 individuos). Si se quiere ampliar el alcance real de esta
+función, **más especies documentadas ayudaría poco por sí solo** —
+convendría primero revisar si el umbral de 10 individuos es demasiado
+conservador (con criterio de la Secretaría, no una decisión técnica
+unilateral) antes de invertir en más fichas de especies.
+
+## Auditoría de viabilidad de zonas de siembra (Fase D)
+
+**Motivación.** El pipeline original (`bloque2_recomendador_siembra.py`)
+filtra zonas viables por `cober_dom` (Grama/Tierra) y excluye `categoria`
+privada (`ZVPrivadas`, `ZVUsoPrivado`). Pero `categoria` en GeoMedellín es
+gruesa (17 valores: `Antejardin`, `Separador`, `ParqueRec`, `ZVRecreacional`,
+`ParqueCiv`, `OrejaPuente`, ...) y no distingue una cancha o plazoleta con
+césped perimetral de una zona verde real sin restricciones — un usuario
+reportó exactamente ese patrón: zonas recomendadas cayendo sobre canchas o
+parques. La señal que sí distingue esto vive en dos columnas del inventario
+que el pipeline original nunca consultó (`subcategoria` e
+`infraestructura`/`equipamiento`), documentadas en el propio dataset pero no
+usadas por `_ZONAS_VERDES_PROPERTIES` en `data_loader.py` (se descartan al
+servir `/api/zonas-verdes` porque no aportan al mapa general).
+
+**Nota sobre la premisa inicial**: se investigó primero la hipótesis de que
+el pipeline original usaba un inventario de zonas verdes MENOS detallado que
+el integrado después. Es falsa para este caso: el script fuente
+(`Visualizacion-de-datos/scripts/bloque_2/bloque2_recomendador_siembra.py`,
+`RUTA_ZONAS`) ya apuntaba al mismo `inventario_zonas_verdes.geojson` de
+GeoMedellín. Verificado además empíricamente: las 1.648 zonas de
+`zonas_priorizadas_siembra.geojson` tienen el mismo `id_poligono` Y la misma
+`Shape_Area` (hasta el último decimal) que su contraparte en el inventario
+completo — son literalmente el mismo polígono, no una versión distinta. El
+problema real no es un dataset desactualizado: es que el pipeline original
+solo miró 2 de las ~10 columnas categóricas disponibles.
+
+**Categorías reales de GeoMedellín y su clasificación** (valores únicos
+verificados contra el dataset, no asumidos):
+
+| Campo | Valores encontrados | Sembrable / no sembrable |
+|---|---|---|
+| `categoria` (17 valores) | `FranjaAmoblamiento`, `Antejardin`, `ZVPrivadas`, `ZVUsoPrivado`, `Separador`, `ParqueRec`, `ParqueCiv`, `ZVRecreacional`, `Parqueadero`, `EcoparqueQuebrada`, `OrejaPuente`, `RetiroQuebradas`, `OtrasZV`, `EcoparqueCerro`, `Glorieta`, `FajasTaludes`, `RetiroLinderos` | Ninguno distingue cancha/plaza directamente — demasiado gruesa para auditar sola (ver por qué se usan `subcategoria`/`infraestructura` en vez de este campo) |
+| `subcategoria` (10 valores no triviales) | `Plaza`, `Plazoleta`, `Plazuela`, `Parqueaderos a nivel`, `Alcorques corridos`, `Activo`, + 3 de sección vial | **No sembrable**: `Plaza`/`Plazoleta`/`Plazuela`/`Parqueaderos a nivel` son superficie dura por definición, sin importar `cober_dom`. El resto son neutrales/sembrables |
+| `infraestructura`/`equipamiento` (861 valores únicos: nombre del predio) | Universidades, hospitales, cementerios, el aeropuerto, unidades deportivas, canchas, placas polideportivas, parques... | **No sembrable** solo el subconjunto deportivo/recreativo duro (`cancha`, `estadio`, `coliseo`, `polideportivo`, `placa polideportiva`, `unidad deportiva`, `parque deportivo` — lista cerrada en `PALABRAS_CLAVE_NO_SEMBRABLE`). Universidades/hospitales/cementerios **NO se marcan**: esos predios sí suelen tener jardines/prados reales, marcarlos todos sería un falso positivo masivo, no una auditoría útil |
+
+**Método** (`backend/scripts/auditar_viabilidad_siembra.py`, corrido de
+forma manual/puntual — no en cada arranque del servidor):
+
+1. Overlay espacial real (`geopandas.overlay`, no un join por atributo)
+   entre cada polígono de `zonas_priorizadas_siembra.geojson` y el
+   inventario completo de `inventario_zonas_verdes.geojson`. Se usa overlay
+   geométrico y no un simple cruce por `id_poligono` a propósito: no asume
+   que los IDs seguirán siendo estables si el inventario se refresca (ver
+   `docs/ACTUALIZACION_DATOS.md`) — un polígono de siembra podría en el
+   futuro solaparse con varios polígonos nuevos, o con ninguno.
+2. Para cada zona de siembra, el polígono del inventario con mayor área de
+   intersección es el "dominante". Si cubre menos del 50% del área de la
+   zona de siembra (`UMBRAL_SOLAPE_DOMINANTE`), su categoría NO se usa para
+   clasificar (evita que un solape marginal de borde con una cancha vecina
+   decida el resultado).
+3. Clasificación en `viabilidad_auditada`:
+   - **`posible_no_viable`**: el polígono dominante tiene `subcategoria` de
+     superficie dura, o su `infraestructura`/`equipamiento` coincide con la
+     lista cerrada de palabras clave deportivas/recreativas duras.
+   - **`sin_solape_con_inventario_real`**: la zona de siembra no intersecta
+     ningún polígono del inventario actual — distinto de "no viable": no
+     dice nada sobre si el sitio es sembrable, solo que no se pudo verificar
+     contra el inventario vigente (geometría desactualizada).
+   - **`consistente`**: hay solape real y ninguna señal de alerta. **No es
+     una garantía de viabilidad** — solo significa "sin bandera roja
+     conocida en este cruce"; sigue existiendo ambigüedad residual que este
+     método no resuelve (p. ej. una zona con `cober_dom=Grama` genuinamente
+     mixta con superficie dura, sin que `subcategoria`/`infraestructura` lo
+     capturen). Se documenta esta ambigüedad en vez de forzar una
+     clasificación más granular con evidencia insuficiente — ver
+     restricción explícita del prompt de Fase D.
+4. Sanity check impreso por el script: el polígono dominante por área de
+   intersección coincide con el `id_poligono` original en el 100% de los
+   casos (1.648/1.648) — confirma la nota de arriba (mismo inventario como
+   fuente) y valida que el overlay espacial está bien calculado.
+
+**Resultado de la corrida más reciente** (2026-08-19, sobre los datos
+actuales):
+
+| `viabilidad_auditada` | Zonas | % |
+|---|---|---|
+| `consistente` | 1.514 | 91.9% |
+| `posible_no_viable` | 134 | 8.1% |
+| `sin_solape_con_inventario_real` | 0 | 0.0% |
+
+Los motivos más frecuentes de `posible_no_viable`: 56 zonas dentro de la
+Unidad Deportiva Atanasio Girardot, 22 en la Unidad Deportiva de Belén, 11
+en el Parque Norte/Estadio Cincuentenario, y el resto repartido entre otras
+unidades deportivas/canchas/placas polideportivas puntuales y 14 zonas con
+`subcategoria` de plaza/plazoleta/plazuela/parqueadero. El
+`sin_solape_con_inventario_real` en 0 es esperable dado el punto 4 (mismo
+inventario como fuente) — un refresco futuro de `inventario_zonas_verdes.geojson`
+con geometría distinta sí podría producir casos en esta categoría, por eso
+el método sigue siendo overlay espacial y no join por ID.
+
+**Cómo se sirve**: `_auditoria_viabilidad_siembra_por_id()` en
+`data_loader.py` lee `auditoria_viabilidad_siembra.geojson` (tabla plana sin
+geometría propia, indexada por `id_poligono`) y `load_zonas_priorizadas_siembra_geojson()`
+inyecta `viabilidad_auditada`/`viabilidad_motivo` en las `properties` de
+cada feature al servir `/api/siembra/zonas/geojson` — **nunca** se
+sobrescribe `zonas_priorizadas_siembra.geojson` en disco. Si el archivo de
+auditoría no existe en un entorno (p. ej. no se corrió el script todavía),
+el endpoint sigue respondiendo normalmente sin esos dos campos (ambos
+`None`/ausentes) — no es una dependencia crítica.
+
+**Cuándo re-correr la auditoría**: cada vez que se reemplace
+`inventario_zonas_verdes.geojson` o `zonas_priorizadas_siembra.geojson`
+(ver `docs/ACTUALIZACION_DATOS.md`) — de lo contrario `viabilidad_auditada`
+queda desincronizada silenciosamente frente a datos nuevos.
+
 ## Fuente de `inventario_zonas_verdes.geojson`
 
 **Resuelto (2026-08-04).** El script original `bloque2_recomendador_siembra.py`
@@ -410,11 +658,10 @@ original — `app/models/zona_verde.py` se actualizó para reflejar los campos
 reales (`extra="allow"` para las columnas de detalle por subsistema, casi
 siempre "No aplica", que no se tipan una a una).
 
-**Optimización de payload** (`load_inventario_zonas_verdes_geojson` en
+**Optimización de payload** (`procesar_zonas_verdes_geojson` en
 `app/services/data_loader.py`): el archivo fuente pesa 71MB sin optimizar,
 demasiado para servir sin degradar el framerate del mapa con la capa activa.
-Se aplican tres pasos antes de servir la respuesta (cacheados vía
-`lru_cache`, un único costo de carga/proceso ~20s en el primer request):
+Se aplican tres pasos:
 
 1. `geopandas.GeoDataFrame.geometry.simplify(tolerance=0.5, preserve_topology=True)`
    en el CRS proyectado original (metros): ~44% menos vértices, <0.12% de
@@ -430,6 +677,50 @@ Resultado: 71MB → ~23MB servidos, endpoint responde **200**.
 Si en el futuro se necesita más rendimiento (p. ej. paginación espacial por
 bounding box del viewport), evaluarlo después de medir el impacto real de
 esta simplificación a solas — no antes.
+
+### Por qué `/api/zonas-verdes` sirve un archivo precomputado (incidente 502 en Render)
+
+**Resuelto (2026-08-19).** La optimización de payload de arriba (simplify +
+reproyección de 48.348 polígonos) originalmente corría de forma perezosa
+dentro de `load_inventario_zonas_verdes_geojson`, cacheada con `@lru_cache`:
+el primer request real que pedía la capa pagaba ese costo completo (~55s en
+frío contra ~10-15s medidos en esta máquina; la diferencia depende del CPU
+del dyno de Render). Render corta requests que exceden su timeout (plan
+free/estándar), así que ese primer usuario recibía **502**, y cualquier
+reinicio del servicio (deploy, cold start tras dormir en el plan free)
+reproducía el problema para el siguiente "primer" usuario.
+
+**Se descartó calentar el caché en el evento `startup` de FastAPI** (alargar
+el arranque del servidor) porque sigue acoplando un cómputo pesado y no
+determinista en duración al ciclo de vida del proceso — un reinicio
+inesperado de Render seguiría pagando el costo, solo que antes del primer
+request en vez de durante él, con el mismo riesgo si el arranque tarda más
+de lo que Render tolera antes de marcar el servicio "unhealthy"
+(`healthCheckPath: /health` en `render.yaml`).
+
+**Solución elegida: precomputar y servir un archivo estático** (`backend/scripts/preprocesar_zonas_verdes.py`
+→ `backend/data/zonas_verdes_procesado.geojson`, ver
+`docs/ACTUALIZACION_DATOS.md`, sección "Zonas verdes"). Es la opción más
+simple dado que zonas verdes ya es un dataset de refresco manual
+infrecuente (cada 6-12 meses, sin script de descarga automatizado): el
+mismo flujo manual que ya existía para reemplazar el GeoJSON crudo ahora
+incluye correr este script una vez. `load_inventario_zonas_verdes_geojson`
+(en `app/services/data_loader.py`) solo lee y parsea el JSON ya listo — cero
+cómputo geométrico en el camino de cualquier request, sin importar cuántas
+veces se reinicie el proceso. Robusto ante reinicios por construcción: el
+archivo procesado vive en `backend/data/` (versionado en el repo, no
+regenerado en cada arranque), así que un redeploy o un cold start del plan
+free nunca vuelve a pagar el costo de simplify/reproyección.
+
+Verificado localmente: `python backend/scripts/preprocesar_zonas_verdes.py`
+tarda ~10s en procesar las 48.348 features, y con el archivo ya generado
+`load_inventario_zonas_verdes_geojson` solo lee/parsea JSON — sin
+geopandas/shapely en el camino, a diferencia de los demás loaders de
+GeoJSON del módulo (que sí reproyectan en cada primer request, aceptable
+para ellos por ser datasets mucho más pequeños). Falta confirmar en Render
+mismo (requiere acceso al servicio desplegado, fuera de este entorno):
+forzar un redeploy y medir el tiempo de respuesta real del primer request
+tras el reinicio.
 
 ## Fuente de `sau_arboles_urbanos.csv`
 
