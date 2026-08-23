@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { ZonaSiembraFeature } from "@/components/map/layers/zonasSiembraLayer";
 
 /** Centro aproximado de Medellín, con inclinación para dar sensación 3D desde el inicio. */
 export const INITIAL_VIEW_STATE = {
@@ -120,16 +121,19 @@ type MapState = {
    */
   mostrarZonasDescartadas: boolean;
   /**
-   * Refleja (no gobierna) si `ZonaSiembraDetailPanel` está abierto —
-   * ese panel vive como estado local de `MapCanvas` a propósito (no debe
-   * afectar URL/dashboard, ver comentario ahí), pero `MapLegend` necesita
-   * saber si está abierto para no dibujarse debajo/encima de él: ambos
-   * anclan a la esquina inferior y se solapan visualmente en pantallas
-   * angostas (<~640px) o cuando el contenido de la leyenda es alto.
+   * Zona de siembra seleccionada (click en el mapa) — vive en el store
+   * (Fase "rediseño de paneles flotantes") para poder aplicar exclusión
+   * mutua real con `selectedComuna`: el panel de detalle de comuna y el de
+   * zona de siembra comparten la misma región fija de pantalla (columna
+   * derecha, ver `ComunaDetailPanel`/`ZonaSiembraDetailPanel`), así que solo
+   * uno de los dos puede estar abierto a la vez — seleccionar uno cierra
+   * el otro automáticamente (`setSelectedComuna`/`setSelectedZonaSiembra`
+   * abajo). No afecta la URL ni el dashboard, igual que antes.
    */
-  zonaSiembraPanelAbierto: boolean;
+  selectedZonaSiembra: ZonaSiembraFeature | null;
   setSelectedComuna: (comuna: string | null) => void;
   setHoveredComuna: (comuna: string | null) => void;
+  setSelectedZonaSiembra: (zona: ZonaSiembraFeature | null) => void;
   toggleLayer: (layer: MapLayerId) => void;
   setViewState: (viewState: MapViewState) => void;
   toggleParticlesPaused: () => void;
@@ -138,7 +142,6 @@ type MapState = {
   setSearchMarker: (marker: SearchMarker) => void;
   setMapStyle: (style: MapStyle) => void;
   toggleMapStyle: () => void;
-  setZonaSiembraPanelAbierto: (abierto: boolean) => void;
 };
 
 export const useMapStore = create<MapState>((set) => ({
@@ -171,13 +174,25 @@ export const useMapStore = create<MapState>((set) => ({
   searchMarker: null,
   mapStyle: "dark",
   mostrarZonasDescartadas: false,
-  zonaSiembraPanelAbierto: false,
+  selectedZonaSiembra: null,
   setSelectedComuna: (comuna) =>
     set({
       selectedComuna: comuna,
       isFlyingTo: comuna !== null,
+      // Exclusión mutua: seleccionar una comuna cierra el panel de zona de
+      // siembra, que comparte la misma región fija de pantalla. Al
+      // deseleccionar (comuna=null, ej. cerrar el panel) no se toca
+      // `selectedZonaSiembra` — puede estar cerrándose por su propia cuenta.
+      ...(comuna !== null ? { selectedZonaSiembra: null } : {}),
     }),
   setHoveredComuna: (comuna) => set({ hoveredComuna: comuna }),
+  setSelectedZonaSiembra: (zona) =>
+    set({
+      selectedZonaSiembra: zona,
+      // Exclusión mutua inversa: seleccionar una zona de siembra cierra el
+      // panel de detalle de comuna.
+      ...(zona !== null ? { selectedComuna: null } : {}),
+    }),
   toggleLayer: (layer) =>
     set((state) => ({
       layers: { ...state.layers, [layer]: !state.layers[layer] },
@@ -192,5 +207,4 @@ export const useMapStore = create<MapState>((set) => ({
   setMapStyle: (style) => set({ mapStyle: style }),
   toggleMapStyle: () =>
     set((state) => ({ mapStyle: state.mapStyle === "dark" ? "satellite" : "dark" })),
-  setZonaSiembraPanelAbierto: (abierto) => set({ zonaSiembraPanelAbierto: abierto }),
 }));

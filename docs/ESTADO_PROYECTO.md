@@ -7,6 +7,98 @@
 > [`docs/ACTUALIZACION_DATOS.md`](./ACTUALIZACION_DATOS.md) para la cadencia
 > recomendada de refresco de cada fuente de datos.
 
+### Corrección de regresión del rediseño de paneles: panel de configuración desaparecía (2026-08-21)
+
+El rediseño de abajo introdujo un bug real: al seleccionar una comuna o zona
+de siembra, "Capas y leyenda" (esquina superior izquierda) y la barra de
+controles menores (esquina inferior izquierda) desaparecían por completo de
+la pantalla. Causa raíz confirmada con evidencia (probé forzar `transform`,
+`translate`, `scale`, `filter`, `content-visibility` vía JS en vivo — ninguno
+cambiaba nada): un bug de layout/paint de Chrome que aparece cuando muchos
+hermanos `position:absolute` conviven bajo un contenedor `position:relative;
+overflow:hidden` y uno de ellos (el panel de detalle) anima su tamaño/transform
+al abrirse — los demás hermanos absolutos quedaban con una posición
+horizontal incorrecta (desplazados fuera de pantalla).
+
+**Corrección de raíz**: `ComunaDetailPanel` y `ZonaSiembraDetailPanel` ahora
+se renderizan vía `createPortal` directamente en `document.body`
+(`MapPanelPortal.tsx`), con `position: fixed` (antes `absolute` relativo al
+contenedor del mapa) — los saca por completo del árbol de layout del mapa,
+eliminando la interacción con sus antiguos hermanos de raíz, en vez de
+parchear el síntoma. De paso se corrigió un bug relacionado: el
+`closeButtonRef.current?.focus()` de ambos paneles disparaba el scroll-into-view
+por defecto del navegador sobre la página completa (revelando el footer
+global) — se agregó `{ preventScroll: true }`.
+
+Verificado en Chrome real (no solo build/lint): con "Capas y leyenda"
+expandido + un panel de detalle abierto + el buscador con resultados, los 4
+elementos coexisten sin superposición ni contenedores vacíos, tanto para
+comuna como para zona de siembra.
+
+### Rediseño sistemático de paneles flotantes de `/mapa` (2026-08-21)
+
+El choque visual entre elementos flotantes del mapa se había parcheado
+puntualmente varias veces (Fase D, Fase F1) y volvió a ocurrir: el panel de
+"Capas" se superponía con el panel de detalle de zona de siembra. Causa de
+fondo: cada control nuevo se agregaba como una caja flotante independiente
+con posición absoluta propia (`top-4`, `bottom-left`, `bottom-right`...),
+así que el riesgo de choque crecía con cada fase. Este cambio reemplaza ese
+patrón por un **sistema de layout de 4 zonas fijas**, diseñado para que
+ningún control nuevo futuro necesite inventar una quinta esquina.
+
+**Inventario de elementos flotantes antes del cambio**: `AddressSearch`
+(buscador, siempre visible, top centrado), `MapLayerToggles` ("Capas",
+siempre visible, top-derecha), `MapLegend` (siempre visible en desktop,
+bottom-izquierda, se ocultaba condicionalmente si había un panel de zona
+abierto), `ComunaDetailPanel` (condicional a comuna seleccionada, slide-in
+derecha), `ZonaSiembraDetailPanel` (condicional a zona seleccionada,
+bottom-derecha — el que chocaba con "Capas"), `ComunaKeyboardSelector`
+(siempre visible, top-izquierda) y `CopyLinkButton` (siempre visible,
+izquierda debajo del selector).
+
+**Las 4 zonas fijas del nuevo sistema** (ver `MapaClient.tsx`):
+1. **Barra superior centrada**: `AddressSearch` — sin cambios.
+2. **Esquina superior izquierda**: `MapConfigPanel`, panel único
+   colapsado por defecto (sin footprint fijo) que agrupa "Capas"
+   (`MapLayerToggles`, ahora solo contenido, sin posición propia) y
+   "Leyenda" (`MapLegend`, ídem) en pestañas dentro de una sola caja, con
+   altura tope (`max-h-[min(70vh,32rem)]`) y scroll interno — esto es lo
+   que garantiza que, sin importar cuánto crezca el contenido futuro, el
+   panel nunca invade la esquina inferior ni cruza al lado derecho.
+3. **Esquina inferior izquierda**: controles menores —
+   `ComunaKeyboardSelector` y `CopyLinkButton`, apilados, compactos.
+4. **Columna derecha, altura completa**: panel de detalle contextual.
+   `ComunaDetailPanel` y `ZonaSiembraDetailPanel` ahora comparten
+   EXACTAMENTE la misma región (`absolute inset-y-0 right-0 w-full
+   max-w-sm`, slide-in) con **exclusión mutua real** aplicada en
+   `mapStore.ts`: seleccionar una comuna cierra cualquier zona de siembra
+   abierta y viceversa (antes eran estados independientes — uno podía
+   quedar seleccionado sin cerrarse detrás del otro, un bug latente que
+   este rediseño también corrige). `selectedZonaSiembra` se movió de
+   estado local de `MapCanvas` al store global para poder coordinar esta
+   exclusión mutua entre componentes.
+
+**Regla para controles futuros**: cualquier toggle/capa nuevo va dentro de
+`MapLayerToggles`; cualquier entrada nueva de leyenda va dentro de
+`MapLegend`; cualquier panel de detalle contextual nuevo debe evaluar si
+puede compartir la región de la zona 4 (con exclusión mutua) antes de pedir
+una zona nueva. Ninguna caja flotante nueva debería necesitar su propia
+posición absoluta independiente.
+
+**Verificado**: escenario más exigente (panel de configuración expandido +
+panel de detalle de comuna abierto + buscador de dirección con resultados,
+los tres a la vez) sin ninguna superposición, en desktop. La verificación
+visual automatizada en viewport mobile (375px) no pudo completarse en esta
+sesión — la herramienta de redimensionar ventana del navegador no logró
+achicar la ventana real por debajo de su tamaño de pantalla completo (limitación
+del entorno, no algo que se decidiera omitir) — así que mobile se verificó
+por auditoría de código de las clases responsive (`w-[calc(100vw-2rem)]`,
+`sm:w-80`, etc., mismo patrón ya usado y probado visualmente en la Fase F1)
+más una corrección real encontrada en esa auditoría: el aviso transitorio
+de "hay más árboles de los que se muestran" (en `MapCanvas.tsx`) compartía
+`bottom-4` centrado con la nueva esquina de controles menores — se subió a
+`bottom-20` para no competir con esa esquina en pantallas angostas.
+
 ### Fase F4: proyección temporal de maduración del plan de siembra (2026-08-21)
 
 Nuevo componente `ProyeccionTemporal` en `/dashboard`: explora cómo crecería

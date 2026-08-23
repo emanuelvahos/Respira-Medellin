@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { isPointInPolygon } from "@/lib/map/pointInPolygon";
 import { MethodologyNote } from "@/components/dashboard/MethodologyNote";
+import { MapPanelPortal } from "@/components/map/MapPanelPortal";
 
 export function ComunaDetailPanel() {
   const { selectedComuna, setSelectedComuna } = useMapStore();
@@ -31,7 +32,12 @@ export function ComunaDetailPanel() {
   // el canvas, y en ambos casos el panel debe anunciarse y quedar navegable
   // sin que el usuario tenga que buscarlo con Tab.
   useEffect(() => {
-    if (isOpen) closeButtonRef.current?.focus();
+    // `preventScroll`: sin esto, enfocar el botón (fuera del viewport visible
+    // en el momento del render, ya que el panel recién empieza su transición
+    // de entrada) dispara el scroll-into-view por defecto del navegador
+    // sobre la PÁGINA completa (no solo el panel) — revelando el footer
+    // global y empujando el resto del layout del mapa fuera de la vista.
+    if (isOpen) closeButtonRef.current?.focus({ preventScroll: true });
   }, [isOpen]);
 
   const feature = comunasQuery.data?.features.find(
@@ -65,9 +71,10 @@ export function ComunaDetailPanel() {
   }, [feature, estacionesQuery.data]);
 
   return (
+    <MapPanelPortal>
     <aside
       className={cn(
-        "absolute inset-y-0 right-0 z-20 w-full max-w-sm border-l border-border bg-card p-5 shadow-xl transition-transform duration-300 ease-out",
+        "fixed top-16 bottom-0 right-0 z-20 w-full max-w-sm overflow-y-auto border-l border-border bg-card p-5 shadow-xl transition-transform duration-300 ease-out",
         isOpen ? "translate-x-0" : "translate-x-full",
       )}
       aria-hidden={!isOpen}
@@ -354,5 +361,6 @@ export function ComunaDetailPanel() {
         </div>
       )}
     </aside>
+    </MapPanelPortal>
   );
 }

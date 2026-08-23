@@ -3,9 +3,9 @@
 import { Suspense, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { MapLegend } from "@/components/map/MapLegend";
-import { MapLayerToggles } from "@/components/map/MapLayerToggles";
+import { MapConfigPanel } from "@/components/map/MapConfigPanel";
 import { ComunaDetailPanel } from "@/components/map/ComunaDetailPanel";
+import { ZonaSiembraDetailPanel } from "@/components/map/ZonaSiembraDetailPanel";
 import { ComunaKeyboardSelector } from "@/components/map/ComunaKeyboardSelector";
 import { AddressSearch } from "@/components/map/AddressSearch";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
@@ -69,28 +69,28 @@ function MapaInner() {
   return (
     <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden">
       <MapCanvas />
+
+      {/* Sistema de layout de 4 zonas fijas, ninguna se superpone con otra
+          sin importar cuántos controles estén activos a la vez (ver
+          "Rediseño de paneles flotantes" en docs/ESTADO_PROYECTO.md):
+          1. Barra superior centrada: buscador de dirección.
+          2. Esquina superior izquierda: panel de configuración colapsable
+             (Capas + Leyenda en pestañas, altura tope con scroll interno).
+          3. Esquina inferior izquierda: controles menores (ir a comuna,
+             copiar link).
+          4. Columna derecha, altura completa: panel de detalle contextual
+             (comuna O zona de siembra, mutuamente excluyentes — ver
+             `mapStore.ts`), comparten la misma región. */}
       <AddressSearch />
-      <MapLegend />
-      {/* Mobile (<640px): dos columnas de 256px no caben lado a lado por
-          debajo de ~550px de ancho — `ComunaKeyboardSelector` y
-          `MapLayerToggles` ya no fijan su propia posición absoluta ahí (ver
-          cada componente); este wrapper los apila en una sola columna con
-          `flex flex-col`, que respeta la altura real de cada uno en vez de
-          offsets en rem adivinados. Desde `sm:`, `sm:contents` saca el
-          wrapper del layout (no genera su propia caja) y cada hijo recupera
-          su posición absoluta original de dos columnas. */}
-      <div className="absolute inset-x-4 top-24 z-10 flex flex-col gap-3 sm:contents">
+      <MapConfigPanel />
+
+      <div className="absolute bottom-4 left-4 z-10 flex flex-col items-start gap-2">
         <ComunaKeyboardSelector />
-        <MapLayerToggles />
-        {/* Al lado izquierdo, debajo de "Ir a comuna": el panel de detalle de
-            comuna (derecha, `inset-y-0`) cubriría cualquier posición del lado
-            derecho en cuanto hay una comuna seleccionada — justo el momento en
-            que más sentido tiene copiar el link. */}
-        <div className="sm:absolute sm:left-4 sm:top-56 sm:z-10">
-          <CopyLinkButton label="Copiar link de esta vista" />
-        </div>
+        <CopyLinkButton label="Copiar link de esta vista" />
       </div>
+
       <ComunaDetailPanel />
+      <ZonaSiembraDetailPanel />
     </div>
   );
 }

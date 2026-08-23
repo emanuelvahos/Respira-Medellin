@@ -1,16 +1,15 @@
 import { BroadcastIcon } from "@phosphor-icons/react/dist/ssr";
-import { useMapStore } from "@/store/mapStore";
 
+/**
+ * Contenido de la pestaña "Leyenda" de `MapConfigPanel` — sin posición
+ * propia (ver "Rediseño de paneles flotantes" en docs/ESTADO_PROYECTO.md).
+ * Ya no necesita ocultarse cuando hay un panel de detalle abierto: al vivir
+ * dentro del panel de configuración (izquierda), nunca comparte esquina con
+ * los paneles de detalle (derecha).
+ */
 export function MapLegend() {
-  // El panel de detalle de zona de siembra ancla a la misma esquina inferior
-  // (derecha) y a pantallas angostas (o con la leyenda muy alta) se solapan
-  // visualmente — se prioriza el panel, que es la acción activa del usuario,
-  // y la leyenda vuelve a aparecer al cerrarlo.
-  const zonaSiembraPanelAbierto = useMapStore((state) => state.zonaSiembraPanelAbierto);
-  if (zonaSiembraPanelAbierto) return null;
-
   return (
-    <div className="pointer-events-none absolute bottom-4 left-4 z-10 hidden w-64 rounded-lg border border-border bg-card/95 p-4 text-xs text-card-foreground shadow-md backdrop-blur sm:block">
+    <div className="text-xs text-card-foreground">
       <p className="mb-2 font-heading text-sm font-semibold">Leyenda</p>
 
       <div className="mb-3">
@@ -22,11 +21,11 @@ export function MapLegend() {
           <span>Baja</span>
           <span>Alta</span>
         </div>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span className="inline-block size-2.5 shrink-0 rounded-full bg-muted-foreground/40" aria-hidden="true" />
           Gris plano: sin dato de PM2.5, sin score AHP calculado
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span
             className="inline-block size-2.5 shrink-0 rounded-full border-2 border-foreground bg-warning/40"
             aria-hidden="true"
@@ -38,7 +37,7 @@ export function MapLegend() {
           en el inventario real de zonas verdes (Santa Cruz, Villa Hermosa,
           San Cristóbal, Santa Elena)
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span
             className="inline-block size-2.5 shrink-0 rounded-full border-2 border-dotted border-critical bg-warning/40"
             aria-hidden="true"
@@ -50,7 +49,7 @@ export function MapLegend() {
           — ninguna estación SIATA real dentro de la comuna (Popular,
           Manrique, Doce de Octubre). Confianza media; ver panel de detalle.
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-data-sky bg-warning/40 text-[8px]" aria-hidden="true">
             ⏱
           </span>
@@ -68,7 +67,7 @@ export function MapLegend() {
         <p className="mb-1 font-medium text-muted-foreground">
           Zonas priorizadas de siembra
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span
             className="inline-block size-2.5 shrink-0 rounded-full border-2 border-critical bg-warning/40"
             aria-hidden="true"
@@ -93,7 +92,7 @@ export function MapLegend() {
         <p className="mb-1 font-medium text-muted-foreground">
           Estaciones de monitoreo PM2.5 (activable desde Capas)
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] text-muted-foreground">
           <span
             className="inline-flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-data-sky bg-card text-data-sky"
             aria-hidden="true"

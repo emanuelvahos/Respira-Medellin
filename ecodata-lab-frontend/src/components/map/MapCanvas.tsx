@@ -29,7 +29,6 @@ import {
 import type { Bbox } from "@/lib/api/endpoints";
 import { createComunasLayer } from "@/components/map/layers/comunasLayer";
 import { createZonasSiembraLayer, type ZonaSiembraFeature } from "@/components/map/layers/zonasSiembraLayer";
-import { ZonaSiembraDetailPanel } from "@/components/map/ZonaSiembraDetailPanel";
 import { createZonasVerdesLayer } from "@/components/map/layers/zonasVerdesLayer";
 import { createArbolesClustersLayer, createArbolesPuntosLayer } from "@/components/map/layers/arbolesSauLayer";
 import {
@@ -59,9 +58,8 @@ export function MapCanvas() {
     setIsFlyingTo,
     searchMarker,
     mapStyle,
-    setMapStyle,
     mostrarZonasDescartadas,
-    setZonaSiembraPanelAbierto,
+    setSelectedZonaSiembra,
   } = useMapStore();
 
   const reducedMotion = usePrefersReducedMotion();
@@ -147,22 +145,11 @@ export function MapCanvas() {
     [layers.comunas, comunasQuery.data, resumenPorComuna, selectedComuna, hoveredComuna, setSelectedComuna, setHoveredComuna],
   );
 
-  // --- Panel de la zona de siembra seleccionada (Fase D: auditoría de
-  // viabilidad) — click para fijar, mismo patrón que `selectedComuna` pero
-  // con estado local: no necesita persistir en el store global ni afectar
-  // otras vistas (dashboard, URL) como sí hace la comuna seleccionada.
-  const [selectedZonaSiembra, setSelectedZonaSiembra] = useState<ZonaSiembraFeature | null>(null);
-
-  // `MapLegend` (esquina inferior izquierda) y este panel (esquina inferior
-  // derecha) se solapan visualmente en pantallas angostas o cuando la
-  // leyenda es muy alta — el store solo recibe este booleano derivado para
-  // que `MapLegend` pueda ocultarse mientras el panel está abierto, sin que
-  // `selectedZonaSiembra` en sí deje de ser estado local (ver comentario
-  // arriba: no debe afectar URL/dashboard).
-  useEffect(() => {
-    setZonaSiembraPanelAbierto(selectedZonaSiembra !== null);
-  }, [selectedZonaSiembra, setZonaSiembraPanelAbierto]);
-
+  // Panel de la zona de siembra seleccionada (Fase D: auditoría de
+  // viabilidad) — click para fijar. Vive en el store (no como estado local)
+  // para poder aplicar exclusión mutua real con `selectedComuna`: ambos
+  // paneles de detalle comparten la misma región fija de la derecha, ver
+  // `setSelectedZonaSiembra`/`setSelectedComuna` en `mapStore.ts`.
   const zonasSiembraLayer = useMemo(
     () =>
       layers.zonasSiembra
@@ -172,7 +159,7 @@ export function MapCanvas() {
             onClick: setSelectedZonaSiembra,
           })
         : null,
-    [layers.zonasSiembra, zonasSiembraQuery.data, mostrarZonasDescartadas],
+    [layers.zonasSiembra, zonasSiembraQuery.data, mostrarZonasDescartadas, setSelectedZonaSiembra],
   );
 
   const zonasVerdesLayer = useMemo(
@@ -478,27 +465,15 @@ export function MapCanvas() {
       </DeckGL>
 
       {layers.arbolesSau && arbolesSauZoomCercano && arbolesPuntosQuery.data?.truncado && (
-        <div className="absolute bottom-4 left-4 z-10 rounded-md border border-border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-md backdrop-blur">
+        // Centrado y levantado (`bottom-20`, no `bottom-4`): la esquina
+        // inferior izquierda es la región fija de controles menores
+        // (`CopyLinkButton`/`ComunaKeyboardSelector`, ver `MapaClient`) —
+        // este aviso es transitorio, no un control, y al estar centrado
+        // podría invadir esa esquina en pantallas angostas si compartiera
+        // el mismo `bottom-4`.
+        <div className="absolute inset-x-4 bottom-20 z-10 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-md border border-border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-md backdrop-blur">
           Hay más árboles en esta vista de los que se muestran ({arbolesPuntosQuery.data.limite} máx.) — acerca más el zoom para verlos todos.
         </div>
-      )}
-
-      {selectedZonaSiembra && (
-        <ZonaSiembraDetailPanel
-          zona={selectedZonaSiembra}
-          onClose={() => setSelectedZonaSiembra(null)}
-          onVerEnMapaCompleto={() => {
-            const centroid = approximateCentroid(selectedZonaSiembra.geometry);
-            if (centroid) {
-              flyTo(
-                setViewState,
-                { longitude: centroid[0], latitude: centroid[1], zoom: 18.5, pitch: 0, bearing: 0 },
-                reducedMotion,
-              );
-            }
-            setMapStyle("satellite");
-          }}
-        />
       )}
     </div>
   );

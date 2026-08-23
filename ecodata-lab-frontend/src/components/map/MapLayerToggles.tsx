@@ -18,6 +18,12 @@ const LAYER_LABELS: Record<MapLayerId, string> = {
   arbolesSau: "Árboles del SAU (inventario real)",
 };
 
+/**
+ * Contenido de la pestaña "Capas" de `MapConfigPanel` — sin posición propia
+ * (el panel de configuración es quien decide dónde vivir en pantalla, ver
+ * "Rediseño de paneles flotantes" en docs/ESTADO_PROYECTO.md). Cualquier
+ * capa/toggle nuevo del mapa va aquí, no en una caja flotante nueva.
+ */
 export function MapLayerToggles() {
   const {
     layers,
@@ -48,15 +54,7 @@ export function MapLayerToggles() {
   }, [zonasSiembraQuery.data]);
 
   return (
-    // Mobile (<640px): flujo normal dentro del stack vertical de
-    // `MapaClient` (no cabe una columna izquierda + derecha de 256px cada
-    // una por debajo de ~550px de ancho). Desde `sm:`, posición absoluta
-    // original: `top-24` deja espacio para `AddressSearch` arriba.
-    <div className="relative z-10 w-full rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur sm:absolute sm:right-4 sm:top-24 sm:w-64">
-      <p className="mb-2 font-heading text-sm font-semibold text-card-foreground">
-        Capas
-      </p>
-
+    <div className="text-sm">
       <label className="mb-3 flex items-center justify-between gap-2 border-b border-border pb-3">
         <span className="text-foreground">Vista satelital</span>
         <input
