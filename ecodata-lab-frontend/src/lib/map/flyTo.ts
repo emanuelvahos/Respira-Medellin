@@ -10,7 +10,7 @@ export type FlyToTarget = {
 };
 
 /**
- * Vuelo de cámara compartido por "Respiro Urbano" (selección de comuna) y por
+ * Vuelo de cámara compartido por la selección de comuna (`MapCanvas`) y por
  * `AddressSearch`: actualiza el `viewState` del store con un
  * `FlyToInterpolator` de deck.gl.
  *
@@ -20,7 +20,7 @@ export type FlyToTarget = {
  * render, cancelando la animación nativa casi de inmediato.
  *
  * Devuelve la duración (ms) para que el llamador pueda programar lo que deba
- * ocurrir cuando el vuelo termine (p. ej. revelar árboles 3D).
+ * ocurrir cuando el vuelo termine.
  */
 export function flyTo(
   setViewState: (viewState: MapViewState) => void,

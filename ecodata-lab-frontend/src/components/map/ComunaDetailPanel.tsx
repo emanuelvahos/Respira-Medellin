@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
-import { useComunas, usePM25, useResumenComuna, useSaludResumenComuna } from "@/lib/api/queries";
+import {
+  useComunas,
+  useEstacionesPM25,
+  usePM25,
+  useResumenComuna,
+  useSaludResumenComuna,
+} from "@/lib/api/queries";
 import { useMapStore } from "@/store/mapStore";
 import { cn } from "@/lib/utils";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
+import { isPointInPolygon } from "@/lib/map/pointInPolygon";
 import { MethodologyNote } from "@/components/dashboard/MethodologyNote";
 
 export function ComunaDetailPanel() {
@@ -14,6 +21,7 @@ export function ComunaDetailPanel() {
   const resumenQuery = useResumenComuna();
   const pm25Query = usePM25();
   const saludQuery = useSaludResumenComuna();
+  const estacionesQuery = useEstacionesPM25();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const isOpen = selectedComuna !== null;
@@ -42,6 +50,19 @@ export function ComunaDetailPanel() {
     (c) => normalizeComunaName(c.comuna) === selectedComuna,
   );
   const [mostrarTasa, setMostrarTasa] = useState(false);
+
+  // Cobertura real de medición (Fase F2): cuántas estaciones SIATA caen
+  // físicamente dentro del polígono de esta comuna — mismo point-in-polygon
+  // (ray casting) ya usado para dispersar árboles/zonas dentro de un
+  // polígono real (`randomPointsInPolygon`), aquí solo para contar. Esto es
+  // lo que explica visualmente, en el mapa, por qué una comuna tiene PM2.5
+  // "estimado" o "histórico": no tiene ninguna estación propia.
+  const nEstaciones = useMemo(() => {
+    if (!feature || !estacionesQuery.data) return null;
+    return estacionesQuery.data.filter((e) =>
+      isPointInPolygon([e.lon, e.lat], feature.geometry),
+    ).length;
+  }, [feature, estacionesQuery.data]);
 
   return (
     <aside
@@ -191,6 +212,20 @@ export function ComunaDetailPanel() {
 
               <div>
                 <dt className="text-xs text-muted-foreground">
+                  Estaciones de monitoreo PM2.5
+                </dt>
+                <dd
+                  className={cn(
+                    "font-medium",
+                    nEstaciones != null && nEstaciones <= 1 ? "text-warning" : "text-foreground",
+                  )}
+                >
+                  {nEstaciones ?? "Cargando…"}
+                </dd>
+              </div>
+
+              <div>
+                <dt className="text-xs text-muted-foreground">
                   Árboles registrados
                 </dt>
                 <dd className="font-medium text-foreground">
@@ -232,6 +267,16 @@ export function ComunaDetailPanel() {
                 </dd>
               </div>
             </dl>
+          )}
+
+          {nEstaciones != null && nEstaciones <= 1 && (
+            <div className="mt-3">
+              <MethodologyNote>
+                {nEstaciones === 0
+                  ? "Esta comuna no tiene ninguna estación de monitoreo propia — su PM2.5 no se mide directamente aquí (ver arriba si es estimado por interpolación o histórico de una comuna vecina)."
+                  : "Esta comuna tiene 1 estación de monitoreo — el dato de PM2.5 puede ser menos representativo de toda su área que en comunas con más cobertura."}
+              </MethodologyNote>
+            </div>
           )}
 
           {feature?.properties.poblacion != null && (

@@ -7,6 +7,96 @@
 > [`docs/ACTUALIZACION_DATOS.md`](./ACTUALIZACION_DATOS.md) para la cadencia
 > recomendada de refresco de cada fuente de datos.
 
+### Fase F4: proyección temporal de maduración del plan de siembra (2026-08-21)
+
+Nuevo componente `ProyeccionTemporal` en `/dashboard`: explora cómo crecería
+en el tiempo el efecto estimado del plan de siembra recomendado, a medida
+que los árboles plantados maduran — **nunca presenta un valor de PM2.5 en
+µg/kg**, solo un % (0-100) que multiplica los datos reales ya existentes
+(`arboles_cupo_estimado`, eficiencia cualitativa de mitigación).
+
+**Investigación previa** (2 rondas de exploración documentadas en el
+historial de la fase, resumidas aquí): la categoría de velocidad de
+crecimiento (Lenta/Media/Rápida) de las 5 especies documentadas está
+validada con 2 fuentes reales independientes (`fichas_especies.json` y
+Vásquez-Bedoya & Arroyave-Maya 2019, Revista EIA). Los AÑOS concretos de
+maduración por escenario NO tienen ese mismo respaldo — solo *Retrophyllum
+rospigliosii* (Pino Romerón) tiene un ancla numérica real (crecimiento
+medido en plantaciones andinas colombianas); las otras 4 especies usan
+convención general de arboricultura urbana. Se confirmó explícitamente que
+el SAU (339.724 árboles) **no tiene** un campo real de madurez ni de
+diámetro por individuo en su capa pública actual — no fue posible anclar
+esta curva con datos propios del proyecto, solo con literatura y la
+categoría cruzada.
+
+**Qué se construyó**:
+- Backend: `GET /api/siembra/proyeccion?anio=&escenario=` (Fase F4) — curva
+  logística `factor(t) = 1 / (1 + e^(-k·(t-t_mitad)))` calibrada por
+  especie/escenario para que `factor(0)=0.02` y `factor(anio_maduracion)=0.90`.
+  Agrega por comuna y ciudad ponderando por `arboles_cupo_estimado` real; en
+  las ~146 zonas con propuesta de diversificación de especies (Fase E3), el
+  factor se pondera por la proporción real de cada especie en esa zona, no
+  un factor genérico por zona. Ver `backend/app/services/maduracion.py` y
+  `backend/README.md` ("Curva de maduración del plan de siembra (Fase F4)").
+- Frontend: `ProyeccionTemporal.tsx` en `/dashboard` — slider de años (0 al
+  máximo del escenario conservador, ~40 años), selector de 3 escenarios
+  (optimista/esperado/conservador), gráfica de línea con marcador en el año
+  seleccionado, desglose por especie, y **los 6 caveats metodológicos
+  siempre visibles** (nunca detrás de un click/hover) — el texto de los
+  caveats viene literalmente del campo `caveats` de la respuesta del
+  endpoint, una sola fuente de verdad con el backend.
+- **No se construyó** una versión animada en el mapa (árboles "creciendo"
+  visualmente) — se evaluó y se decidió priorizar la versión de dashboard
+  (gráfica 2D determinista) para no reintroducir el mismo tipo de riesgo
+  técnico que tuvo `TreeInstances`/three.js (Fase F3): la curva de
+  maduración ya es la pieza de mayor incertidumbre metodológica del
+  proyecto, no ameritaba sumarle además complejidad de renderizado 3D.
+
+**Caveats que viajan con el dato** (ver el endpoint, nunca solo en esta
+documentación): la categoría de crecimiento está validada con 2 fuentes,
+los años no; el SAU no tiene madurez/DAP por individuo hoy; solo el Pino
+Romerón tiene ancla numérica real; esto modela el efecto marginal del plan,
+no el PM2.5 total futuro de la ciudad; la comparación contra el Plan
+Distrital de Silvicultura Urbana (i-Tree Eco real) es de plausibilidad, no
+de calibración; si se consigue data real de madurez del SAU, debe
+reemplazar esta estimación, no complementarla.
+
+### Fase F3: remoción de los árboles 3D ("Respiro Urbano") — decisión consciente de UX, no un bug (2026-08-21)
+
+Se removió por completo la revelación de árboles 3D al seleccionar una comuna
+(`TreeInstances.tsx`, construida en la Fase 3) y toda su sincronización de
+cámara geo↔three.js (`mapboxThreeSync.ts`). **Decisión de UX confirmada
+visualmente por el dueño del proyecto, no un bug sin resolver**: los conos 3D
+se sentían confusos y se desplazaban de forma extraña al rotar/arrastrar el
+mapa. Esta pieza fue, a lo largo de todo el proyecto, la técnicamente más
+frágil (bug de escala de copas sub-píxel, sign-flip de coordenadas norte/sur,
+bucle infinito de render por resincronización de `viewState`, blocking de
+clicks reales del mapa por el canvas three.js encima de deck.gl — varias
+rondas de debugging profundo documentadas en los comentarios del código que
+se removió). Ya existía una alternativa que sí funciona bien y fue validada
+visualmente: la capa de clusters/puntos reales del SAU
+(`arbolesSauLayer.ts`), que ahora es la única representación de árboles
+reales en el mapa.
+
+**Qué se eliminó**: `src/components/trees/TreeInstances.tsx`,
+`src/lib/map/mapboxThreeSync.ts`, `src/components/map/TreeModeSelector.tsx`,
+el estado `treesRevealed`/`treeMode`/`setTreeMode` de `mapStore.ts`, la
+lógica de revelación al final del flyTo en `MapCanvas.tsx`, y las funciones
+`bboxOfGeometry`/`randomPointsInPolygon` (usadas solo por los árboles 3D;
+`scatterInPolygon.ts` se renombró a `pointInPolygon.ts` porque ya no dispersa
+nada, solo prueba pertenencia). Se desinstalaron `three`, `@react-three/fiber`,
+`@react-three/drei` y `@types/three` — no se usaban en ningún otro lado del
+proyecto (confirmado por búsqueda de referencias antes de borrar).
+
+**Qué se mantuvo intacto**: el `flyTo` de cámara al seleccionar una comuna
+(zoom a nivel de calle, mismo `COMUNA_FLYTO_ZOOM`/`PITCH`/`BEARING` de
+siempre) — sigue siendo una buena experiencia por sí sola, solo se quitó la
+aparición de conos 3D al final de la animación. La capa de clusters/puntos
+del SAU (toggle "Árboles del SAU" en `MapLayerToggles`) no se tocó y sigue
+funcionando exactamente igual; como ya no depende de un modo mutuamente
+excluyente con los árboles 3D (`TreeModeSelector` los alternaba), volvió a
+ser un checkbox independiente en el panel de Capas, igual que las demás capas.
+
 ### Incidente: deploy de Render caído por `ValidationError` de `Settings` → CORREGIDO (2026-08-18)
 
 Los árboles 3D dejaban de mostrarse en ubicaciones reales del SAU y el

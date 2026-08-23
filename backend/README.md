@@ -104,6 +104,7 @@ python scripts/fetch_sau_arboles.py
 | GET | `/api/siembra/zona/{id_poligono}/detalle` | `recomendacion_siembra_por_zona.csv` + `fichas_especies.json` + `diversificacion_especies_siembra.geojson` | Detalle real de una zona: área, especie recomendada, su ficha botánica y (si aplica) una propuesta exploratoria de diversificación — ver "Detalle de zona de siembra (Fase E2)" y "Diversificación de especies por zona (Fase E3)" abajo. 404 si el `id_poligono` no existe |
 | GET | `/api/siembra/resumen-comuna` | `resumen_recomendacion_por_comuna.csv` + `scores_ahp_extendido_sin_siembra.csv` + `scores_ahp_interpolado_idw.csv` + `scores_ahp_altavista_historico.csv` | Score AHP y ranking agregado por comuna (11 comunas con zona de siembra + 4 comunas con score pero sin zona + 3 comunas con PM2.5 **interpolado, no medido** + Altavista con PM2.5 **histórico, no vigente** — ver "Comunas con score AHP pero sin zona de siembra", "PM2.5 interpolado (IDW)" y "Altavista — PM2.5 histórico real, no vigente" abajo) |
 | GET | `/api/siembra/ranking-comunas?peso_pm25=&peso_deficit=&peso_area=` | recalculado (ver abajo) | Ranking AHP con pesos custom (comparador de escenarios, Fase 4) |
+| GET | `/api/siembra/proyeccion?anio=&escenario=` | recalculado (ver abajo) | Curva de maduración estimada del plan de siembra — factor 0-1 (nunca un valor en µg/kg) por especie/comuna/ciudad, para "años desde la siembra" y escenario dados (Fase F4, exploratorio) — ver "Curva de maduración del plan de siembra (Fase F4)" abajo |
 | GET | `/api/zonas-verdes` | `inventario_zonas_verdes.geojson` | Inventario real de zonas verdes (48.348 polígonos) — ver "Fuente de `inventario_zonas_verdes.geojson`" abajo |
 | GET | `/api/arboles/resumen-comuna` | `sau_arboles_urbanos.csv` | Conteo real por comuna, top 5 especies y % de estado fitosanitario (SAU) — agregado liviano para el dashboard |
 | GET | `/api/arboles/clusters?cell_size_deg=` | idem | Clustering espacial en grid (centroide + conteo por celda) — para el mapa a zoom alejado |
@@ -155,6 +156,72 @@ ranking = orden descendente por score_total
   `ranking_prioridad` del CSV original.
 - No se re-ejecuta el spatial join ni se relee ningún archivo fuera de lo
   que el backend ya expone en otros endpoints.
+
+## Curva de maduración del plan de siembra (Fase F4): `/api/siembra/proyeccion`
+
+Un árbol recién plantado no mitiga PM2.5 de inmediato ni al nivel de un
+ejemplar adulto. Este endpoint estima ese efecto marginal en el tiempo,
+**multiplicando (nunca reemplazando)** los datos reales ya existentes
+(`arboles_cupo_estimado`, `pm25_eficiencia` cualitativa) por un factor 0-1
+que crece con los años desde la siembra — **nunca devuelve una cifra nueva
+de PM2.5 en µg/kg**, sería un dato inventado (ver "Detalle de zona de
+siembra (Fase E2)" arriba para por qué ese número no existe en ninguna
+fuente real del proyecto).
+
+**Parámetros**: `anio` (0-100, años desde la siembra) y `escenario`
+(`optimista`/`esperado`/`conservador`).
+
+**Fórmula** (implementada en `app/services/maduracion.py`):
+
+```
+factor(t) = 1 / (1 + e^(-k · (t − t_mitad)))
+```
+
+`k` y `t_mitad` se resuelven en forma cerrada por especie/escenario para
+que `factor(0) = 0.02` (cercano a 0, un árbol recién plantado casi no
+mitiga) y `factor(anio_maduracion) = 0.90` (nunca 100% — un árbol no
+"termina" de madurar). No es un ajuste estadístico a datos: es una elección
+de forma de curva transparente y documentada.
+
+**Agregación**: el factor de cada zona multiplica su `arboles_cupo_estimado`
+real; para las ~146 zonas con propuesta de diversificación real (Fase E3),
+el factor se pondera por la proporción real de cada especie en esa zona
+(`propuesta_diversificacion`), no se aplica un único factor genérico a toda
+la zona. Los agregados por comuna y ciudad son promedios ponderados por
+cupo real de árboles, no promedios simples entre zonas de tamaños distintos.
+
+**Qué SÍ está validado con evidencia real (y qué no)** — la respuesta
+incluye `caveats` explícitos (mismo patrón que `metodologia` en
+`/api/salud/resumen-comuna`, el caveat viaja con el dato):
+
+1. La categoría de velocidad de crecimiento (Lenta/Media/Rápida) por especie
+   está validada con **2 fuentes reales independientes**:
+   `fichas_especies.json` (campo `tasa_crecimiento`, fuente: Morales y
+   Varón 2013 / SAO 2009 / AMVA y UNAL 2014) y Vásquez-Bedoya & Arroyave-Maya
+   (2019, Revista EIA vol. 16 n.º 32) — mismo resultado en las 5 especies.
+2. El SAU (339.724 árboles) **no tiene un campo real de madurez ni de
+   diámetro por individuo** en la capa pública actual — confirmado contra
+   los 26 campos que expone el servicio ArcGIS origen (ver
+   `backend/scripts/fetch_sau_arboles.py`). No fue posible anclar esto
+   empíricamente con datos propios del proyecto.
+3. Los AÑOS concretos de maduración por escenario NO tienen el mismo
+   respaldo que la categoría: solo *Retrophyllum rospigliosii* (Pino
+   Romerón) tiene un ancla numérica real (~12 mm/año de incremento en DAP
+   medido en plantaciones andinas colombianas, Redalyc/Madera y Bosques);
+   las otras 4 especies usan convención general de arboricultura urbana
+   ajustada por porte final de la especie, no medida en Medellín.
+4. Este endpoint modela el **efecto marginal** del plan de siembra
+   recomendado, no el PM2.5 total futuro de la ciudad (tráfico, industria,
+   políticas quedan fuera por completo).
+5. El orden de magnitud del resultado se comparó (no se calibró) contra la
+   Tabla 12-14 del Plan Distrital de Silvicultura Urbana 2025-2036, que sí
+   usó **i-Tree Eco real calibrado con datos del SAU** — es una validación
+   de plausibilidad, no una calibración numérica exacta.
+6. Si en el futuro se consigue data real de madurez/DAP del SAU, debe
+   **reemplazar** esta estimación, no complementarla.
+
+Ver `app/services/maduracion.py` para la investigación completa y
+`docs/ESTADO_PROYECTO.md` (entrada Fase F4) para el resumen ejecutivo.
 
 ## Comunas con score AHP pero sin zona de siembra: `scores_ahp_extendido_sin_siembra.csv`
 

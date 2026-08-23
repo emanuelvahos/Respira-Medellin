@@ -111,6 +111,8 @@ export function Pm25TrendChart() {
                     borderRadius: 8,
                     fontSize: 12,
                   }}
+                  labelStyle={{ color: "var(--color-foreground)" }}
+                  itemStyle={{ color: "var(--color-foreground)" }}
                 />
                 <Line
                   type="monotone"

@@ -47,6 +47,14 @@ export function rankingComunasExportUrl(
   return `/api/siembra/ranking-comunas/export?${params.toString()}`;
 }
 
+/** `/api/siembra/proyeccion` (Fase F4) — curva de maduración estimada del
+ * plan de siembra, nunca un valor de PM2.5 en µg/kg (ver backend/README.md,
+ * "Curva de maduración del plan de siembra (Fase F4)"). */
+export function proyeccionMaduracionUrl(anio: number, escenario: string): string {
+  const params = new URLSearchParams({ anio: String(anio), escenario });
+  return `/api/siembra/proyeccion?${params.toString()}`;
+}
+
 /** `/api/arboles/clusters` — grid espacial (para zoom alejado del mapa). */
 export function arbolesClustersUrl(cellSizeDeg?: number): string {
   if (cellSizeDeg == null) return "/api/arboles/clusters";
@@ -55,10 +63,9 @@ export function arbolesClustersUrl(cellSizeDeg?: number): string {
 
 export type Bbox = { minLon: number; minLat: number; maxLon: number; maxLat: number };
 
-/** `/api/arboles/puntos` — árboles individuales reales dentro de un bbox.
- * Usado tanto por la capa clustered del mapa a zoom cercano (sin `limit`,
- * usa el tope por defecto del backend) como por "Respiro Urbano"
- * (`TreeInstances`, con `limit` acotado al cap de instancias 3D). */
+/** `/api/arboles/puntos` — árboles individuales reales dentro de un bbox,
+ * usado por la capa clustered/puntos del mapa a zoom cercano (tope por
+ * defecto del backend). */
 export function arbolesPuntosUrl(bbox: Bbox, limit?: number): string {
   const params = new URLSearchParams({
     min_lon: String(bbox.minLon),

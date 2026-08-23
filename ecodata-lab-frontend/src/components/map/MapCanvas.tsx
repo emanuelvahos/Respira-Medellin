@@ -3,15 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
 import type { PickingInfo } from "@deck.gl/core";
-import MapGL, { Marker, type MapRef } from "react-map-gl/mapbox";
+import MapGL, { Marker, Popup, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { BroadcastIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useComunas,
   useResumenComuna,
   useZonasSiembraGeojson,
   useZonasVerdes,
-  usePM25,
   useEstacionesPM25,
   useArbolesClusters,
   useArbolesPuntos,
@@ -42,14 +41,9 @@ import type { ResumenRecomendacionComuna } from "@/types/siembra";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 import { approximateCentroid } from "@/lib/map/geoCentroid";
 import { flyTo } from "@/lib/map/flyTo";
-import { bboxOfGeometry, randomPointsInPolygon } from "@/lib/map/scatterInPolygon";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { TreeInstances, type TreePoint } from "@/components/trees/TreeInstances";
-import type { MapCameraState } from "@/lib/map/mapboxThreeSync";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-const MAX_EXISTING_TREE_INSTANCES = 220;
-const MAX_RECOMMENDED_TREE_INSTANCES = 220;
 
 export function MapCanvas() {
   const {
@@ -63,27 +57,22 @@ export function MapCanvas() {
     particlesPaused,
     isFlyingTo,
     setIsFlyingTo,
-    treesRevealed,
-    setTreesRevealed,
-    treeMode,
     searchMarker,
     mapStyle,
     setMapStyle,
     mostrarZonasDescartadas,
+    setZonaSiembraPanelAbierto,
   } = useMapStore();
 
   const reducedMotion = usePrefersReducedMotion();
   const mapRef = useRef<MapRef>(null);
-  const [cameraState, setCameraState] = useState<MapCameraState | null>(null);
 
   // Memoizado: DeckGL trata un cambio de identidad de `viewState` como un
   // movimiento de cámara real y lo reaplica sobre Mapbox (`Mapbox.setProps`
-  // -> `map._render` -> evento "move"). Sin memo, cada re-render (p. ej. los
-  // que dispara `setCameraState` en el efecto de más abajo, en cada "move")
-  // reconstruye este objeto por referencia y reinyecta el mismo movimiento,
-  // que vuelve a disparar "move" -> setCameraState -> re-render: bucle
-  // infinito ("Maximum update depth exceeded"), solo visible una vez que
-  // `treesRevealed` activa ese efecto.
+  // -> `map._render` -> evento "move"). Sin memo, cada re-render reconstruye
+  // este objeto por referencia y reinyecta el mismo movimiento, que vuelve a
+  // disparar "move" -> re-render: riesgo de bucle si algo más abajo depende
+  // de ese evento de movimiento.
   const deckViewState = useMemo(
     () =>
       ({
@@ -99,7 +88,6 @@ export function MapCanvas() {
   const resumenQuery = useResumenComuna();
   const zonasSiembraQuery = useZonasSiembraGeojson();
   const zonasVerdesQuery = useZonasVerdes(layers.zonasVerdes);
-  const pm25Query = usePM25();
   const estacionesPm25Query = useEstacionesPM25();
 
   // --- Árboles SAU: clusters (grid liviano) a zoom alejado, puntos reales
@@ -164,6 +152,16 @@ export function MapCanvas() {
   // con estado local: no necesita persistir en el store global ni afectar
   // otras vistas (dashboard, URL) como sí hace la comuna seleccionada.
   const [selectedZonaSiembra, setSelectedZonaSiembra] = useState<ZonaSiembraFeature | null>(null);
+
+  // `MapLegend` (esquina inferior izquierda) y este panel (esquina inferior
+  // derecha) se solapan visualmente en pantallas angostas o cuando la
+  // leyenda es muy alta — el store solo recibe este booleano derivado para
+  // que `MapLegend` pueda ocultarse mientras el panel está abierto, sin que
+  // `selectedZonaSiembra` en sí deje de ser estado local (ver comentario
+  // arriba: no debe afectar URL/dashboard).
+  useEffect(() => {
+    setZonaSiembraPanelAbierto(selectedZonaSiembra !== null);
+  }, [selectedZonaSiembra, setZonaSiembraPanelAbierto]);
 
   const zonasSiembraLayer = useMemo(
     () =>
@@ -267,7 +265,7 @@ export function MapCanvas() {
     ],
   );
 
-  // --- "Respiro Urbano": flyTo + revelación de árboles 3D al seleccionar comuna ---
+  // --- flyTo de cámara al seleccionar una comuna ---
   //
   // IMPORTANTE: DeckGL controla el `viewState` del mapa subyacente (lo pasa a
   // MapGL como componente controlado). Llamar a `map.flyTo()` imperativamente
@@ -276,11 +274,12 @@ export function MapCanvas() {
   // de inmediato. Por eso el vuelo se dispara actualizando el `viewState` del
   // store con un `transitionInterpolator` de deck.gl (`FlyToInterpolator`),
   // que es quien realmente anima la cámara compartida por deck.gl + Mapbox.
+  //
+  // Fase F3: este efecto originalmente también revelaba árboles 3D
+  // (`TreeInstances`) al terminar el vuelo — se removieron por decisión de
+  // UX (ver docs/ESTADO_PROYECTO.md), el flyTo en sí se mantiene igual.
   useEffect(() => {
     if (!selectedComuna || !isFlyingTo) return;
-    // En modo "ciudad" no se revelan los árboles 3D por comuna (ver
-    // `setTreeMode` en el store): el flyTo de cámara igual ocurre al hacer
-    // click en una comuna, pero `setTreesRevealed` de más abajo se omite.
 
     const feature = comunasQuery.data?.features.find(
       (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
@@ -303,218 +302,21 @@ export function MapCanvas() {
       reducedMotion,
     );
 
-    const timeout = setTimeout(() => {
-      setIsFlyingTo(false);
-      if (treeMode === "comuna") setTreesRevealed(true);
-    }, duration + 50);
+    const timeout = setTimeout(() => setIsFlyingTo(false), duration + 50);
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe re-ejecutarse cuando cambia la comuna seleccionada o arranca el flyTo.
   }, [selectedComuna, isFlyingTo]);
 
-  // Cámara en vivo (para sincronizar TreeInstances) mientras los árboles están visibles.
-  //
-  // Guard de igualdad de valores (no solo de referencia): DeckGL resincroniza
-  // su prop `viewState` controlado sobre la instancia de Mapbox en cada
-  // render (no solo cuando el usuario interactúa), y esa resincronización
-  // dispara el evento "move" de Mapbox incluso si las coordenadas no
-  // cambiaron. Sin este guard, `setCameraState` crea un objeto nuevo en cada
-  // "move" -> re-render -> DeckGL vuelve a resincronizar -> nuevo "move" ->
-  // bucle síncrono ("Maximum update depth exceeded"), reproducible al
-  // seleccionar cualquier comuna (justo cuando `treesRevealed` activa este
-  // efecto). Comparar valores con epsilon antes de actualizar el estado
-  // rompe el ciclo sin perder la sincronización real de cámara.
-  const lastCameraStateRef = useRef<MapCameraState | null>(null);
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (!map || !treesRevealed) return;
-
-    const CAMERA_EPSILON = 1e-6;
-    const camerasEqual = (a: MapCameraState, b: MapCameraState) =>
-      Math.abs(a.center[0] - b.center[0]) < CAMERA_EPSILON &&
-      Math.abs(a.center[1] - b.center[1]) < CAMERA_EPSILON &&
-      Math.abs(a.zoom - b.zoom) < CAMERA_EPSILON &&
-      Math.abs(a.pitch - b.pitch) < CAMERA_EPSILON &&
-      Math.abs(a.bearing - b.bearing) < CAMERA_EPSILON;
-
-    const updateCameraState = () => {
-      const center = map.getCenter();
-      const next: MapCameraState = {
-        center: [center.lng, center.lat],
-        zoom: map.getZoom(),
-        pitch: map.getPitch(),
-        bearing: map.getBearing(),
-      };
-      if (lastCameraStateRef.current && camerasEqual(lastCameraStateRef.current, next)) {
-        return;
-      }
-      lastCameraStateRef.current = next;
-      setCameraState(next);
-    };
-    updateCameraState();
-    map.on("move", updateCameraState);
-    return () => {
-      map.off("move", updateCameraState);
-    };
-  }, [treesRevealed]);
-
-  const selectedComunaFeature = useMemo(() => {
-    if (!selectedComuna) return null;
-    return (
-      comunasQuery.data?.features.find(
-        (f) => normalizeComunaName(f.properties.nombre) === selectedComuna,
-      ) ?? null
-    );
-  }, [selectedComuna, comunasQuery.data]);
-
-  const comunaCentroid = useMemo(
-    () => (selectedComunaFeature ? approximateCentroid(selectedComunaFeature.geometry) : null),
-    [selectedComunaFeature],
-  );
-
-  // Cuántos árboles "existentes" mostrar en 3D: mismo criterio de cap ya
-  // usado antes de esta integración (proporcional al conteo real agregado
-  // `cantidad_arboles_totales`, techo MAX_EXISTING_TREE_INSTANCES) — lo
-  // único que cambió es que ahora se piden posiciones REALES del SAU con
-  // ese mismo tope, en vez de dispersarlas sintéticamente dentro del
-  // polígono de la comuna (ver randomPointsInPolygon, todavía usado abajo
-  // solo para las zonas "recomendadas", que no son árboles reales).
-  const nExistingTrees = useMemo(() => {
-    if (!selectedComuna) return 0;
-    const registrosPm25 = pm25Query.data?.filter(
-      (r) => normalizeComunaName(r.comuna) === selectedComuna,
-    );
-    const arbolesTotales = registrosPm25?.length
-      ? Math.max(...registrosPm25.map((r) => r.cantidad_arboles_totales))
-      : 0;
-    return Math.min(MAX_EXISTING_TREE_INSTANCES, Math.max(20, Math.round(arbolesTotales / 25)));
-  }, [selectedComuna, pm25Query.data]);
-
-  const comunaBbox = useMemo(
-    () => (selectedComunaFeature ? bboxOfGeometry(selectedComunaFeature.geometry) : null),
-    [selectedComunaFeature],
-  );
-
-  // Reutiliza el mismo hook que alimenta la capa clustered del SAU en el
-  // mapa (ver arbolesPuntosQuery arriba) — mismo endpoint, mismo hook,
-  // solo con un bbox de comuna completa y un `limit` acotado al cap de
-  // instancias 3D en vez del bbox de viewport + tope por defecto. El
-  // backend ya muestrea aleatoriamente cuando trunca (ver
-  // `puntos_en_bbox` en `backend/app/services/arboles.py`), así que no
-  // hace falta una segunda pasada de sub-muestreo en el cliente.
-  const arbolesExistentesQuery = useArbolesPuntos(
-    treesRevealed && nExistingTrees > 0,
-    comunaBbox,
-    nExistingTrees || undefined,
-  );
-
-  const treePoints = useMemo<TreePoint[]>(() => {
-    if (!treesRevealed || !comunaCentroid) return [];
-
-    const existingPoints: TreePoint[] = (arbolesExistentesQuery.data?.puntos ?? []).map(
-      (p): TreePoint => ({
-        lon: p.lon,
-        lat: p.lat,
-        kind: "existing",
-        especie: p.s_especie,
-        nombreComun: p.nombre_comun,
-        estado: p.s_estado_arbol,
-      }),
-    );
-
-    // Fase E1: los conos "recomendados" de Respiro Urbano son otra forma de
-    // presentar la misma recomendación de siembra que `zonasSiembraLayer` —
-    // por defecto excluyen las zonas `posible_no_viable` igual que el mapa
-    // 2D, y respetan el mismo toggle "Mostrar zonas descartadas".
-    const zonasComuna =
-      zonasSiembraQuery.data?.features.filter(
-        (f) =>
-          normalizeComunaName(f.properties.comuna) === selectedComuna &&
-          (mostrarZonasDescartadas || f.properties.viabilidad_auditada !== "posible_no_viable"),
-      ) ?? [];
-    const totalCupo = zonasComuna.reduce((acc, f) => acc + f.properties.arboles_cupo_estimado, 0) || 1;
-    const recommendedPoints: TreePoint[] = [];
-    for (const zona of zonasComuna) {
-      const share = Math.round(
-        (zona.properties.arboles_cupo_estimado / totalCupo) * MAX_RECOMMENDED_TREE_INSTANCES,
-      );
-      const n = Math.min(share, 12);
-      randomPointsInPolygon(zona.geometry, n).forEach(([lon, lat]) => {
-        recommendedPoints.push({ lon, lat, kind: "recommended" });
-      });
-    }
-
-    return [...existingPoints, ...recommendedPoints];
-  }, [
-    treesRevealed,
-    comunaCentroid,
-    arbolesExistentesQuery.data,
-    selectedComuna,
-    zonasSiembraQuery.data,
-    mostrarZonasDescartadas,
-  ]);
-
-  // --- Tooltip de especie real al pasar el mouse sobre un árbol "existente" ---
-  //
-  // TreeInstances renderiza sobre un <canvas> three.js con pointer-events:none
-  // (para no bloquear el pan/zoom del mapa subyacente) — por eso el hover no
-  // se resuelve con raycasting de R3F, sino proyectando cada punto real a
-  // coordenadas de pantalla con `map.project()` (misma instancia de Mapbox
-  // que ya usa el resto de MapCanvas) y buscando el árbol más cercano al
-  // cursor dentro de un radio en píxeles. Los árboles "recomendados" no
-  // tienen especie real todavía, así que no participan de este hover.
-  const [hoveredTree, setHoveredTree] = useState<{
-    especie: string;
-    nombreComun: string | null;
-    x: number;
-    y: number;
-  } | null>(null);
-
-  const existingTreePoints = useMemo(
-    () => treePoints.filter((p) => p.kind === "existing"),
-    [treePoints],
-  );
-
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (!map || !treesRevealed || existingTreePoints.length === 0) {
-      setHoveredTree(null);
-      return;
-    }
-    const HOVER_RADIUS_PX = 22;
-
-    const handleMouseMove = (e: { point: { x: number; y: number } }) => {
-      let closest: { point: TreePoint; distSq: number } | null = null;
-      for (const point of existingTreePoints) {
-        const screen = map.project([point.lon, point.lat]);
-        const dx = screen.x - e.point.x;
-        const dy = screen.y - e.point.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq <= HOVER_RADIUS_PX * HOVER_RADIUS_PX && (!closest || distSq < closest.distSq)) {
-          closest = { point, distSq };
-        }
-      }
-      if (!closest) {
-        setHoveredTree(null);
-        return;
-      }
-      const screen = map.project([closest.point.lon, closest.point.lat]);
-      setHoveredTree({
-        especie: closest.point.especie ?? "Especie sin dato",
-        nombreComun: closest.point.nombreComun ?? null,
-        x: screen.x,
-        y: screen.y,
-      });
-    };
-    const handleMouseLeave = () => setHoveredTree(null);
-
-    map.on("mousemove", handleMouseMove);
-    map.on("mouseout", handleMouseLeave);
-    return () => {
-      map.off("mousemove", handleMouseMove);
-      map.off("mouseout", handleMouseLeave);
-    };
-  }, [treesRevealed, existingTreePoints]);
+  // --- Estaciones reales de monitoreo PM2.5 (SIATA) — marcadores DOM
+  // (`Marker`), no una capa deck.gl: son pocos puntos (~10), y así se
+  // reutiliza el mismo patrón ya usado para `searchMarker` (ícono Phosphor
+  // + evento de click nativo), en vez de armar un atlas de íconos para
+  // `IconLayer`. `BroadcastIcon` (antena) es deliberadamente distinto de
+  // los íconos/colores ya usados para árboles y zonas de siembra, para que
+  // no se confundan a simple vista (Fase F2).
+  const [estacionPopupId, setEstacionPopupId] = useState<string | null>(null);
+  const estacionPopup = estacionesPm25Query.data?.find((e) => e.id === estacionPopupId) ?? null;
 
   if (!MAPBOX_TOKEN) {
     return (
@@ -622,6 +424,56 @@ export function MapCanvas() {
               />
             </Marker>
           )}
+
+          {layers.estacionesPm25 &&
+            estacionesPm25Query.data?.map((estacion) => (
+              <Marker
+                key={estacion.id}
+                longitude={estacion.lon}
+                latitude={estacion.lat}
+                anchor="bottom"
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation();
+                  setEstacionPopupId((current) => (current === estacion.id ? null : estacion.id));
+                }}
+              >
+                <button
+                  type="button"
+                  aria-label={`Estación de monitoreo ${estacion.nombre}`}
+                  onMouseEnter={() => setEstacionPopupId(estacion.id)}
+                  onMouseLeave={() =>
+                    setEstacionPopupId((current) => (current === estacion.id ? null : current))
+                  }
+                  className="flex size-7 items-center justify-center rounded-full border-2 border-data-sky bg-card/95 text-data-sky shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <BroadcastIcon size={16} weight="bold" aria-hidden="true" />
+                </button>
+              </Marker>
+            ))}
+
+          {layers.estacionesPm25 && estacionPopup && (
+            <Popup
+              longitude={estacionPopup.lon}
+              latitude={estacionPopup.lat}
+              anchor="top"
+              offset={12}
+              closeButton={false}
+              closeOnClick={false}
+              onClose={() => setEstacionPopupId(null)}
+            >
+              <div className="text-xs">
+                <p className="font-semibold text-foreground">{estacionPopup.nombre}</p>
+                <p className="mt-0.5 text-muted-foreground">Comuna: {estacionPopup.comuna_asignada}</p>
+                <p className="mt-0.5 text-foreground">
+                  Última lectura:{" "}
+                  <strong>{estacionPopup.valor_ug_m3.toFixed(1)} µg/m³</strong>
+                </p>
+                <p className="mt-0.5 text-muted-foreground">
+                  {new Date(estacionPopup.fecha_lectura).toLocaleString("es-CO")}
+                </p>
+              </div>
+            </Popup>
+          )}
         </MapGL>
       </DeckGL>
 
@@ -629,15 +481,6 @@ export function MapCanvas() {
         <div className="absolute bottom-4 left-4 z-10 rounded-md border border-border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-md backdrop-blur">
           Hay más árboles en esta vista de los que se muestran ({arbolesPuntosQuery.data.limite} máx.) — acerca más el zoom para verlos todos.
         </div>
-      )}
-
-      {treeMode === "comuna" && treesRevealed && comunaCentroid && cameraState && (
-        <TreeInstances
-          origin={comunaCentroid}
-          cameraState={cameraState}
-          points={treePoints}
-          reducedMotion={reducedMotion}
-        />
       )}
 
       {selectedZonaSiembra && (
@@ -656,21 +499,6 @@ export function MapCanvas() {
             setMapStyle("satellite");
           }}
         />
-      )}
-
-      {hoveredTree && (
-        <div
-          className="deck-tooltip pointer-events-none absolute z-20"
-          style={{ left: hoveredTree.x, top: hoveredTree.y, transform: "translate(-50%, -120%)" }}
-        >
-          <strong>{hoveredTree.especie}</strong>
-          {hoveredTree.nombreComun && (
-            <>
-              <br />
-              {hoveredTree.nombreComun}
-            </>
-          )}
-        </div>
       )}
     </div>
   );

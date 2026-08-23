@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
 from app.models.siembra import (
+    ProyeccionMaduracion,
     RankingComunaItem,
     RecomendacionSiembraZona,
     ResumenRecomendacionComuna,
@@ -29,6 +30,7 @@ from app.services.data_loader import (
     load_zonas_priorizadas_siembra_geojson,
 )
 from app.services.export import build_ranking_excel, build_ranking_pdf, nombre_archivo
+from app.services.maduracion import Escenario, calcular_proyeccion
 
 router = APIRouter(prefix="/api/siembra", tags=["siembra"])
 
@@ -130,6 +132,32 @@ def get_resumen_comuna() -> list[ResumenRecomendacionComuna]:
         *load_scores_ahp_interpolado_idw(),
         *load_scores_ahp_altavista_historico(),
     ]
+
+
+@router.get("/proyeccion", response_model=ProyeccionMaduracion)
+def get_proyeccion_maduracion(
+    anio: int = Query(default=0, ge=0, le=100, description="Años desde la siembra"),
+    escenario: Escenario = Query(default="esperado"),
+) -> ProyeccionMaduracion:
+    """Curva de maduración estimada del plan de siembra (Fase F4 —
+    exploratorio, ver docs/ESTADO_PROYECTO.md).
+
+    Multiplica (nunca reemplaza) `arboles_cupo_estimado` real de cada zona
+    por un factor 0-1 que crece con los años desde la siembra, según la
+    velocidad de crecimiento de la especie recomendada (o, en zonas con
+    propuesta de diversificación de la Fase E3, ponderado por la proporción
+    real de cada especie en esa zona). NUNCA devuelve una cifra de PM2.5 en
+    µg/kg — ver `app/services/maduracion.py` para la metodología completa,
+    qué está validado con evidencia real y qué es una simplificación
+    razonable no verificada empíricamente para Medellín (los `caveats` de
+    la respuesta viajan con el dato, no viven solo en la documentación).
+    """
+    return calcular_proyeccion(
+        anio=anio,
+        escenario=escenario,
+        zonas=load_recomendacion_siembra_zona(),
+        diversificacion_por_id=load_diversificacion_especies_por_id(),
+    )
 
 
 def _calcular_ranking_o_422(peso_pm25: float, peso_deficit: float, peso_area: float) -> list[RankingComunaItem]:

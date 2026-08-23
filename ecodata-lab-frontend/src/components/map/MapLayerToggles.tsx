@@ -5,14 +5,17 @@ import { useMapStore, type MapLayerId } from "@/store/mapStore";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useZonasSiembraGeojson } from "@/lib/api/queries";
 
-// `arbolesSau` ya no es un checkbox suelto aquí: se controla desde el
-// selector explícito de modo (`TreeModeSelector`), que decide entre "por
-// comuna" (árboles 3D) y "ciudad completa" (esta capa de clusters/puntos).
-const LAYER_LABELS: Record<Exclude<MapLayerId, "arbolesSau">, string> = {
+const LAYER_LABELS: Record<MapLayerId, string> = {
   comunas: "Comunas (prioridad AHP)",
   zonasSiembra: "Zonas priorizadas de siembra",
   zonasVerdes: "Zonas verdes (inventario)",
   pm25: "PM2.5 (partículas animadas)",
+  estacionesPm25: "Estaciones de monitoreo PM2.5",
+  // Fase F3: toggle independiente de nuevo — antes lo controlaba
+  // `TreeModeSelector` (removido junto con los árboles 3D, ver
+  // docs/ESTADO_PROYECTO.md). Clusters a zoom alejado, puntos reales del SAU
+  // al acercar (ver `arbolesSauZoomCercano` en `MapCanvas`).
+  arbolesSau: "Árboles del SAU (inventario real)",
 };
 
 export function MapLayerToggles() {
@@ -45,9 +48,11 @@ export function MapLayerToggles() {
   }, [zonasSiembraQuery.data]);
 
   return (
-    // `top-24`, no `top-4`: deja espacio arriba para `AddressSearch`, que
-    // ocupa el borde superior de la pantalla.
-    <div className="absolute right-4 top-24 z-10 w-64 rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur">
+    // Mobile (<640px): flujo normal dentro del stack vertical de
+    // `MapaClient` (no cabe una columna izquierda + derecha de 256px cada
+    // una por debajo de ~550px de ancho). Desde `sm:`, posición absoluta
+    // original: `top-24` deja espacio para `AddressSearch` arriba.
+    <div className="relative z-10 w-full rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur sm:absolute sm:right-4 sm:top-24 sm:w-64">
       <p className="mb-2 font-heading text-sm font-semibold text-card-foreground">
         Capas
       </p>
@@ -63,7 +68,7 @@ export function MapLayerToggles() {
       </label>
 
       <ul className="space-y-2">
-        {(Object.keys(LAYER_LABELS) as Exclude<MapLayerId, "arbolesSau">[]).map((id) => (
+        {(Object.keys(LAYER_LABELS) as MapLayerId[]).map((id) => (
           <li key={id}>
             <label className="flex items-center justify-between gap-2">
               <span className="text-foreground">{LAYER_LABELS[id]}</span>

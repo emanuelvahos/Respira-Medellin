@@ -22,7 +22,7 @@ type Status = "idle" | "loading" | "success" | "empty" | "error";
 /**
  * Búsqueda de direcciones/barrios en Medellín (Mapbox Geocoding, mismo token
  * público que `MapCanvas`). Vuela la cámara con el mismo helper `flyTo` que
- * usa "Respiro Urbano" al seleccionar una comuna — no hay una tercera
+ * usa `MapCanvas` al seleccionar una comuna — no hay una tercera
  * implementación paralela de la animación de cámara.
  */
 export function AddressSearch() {

@@ -168,6 +168,27 @@
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
 }
 
+/* `react-map-gl` `Popup` (usado por las estaciones PM2.5, Fase F2) trae su
+   propio CSS de mapbox-gl.css con fondo blanco fijo — mismo tipo de bug que
+   los tooltips de Recharts (texto/fondo que no responden al tema oscuro):
+   se sobreescribe con los tokens del design system, igual que `.deck-tooltip`. */
+.mapboxgl-popup-content {
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+}
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: var(--popover) !important;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: var(--popover) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

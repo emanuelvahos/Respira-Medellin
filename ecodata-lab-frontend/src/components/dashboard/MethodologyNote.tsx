@@ -9,7 +9,9 @@ export function MethodologyNote({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-foreground">
       <WarningIcon size={16} className="mt-0.5 shrink-0 text-warning" />
-      <p>{children}</p>
+      {/* `div`, no `p`: algunos usos (ej. `ProyeccionTemporal`) pasan una
+          lista <ul> como contenido, inválida dentro de un párrafo. */}
+      <div>{children}</div>
     </div>
   );
 }

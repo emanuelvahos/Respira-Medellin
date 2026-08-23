@@ -5,13 +5,12 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MapLegend } from "@/components/map/MapLegend";
 import { MapLayerToggles } from "@/components/map/MapLayerToggles";
-import { TreeModeSelector } from "@/components/map/TreeModeSelector";
 import { ComunaDetailPanel } from "@/components/map/ComunaDetailPanel";
 import { ComunaKeyboardSelector } from "@/components/map/ComunaKeyboardSelector";
 import { AddressSearch } from "@/components/map/AddressSearch";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { useComunas } from "@/lib/api/queries";
-import { useMapStore, type TreeMode } from "@/store/mapStore";
+import { useMapStore } from "@/store/mapStore";
 import { normalizeComunaName } from "@/lib/map/matchComuna";
 
 // El mapa depende de WebGL/`window` (Mapbox GL + deck.gl): no puede
@@ -33,15 +32,13 @@ function MapaInner() {
   const router = useRouter();
   const pathname = usePathname();
   const comunasQuery = useComunas();
-  const { selectedComuna, setSelectedComuna, treeMode, setTreeMode } = useMapStore();
+  const { selectedComuna, setSelectedComuna } = useMapStore();
   const inicializadoDesdeUrl = useRef(false);
 
   // Vista compartible: si la URL trae `?comuna=`, dispara el mismo flyTo que
   // ocurre al hacer click manualmente — pero solo una vez, y solo cuando el
   // GeoJSON de comunas ya cargó (si no, no hay geometría para calcular el
-  // centroide del flyTo, ver MapCanvas). `?arboles=ciudad` restaura el modo
-  // "ciudad completa"; cualquier otro valor (o ausencia) deja el default
-  // "comuna" ya fijado por el store.
+  // centroide del flyTo, ver MapCanvas).
   useEffect(() => {
     if (inicializadoDesdeUrl.current || !comunasQuery.isSuccess) return;
     inicializadoDesdeUrl.current = true;
@@ -54,44 +51,46 @@ function MapaInner() {
       );
       if (existe) setSelectedComuna(normalizado);
     }
+  }, [comunasQuery.isSuccess, comunasQuery.data, searchParams, setSelectedComuna]);
 
-    if (searchParams.get("arboles") === "ciudad") setTreeMode("ciudad");
-  }, [comunasQuery.isSuccess, comunasQuery.data, searchParams, setSelectedComuna, setTreeMode]);
-
-  // Mantiene la URL sincronizada con la comuna seleccionada y el modo de
-  // árboles (por click, teclado, o la inicialización de arriba) para que
-  // "Copiar link" siempre refleje el estado real en pantalla.
+  // Mantiene la URL sincronizada con la comuna seleccionada (por click,
+  // teclado, o la inicialización de arriba) para que "Copiar link" siempre
+  // refleje el estado real en pantalla.
   useEffect(() => {
     if (!inicializadoDesdeUrl.current) return;
     const params = new URLSearchParams(searchParams.toString());
     if (selectedComuna) params.set("comuna", selectedComuna);
     else params.delete("comuna");
-    // Solo se serializa el valor no-default ("ciudad"): mantiene los links
-    // existentes (sin `arboles=`) funcionando igual que antes, en modo
-    // "comuna".
-    if (treeMode === "ciudad") params.set("arboles", "ciudad" satisfies TreeMode);
-    else params.delete("arboles");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe re-ejecutarse cuando cambia la comuna seleccionada o el modo de árboles.
-  }, [selectedComuna, treeMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe re-ejecutarse cuando cambia la comuna seleccionada.
+  }, [selectedComuna]);
 
   return (
     <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden">
       <MapCanvas />
       <AddressSearch />
       <MapLegend />
-      <ComunaKeyboardSelector />
-      <TreeModeSelector />
-      <MapLayerToggles />
-      <ComunaDetailPanel />
-      {/* Al lado izquierdo, debajo de "Ir a comuna": el panel de detalle de
-          comuna (derecha, `inset-y-0`) cubriría cualquier posición del lado
-          derecho en cuanto hay una comuna seleccionada — justo el momento en
-          que más sentido tiene copiar el link. */}
-      <div className="absolute left-4 top-56 z-10">
-        <CopyLinkButton label="Copiar link de esta vista" />
+      {/* Mobile (<640px): dos columnas de 256px no caben lado a lado por
+          debajo de ~550px de ancho — `ComunaKeyboardSelector` y
+          `MapLayerToggles` ya no fijan su propia posición absoluta ahí (ver
+          cada componente); este wrapper los apila en una sola columna con
+          `flex flex-col`, que respeta la altura real de cada uno en vez de
+          offsets en rem adivinados. Desde `sm:`, `sm:contents` saca el
+          wrapper del layout (no genera su propia caja) y cada hijo recupera
+          su posición absoluta original de dos columnas. */}
+      <div className="absolute inset-x-4 top-24 z-10 flex flex-col gap-3 sm:contents">
+        <ComunaKeyboardSelector />
+        <MapLayerToggles />
+        {/* Al lado izquierdo, debajo de "Ir a comuna": el panel de detalle de
+            comuna (derecha, `inset-y-0`) cubriría cualquier posición del lado
+            derecho en cuanto hay una comuna seleccionada — justo el momento en
+            que más sentido tiene copiar el link. */}
+        <div className="sm:absolute sm:left-4 sm:top-56 sm:z-10">
+          <CopyLinkButton label="Copiar link de esta vista" />
+        </div>
       </div>
+      <ComunaDetailPanel />
     </div>
   );
 }

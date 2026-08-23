@@ -105,6 +105,8 @@ export function Pm25BarChart() {
                     borderRadius: 8,
                     fontSize: 12,
                   }}
+                  labelStyle={{ color: "var(--color-foreground)" }}
+                  itemStyle={{ color: "var(--color-foreground)" }}
                 />
                 <Bar dataKey="pm25" radius={[4, 4, 0, 0]}>
                   {data.map((d) => (

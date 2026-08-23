@@ -1,41 +1,12 @@
 import type { Geometry, Position } from "geojson";
 
 /**
- * El backend no expone coordenadas de árboles individuales (solo conteos
- * agregados por comuna/zona: `cantidad_arboles_totales`, `arboles_cupo_estimado`).
- * Para poder mostrar una "muestra representativa" en el mapa 3D, se dispersan
- * puntos sintéticos dentro de la geometría REAL (polígono de comuna o de zona
- * priorizada) en cantidad proporcional al conteo REAL — la cantidad no se
- * inventa, solo la posición exacta de cada punto dentro del polígono.
+ * Point-in-polygon (ray casting) sobre geometría GeoJSON real (Polygon o
+ * MultiPolygon, huecos incluidos) — usado donde hace falta probar si una
+ * coordenada real cae dentro del polígono real de una comuna/zona (ej.
+ * contar estaciones de monitoreo PM2.5 dentro de una comuna, ver
+ * `isPointInPolygon` abajo).
  */
-
-function bbox(rings: Position[][]): [number, number, number, number] {
-  let minLon = Infinity;
-  let minLat = Infinity;
-  let maxLon = -Infinity;
-  let maxLat = -Infinity;
-  for (const ring of rings) {
-    for (const [lon, lat] of ring) {
-      if (lon < minLon) minLon = lon;
-      if (lon > maxLon) maxLon = lon;
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-    }
-  }
-  return [minLon, minLat, maxLon, maxLat];
-}
-
-/** Bbox de una geometría Polygon/MultiPolygon en el formato {minLon,minLat,maxLon,maxLat}
- * que espera `/api/arboles/puntos` (ver `Bbox` en `@/lib/api/endpoints`). Usado por
- * "Respiro Urbano" para pedir árboles reales del SAU dentro del área de una comuna. */
-export function bboxOfGeometry(
-  geometry: Geometry,
-): { minLon: number; minLat: number; maxLon: number; maxLat: number } | null {
-  const polygons = ringsOf(geometry);
-  if (!polygons.length) return null;
-  const [minLon, minLat, maxLon, maxLat] = bbox(polygons.flat());
-  return { minLon, minLat, maxLon, maxLat };
-}
 
 function pointInRing(point: [number, number], ring: Position[]): boolean {
   const [x, y] = point;
@@ -65,29 +36,9 @@ function ringsOf(geometry: Geometry): Position[][][] {
   return [];
 }
 
-/** Dispersa `count` puntos dentro de un Polygon/MultiPolygon (rejection sampling). */
-export function randomPointsInPolygon(
-  geometry: Geometry,
-  count: number,
-  maxAttempts = count * 40,
-): [number, number][] {
+/** `true` si `point` ([lon, lat]) cae dentro de un Polygon/MultiPolygon real
+ * (huecos incluidos). */
+export function isPointInPolygon(point: [number, number], geometry: Geometry): boolean {
   const polygons = ringsOf(geometry);
-  if (!polygons.length || count <= 0) return [];
-
-  const allRingsFlat = polygons.flat();
-  const [minLon, minLat, maxLon, maxLat] = bbox(allRingsFlat);
-  const points: [number, number][] = [];
-  let attempts = 0;
-
-  while (points.length < count && attempts < maxAttempts) {
-    attempts += 1;
-    const candidate: [number, number] = [
-      minLon + Math.random() * (maxLon - minLon),
-      minLat + Math.random() * (maxLat - minLat),
-    ];
-    if (polygons.some((rings) => pointInPolygonRings(candidate, rings))) {
-      points.push(candidate);
-    }
-  }
-  return points;
+  return polygons.some((rings) => pointInPolygonRings(point, rings));
 }

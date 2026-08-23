@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const QUERY = "(prefers-reduced-motion: reduce)";
 
 /** Fuente única de verdad para `prefers-reduced-motion`, usada por partículas,
- * scroll-telling y el crecimiento de árboles 3D (Fase 3). */
+ * scroll-telling y el flyTo de cámara del mapa. */
 export function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(
     () => typeof window !== "undefined" && window.matchMedia(QUERY).matches,

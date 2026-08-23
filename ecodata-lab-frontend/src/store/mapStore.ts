@@ -17,18 +17,13 @@ export type MapViewState = {
   bearing: number;
 };
 
-export type MapLayerId = "comunas" | "zonasSiembra" | "zonasVerdes" | "pm25" | "arbolesSau";
-
-/**
- * Modo explícito de visualización de árboles reales del SAU:
- * - "comuna": conos 3D reales (`TreeInstances`), solo visibles al seleccionar
- *   una comuna (comportamiento histórico, sigue siendo el default).
- * - "ciudad": capa de clusters/puntos a nivel de toda Medellín (equivalente
- *   al toggle `layers.arbolesSau` que existía antes de este selector).
- * Mutuamente excluyentes: mostrar ambas representaciones del mismo
- * inventario a la vez es visualmente confuso y redundante (ver `setTreeMode`).
- */
-export type TreeMode = "comuna" | "ciudad";
+export type MapLayerId =
+  | "comunas"
+  | "zonasSiembra"
+  | "zonasVerdes"
+  | "pm25"
+  | "arbolesSau"
+  | "estacionesPm25";
 
 /**
  * Estilo base del mapa Mapbox. "satellite" (imagen satelital real) existe
@@ -57,19 +52,17 @@ export const ARBOLES_SAU_PUNTOS_MIN_ZOOM = 15;
 
 export type MapLayerToggles = Record<MapLayerId, boolean>;
 
-/** Zoom/pitch/bearing fijos usados por "Respiro Urbano" al volar a una comuna.
- *
- * El zoom debe ser lo bastante cercano para que los árboles 3D (troncos de
- * ~4m, copas de ~6m) ocupen más de un puñado de píxeles: a zoom 15.5 la
- * resolución en el suelo es ~3.4 m/px y una copa de 6m es ~1-2px, invisible
- * en la práctica aunque la cámara y los datos estén correctos.
- */
+/** Zoom/pitch/bearing fijos usados al volar a una comuna seleccionada
+ * ("flyTo"): un acercamiento a nivel de calle con inclinación 3D, para dar
+ * contexto real del terreno de la comuna (Fase 3; el zoom se mantuvo igual
+ * en Fase F3 al remover los árboles 3D que originalmente motivaron este
+ * nivel de acercamiento — sigue siendo una buena experiencia por sí sola). */
 export const COMUNA_FLYTO_ZOOM = 17.8;
 export const COMUNA_FLYTO_PITCH = 60;
 export const COMUNA_FLYTO_BEARING = 0;
 
 /** Zoom/pitch/bearing usados por la búsqueda de direcciones (`AddressSearch`):
- * un poco más alejado que "Respiro Urbano" porque el punto buscado es una
+ * un poco más alejado que el flyTo de comuna porque el punto buscado es una
  * dirección puntual, no una comuna completa — no hace falta acercarse tanto
  * para ubicarla en contexto de calle. */
 export const ADDRESS_FLYTO_ZOOM = 16.5;
@@ -94,8 +87,8 @@ export const MEDELLIN_MAX_BOUNDS: [[number, number], [number, number]] = [
  * (pixeles_por_grado = 256*2^zoom/360) contra un viewport de referencia
  * ~1280x800px. Zoom por debajo de este valor solo agregaría espacio vacío
  * fuera del área de interés, así que se usa como tope de alejamiento.
- * `maxZoom`: por encima de `COMUNA_FLYTO_ZOOM` (17.8, usado por "Respiro
- * Urbano"), para permitir algo de inspección de detalle adicional sin
+ * `maxZoom`: por encima de `COMUNA_FLYTO_ZOOM` (17.8, usado por el flyTo de
+ * comuna), para permitir algo de inspección de detalle adicional sin
  * bloquear el flyTo.
  */
 export const MEDELLIN_MIN_ZOOM = 10.5;
@@ -116,10 +109,6 @@ type MapState = {
   particlesPaused: boolean;
   /** true mientras dura la animación flyTo hacia la comuna seleccionada. */
   isFlyingTo: boolean;
-  /** true una vez el flyTo termina: dispara la revelación de TreeInstances. */
-  treesRevealed: boolean;
-  /** Elección explícita entre árboles 3D "por comuna" o clusters "ciudad completa". */
-  treeMode: TreeMode;
   searchMarker: SearchMarker;
   mapStyle: MapStyle;
   /**
@@ -130,6 +119,15 @@ type MapState = {
    * propio campo en vez de mezclarse con `layers`.
    */
   mostrarZonasDescartadas: boolean;
+  /**
+   * Refleja (no gobierna) si `ZonaSiembraDetailPanel` está abierto —
+   * ese panel vive como estado local de `MapCanvas` a propósito (no debe
+   * afectar URL/dashboard, ver comentario ahí), pero `MapLegend` necesita
+   * saber si está abierto para no dibujarse debajo/encima de él: ambos
+   * anclan a la esquina inferior y se solapan visualmente en pantallas
+   * angostas (<~640px) o cuando el contenido de la leyenda es alto.
+   */
+  zonaSiembraPanelAbierto: boolean;
   setSelectedComuna: (comuna: string | null) => void;
   setHoveredComuna: (comuna: string | null) => void;
   toggleLayer: (layer: MapLayerId) => void;
@@ -137,11 +135,10 @@ type MapState = {
   toggleParticlesPaused: () => void;
   toggleMostrarZonasDescartadas: () => void;
   setIsFlyingTo: (flying: boolean) => void;
-  setTreesRevealed: (revealed: boolean) => void;
-  setTreeMode: (mode: TreeMode) => void;
   setSearchMarker: (marker: SearchMarker) => void;
   setMapStyle: (style: MapStyle) => void;
   toggleMapStyle: () => void;
+  setZonaSiembraPanelAbierto: (abierto: boolean) => void;
 };
 
 export const useMapStore = create<MapState>((set) => ({
@@ -156,22 +153,28 @@ export const useMapStore = create<MapState>((set) => ({
     zonasVerdes: false,
     pm25: false,
     // 339.724 árboles reales (SAU): apagada por defecto, igual que
-    // zonas-verdes — se activa a conciencia desde el toggle, y siempre carga
-    // primero en modo clustered (liviano), nunca los puntos crudos.
+    // zonas-verdes — se activa a conciencia desde el toggle (`MapLayerToggles`),
+    // y siempre carga primero en modo clustered (liviano, `arbolesSauZoomCercano`
+    // en `MapCanvas`), nunca los puntos crudos, hasta acercar el zoom lo
+    // suficiente. Toggle independiente desde Fase F3 (antes lo controlaba
+    // `TreeModeSelector`, removido junto con los árboles 3D).
     arbolesSau: false,
+    // Encendida por defecto: son pocas estaciones reales (SIATA), el dato ya
+    // se pide sin condicionar a este toggle (alimenta las partículas PM2.5),
+    // y es justamente lo que responde "¿por qué esta comuna tiene PM2.5
+    // estimado/histórico?" a simple vista en el mapa.
+    estacionesPm25: true,
   },
   viewState: INITIAL_VIEW_STATE,
   particlesPaused: false,
   isFlyingTo: false,
-  treesRevealed: false,
-  treeMode: "comuna",
   searchMarker: null,
   mapStyle: "dark",
   mostrarZonasDescartadas: false,
+  zonaSiembraPanelAbierto: false,
   setSelectedComuna: (comuna) =>
     set({
       selectedComuna: comuna,
-      treesRevealed: false,
       isFlyingTo: comuna !== null,
     }),
   setHoveredComuna: (comuna) => set({ hoveredComuna: comuna }),
@@ -185,23 +188,9 @@ export const useMapStore = create<MapState>((set) => ({
   toggleMostrarZonasDescartadas: () =>
     set((state) => ({ mostrarZonasDescartadas: !state.mostrarZonasDescartadas })),
   setIsFlyingTo: (flying) => set({ isFlyingTo: flying }),
-  setTreesRevealed: (revealed) => set({ treesRevealed: revealed }),
-  // Decisión de UX (verificada en navegador): "por comuna" y "ciudad
-  // completa" son mutuamente excluyentes. Mostrar los conos 3D reales de
-  // una comuna a la vez que la capa de clusters/puntos de toda la ciudad
-  // resulta visualmente confuso y redundante (ambas son el mismo
-  // inventario SAU, solo con densidad y nivel de detalle distintos), y
-  // además duplicaría fetches innecesarios. Al activar "ciudad" se apagan
-  // los árboles 3D; al volver a "comuna" se re-revelan de inmediato si ya
-  // había una comuna seleccionada (sin esperar un nuevo flyTo).
-  setTreeMode: (mode) =>
-    set((state) => ({
-      treeMode: mode,
-      layers: { ...state.layers, arbolesSau: mode === "ciudad" },
-      treesRevealed: mode === "comuna" ? state.selectedComuna !== null : false,
-    })),
   setSearchMarker: (marker) => set({ searchMarker: marker }),
   setMapStyle: (style) => set({ mapStyle: style }),
   toggleMapStyle: () =>
     set((state) => ({ mapStyle: state.mapStyle === "dark" ? "satellite" : "dark" })),
+  setZonaSiembraPanelAbierto: (abierto) => set({ zonaSiembraPanelAbierto: abierto }),
 }));

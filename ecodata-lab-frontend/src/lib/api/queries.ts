@@ -5,6 +5,7 @@ import {
   arbolesClustersUrl,
   arbolesPuntosUrl,
   endpoints,
+  proyeccionMaduracionUrl,
   rankingComunasUrl,
   zonaSiembraDetalleUrl,
   type Bbox,
@@ -15,6 +16,10 @@ import {
   poblacionComunaSchema,
 } from "@/types/comuna";
 import { estacionPM25Schema } from "@/types/estacionPM25";
+import {
+  proyeccionMaduracionSchema,
+  type EscenarioMaduracion,
+} from "@/types/proyeccionMaduracion";
 import { integracionPM25ArbolesSchema } from "@/types/pm25";
 import { rankingComunaItemSchema, type PesosAhp } from "@/types/rankingComuna";
 import {
@@ -181,10 +186,8 @@ export function useArbolesClusters(enabled: boolean, cellSizeDeg?: number) {
 
 export function useArbolesPuntos(enabled: boolean, bbox: Bbox | null, limit?: number) {
   return useQuery({
-    // `limit` en la queryKey: "Respiro Urbano" (limit acotado al cap de
-    // instancias 3D) y la capa clustered de zoom cercano (sin limit, tope
-    // por defecto del backend) piden el mismo bbox con distinto `limit` y
-    // deben cachearse por separado, no compartir resultado.
+    // `limit` en la queryKey: distintos `limit` para el mismo bbox deben
+    // cachearse por separado, no compartir resultado.
     queryKey: ["arboles-puntos", bbox?.minLon, bbox?.minLat, bbox?.maxLon, bbox?.maxLat, limit ?? "default"],
     queryFn: () =>
       fetchAndValidate(arbolesPuntosUrl(bbox as Bbox, limit), puntosArbolesResponseSchema),
@@ -227,4 +230,25 @@ export function useAuditoriaEstaciones() {
         z.array(estacionAuditoriaSchema),
       ),
   });
+}
+
+/** `/api/siembra/proyeccion` (Fase F4) — un punto (año, escenario) de la
+ * curva de maduración estimada del plan de siembra. Exportada también como
+ * `proyeccionMaduracionQueryOptions` para que `ProyeccionTemporal` pueda
+ * pedir varios años en paralelo con `useQueries` (dibujar la curva
+ * completa) sin duplicar la lógica de fetch/validación. */
+export function proyeccionMaduracionQueryOptions(anio: number, escenario: EscenarioMaduracion) {
+  return {
+    queryKey: ["proyeccion-maduracion", anio, escenario],
+    queryFn: () =>
+      fetchAndValidate(proyeccionMaduracionUrl(anio, escenario), proyeccionMaduracionSchema),
+    // La curva es una función pura y determinista del backend (misma
+    // fórmula siempre para el mismo (anio, escenario)) — nunca queda
+    // obsoleta, se puede cachear indefinidamente.
+    staleTime: Infinity,
+  };
+}
+
+export function useProyeccionMaduracion(anio: number, escenario: EscenarioMaduracion) {
+  return useQuery(proyeccionMaduracionQueryOptions(anio, escenario));
 }

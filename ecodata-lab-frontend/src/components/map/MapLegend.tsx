@@ -1,6 +1,16 @@
+import { BroadcastIcon } from "@phosphor-icons/react/dist/ssr";
+import { useMapStore } from "@/store/mapStore";
+
 export function MapLegend() {
+  // El panel de detalle de zona de siembra ancla a la misma esquina inferior
+  // (derecha) y a pantallas angostas (o con la leyenda muy alta) se solapan
+  // visualmente — se prioriza el panel, que es la acción activa del usuario,
+  // y la leyenda vuelve a aparecer al cerrarlo.
+  const zonaSiembraPanelAbierto = useMapStore((state) => state.zonaSiembraPanelAbierto);
+  if (zonaSiembraPanelAbierto) return null;
+
   return (
-    <div className="pointer-events-none absolute bottom-4 left-4 z-10 w-64 rounded-lg border border-border bg-card/95 p-4 text-xs text-card-foreground shadow-md backdrop-blur">
+    <div className="pointer-events-none absolute bottom-4 left-4 z-10 hidden w-64 rounded-lg border border-border bg-card/95 p-4 text-xs text-card-foreground shadow-md backdrop-blur sm:block">
       <p className="mb-2 font-heading text-sm font-semibold">Leyenda</p>
 
       <div className="mb-3">
@@ -81,6 +91,24 @@ export function MapLegend() {
 
       <div className="mb-3">
         <p className="mb-1 font-medium text-muted-foreground">
+          Estaciones de monitoreo PM2.5 (activable desde Capas)
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <span
+            className="inline-flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-data-sky bg-card text-data-sky"
+            aria-hidden="true"
+          >
+            <BroadcastIcon size={9} weight="bold" />
+          </span>
+          Ícono de antena: ubicación real de una estación SIATA. Pasa el
+          mouse o haz click para ver su comuna y última lectura. Comunas sin
+          ningún ícono dentro de su polígono no tienen estación propia — su
+          PM2.5 es estimado o histórico (ver panel de detalle de la comuna).
+        </p>
+      </div>
+
+      <div className="mb-3">
+        <p className="mb-1 font-medium text-muted-foreground">
           Partículas PM2.5 (estaciones SIATA reales)
         </p>
         <div className="h-2 w-full rounded-full bg-gradient-to-r from-data-sky via-warning to-critical" />
@@ -130,34 +158,18 @@ export function MapLegend() {
 
       <div>
         <p className="mb-1 font-medium text-muted-foreground">
-          Árboles del SAU · dos modos (selector arriba a la derecha)
-        </p>
-        <p className="mt-1 text-[10px] text-muted-foreground">
-          <strong className="font-medium text-foreground">Por comuna</strong>{" "}
-          (default): conos 3D solo al seleccionar una comuna.
+          Árboles del SAU (inventario real, activable desde Capas)
         </p>
         <div className="mt-1 flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1">
             <span className="inline-block size-2.5 rounded-full bg-vegetation" aria-hidden="true" />
-            Existentes (ubicaciones reales SAU)
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="inline-block size-2.5 rounded-full bg-chart-2" aria-hidden="true" />
-            Zonas recomendadas (aproximado)
+            Ubicación real (censo SAU)
           </span>
         </div>
         <p className="mt-1 text-[10px] text-muted-foreground">
-          Verde: árbol real del censo SAU, muestra acotada por rendimiento.
-          Dorado: centroide de una zona priorizada para sembrar — todavía no
-          es un árbol plantado. Pasa el mouse sobre un árbol verde para ver
-          su especie real.
-        </p>
-        <p className="mt-2 text-[10px] text-muted-foreground">
-          <strong className="font-medium text-foreground">Ciudad completa</strong>:
-          clusters/puntos del inventario SAU en todo Medellín, sin necesidad
-          de seleccionar comuna. Puede ser más lento al hacer zoom. Los dos
-          modos son excluyentes — activar uno oculta el otro para no mezclar
-          representaciones del mismo inventario.
+          Alejado: clusters agrupados por densidad. Acercando el zoom, puntos
+          individuales reales — pasa el mouse sobre uno para ver su especie.
+          Puede ser más lento al hacer zoom en dispositivos menos potentes.
         </p>
       </div>
     </div>

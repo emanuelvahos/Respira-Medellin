@@ -19,9 +19,11 @@ export function ComunaKeyboardSelector() {
     .sort((a, b) => a.localeCompare(b));
 
   return (
-    // `top-24`, no `top-4`: deja espacio arriba para `AddressSearch`, que
-    // ocupa el borde superior de la pantalla.
-    <div className="absolute left-4 top-24 z-10 w-64 rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur">
+    // Mobile (<640px): flujo normal dentro del stack vertical de
+    // `MapaClient` (no cabe una columna izquierda + derecha de 256px cada
+    // una por debajo de ~550px de ancho). Desde `sm:`, posición absoluta
+    // original: `top-24` deja espacio para `AddressSearch` arriba.
+    <div className="relative z-10 w-full rounded-lg border border-border bg-card/95 p-4 text-sm shadow-md backdrop-blur sm:absolute sm:left-4 sm:top-24 sm:w-64">
       <label htmlFor="comuna-select" className="mb-2 block font-heading text-sm font-semibold text-card-foreground">
         Ir a comuna
       </label>

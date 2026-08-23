@@ -8,6 +8,7 @@ import { PESOS_AHP_ORIGINALES, type PesosAhp } from "@/types/rankingComuna";
 import { rankingComunasExportUrl } from "@/lib/api/endpoints";
 import { apiFetchBlob, ApiError } from "@/lib/api/client";
 import { reajustarPesos } from "@/lib/dashboard/reajustarPesos";
+import { AhpComparatorHelp } from "@/components/dashboard/AhpComparatorHelp";
 
 type PesoKey = keyof PesosAhp;
 
@@ -63,6 +64,8 @@ export function AhpScenarioComparator({
 
   return (
     <div className="space-y-5">
+      <AhpComparatorHelp />
+
       {CAMPOS.map(({ key, label, color }) => (
         <div key={key} className="space-y-2">
           <div className="flex items-center justify-between text-sm">

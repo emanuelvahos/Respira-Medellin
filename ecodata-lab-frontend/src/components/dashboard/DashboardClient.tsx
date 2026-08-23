@@ -14,6 +14,7 @@ import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespirato
 import { Pm25SaludComparacion } from "@/components/dashboard/Pm25SaludComparacion";
 import { AhpScenarioComparator } from "@/components/dashboard/AhpScenarioComparator";
 import { ComunaComparator } from "@/components/dashboard/ComunaComparator";
+import { ProyeccionTemporal } from "@/components/dashboard/ProyeccionTemporal";
 import { RankingScoreChart } from "@/components/dashboard/RankingScoreChart";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
 import {
@@ -92,6 +93,8 @@ function DashboardInner() {
       </Card>
 
       <ComunaComparator />
+
+      <ProyeccionTemporal />
 
       <Card>
         <CardHeader>

@@ -129,6 +129,50 @@ class ResumenRecomendacionComuna(BaseModel):
     pm25_fecha_ultimo_dato: str | None = None
 
 
+class FactorMaduracionEspecie(BaseModel):
+    """Factor de maduración (0-1) de una de las 5 especies documentadas,
+    para el año/escenario consultado en `/api/siembra/proyeccion` — el
+    caveat de qué tan respaldado está cada número viaja con el dato, no
+    vive solo en la documentación (mismo patrón que `pm25_tipo_dato` en
+    `ResumenRecomendacionComuna`)."""
+
+    especie: str
+    categoria_crecimiento: Literal["Rápida", "Media", "Lenta"]
+    anio_maduracion_escenario: int
+    factor: float
+    fuente_categoria: str
+    fuente_anios: str
+
+
+class ProyeccionComuna(BaseModel):
+    """Factor de maduración agregado por comuna, ponderado por el cupo real
+    de árboles recomendados (`arboles_cupo_estimado`) de cada zona."""
+
+    comuna: str
+    factor_promedio: float
+    arboles_cupo_estimado_total: int
+
+
+class ProyeccionMaduracion(BaseModel):
+    """Respuesta de `/api/siembra/proyeccion`: NUNCA una cifra nueva de
+    PM2.5 en µg/kg — un factor 0-1 (o su equivalente en %) que multiplica
+    los datos reales ya existentes (`arboles_cupo_estimado`,
+    `pm25_eficiencia` cualitativa). Ver `app/services/maduracion.py` para
+    la metodología completa y sus caveats."""
+
+    anio: int
+    escenario: Literal["optimista", "esperado", "conservador"]
+    factor_promedio_ciudad: float
+    arboles_cupo_estimado_total: int
+    n_zonas: int
+    n_zonas_con_diversificacion: int
+    por_especie: list[FactorMaduracionEspecie]
+    por_comuna: list[ProyeccionComuna]
+    anios_maduracion_por_escenario: dict[str, dict[str, int]]
+    caveats: list[str]
+    formula: str
+
+
 class RankingComunaItem(BaseModel):
     """Fila del ranking AHP recalculado con pesos custom (ver /api/siembra/ranking-comunas)."""
 
