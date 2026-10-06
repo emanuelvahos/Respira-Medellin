@@ -1,0 +1,534 @@
+{
+  "generado_utc": "2026-10-06T02:21:05.533542+00:00",
+  "medellin_unicos_contrato": 465412,
+  "medellin_activos_contrato": 431905,
+  "en_ciudadano": {
+    "n": 231353,
+    "estado_individuo": {
+      "Activo": 219820,
+      "Desaparecido": 935,
+      "Talado": 10596,
+      "Historico": 2
+    },
+    "estado_arbol": {
+      "Individuo Sano": 203097,
+      "Desconocido": 24075,
+      "Individuo Enfermo": 4181
+    },
+    "tipoarbol": {
+      "Común": 231326,
+      "Especial": 7,
+      "Patrimonio Cultural": 20
+    },
+    "obs_top": [
+      [
+        "",
+        60172
+      ],
+      [
+        "Se realizó la intervención bajo los estándares de la resoluc",
+        18179
+      ],
+      [
+        " ",
+        2162
+      ],
+      [
+        "Compensación por intervenciones de la unidad de silvicultura",
+        2028
+      ],
+      [
+        "Contrato 395 de 2009 - Redes Ecologicas Norte",
+        1569
+      ],
+      [
+        "Compensación por intervenciones de la Unidad de Paisajismo y",
+        1453
+      ],
+      [
+        "Medellin, Robledo Aures. Ciudad Don Bosco, Cra 96b n°78c- 11",
+        1011
+      ],
+      [
+        "Compensación puente Gilberto Echeverri Mejía (4 sur), Resolu",
+        878
+      ],
+      [
+        "Otras características: Individuo: Adulto; Estado general: Sa",
+        830
+      ],
+      [
+        "Resolución AMVA 001004 del 26 junio de 2013",
+        648
+      ],
+      [
+        "Inventario forestal _ complementario del Cerro Nutibara. Dos",
+        635
+      ],
+      [
+        "Compensacion Expediente CM 5-08-15168, RM N° S.A 001045 del ",
+        624
+      ],
+      [
+        "Compensacion Expediente CM05-08-81030, RM N°S.A 002254 de 27",
+        614
+      ],
+      [
+        "Compensación de árboles, construcción conexión vial avenida ",
+        568
+      ],
+      [
+        "Revisión en SAU para el monitoreo a intervención de EPM. La ",
+        550
+      ]
+    ],
+    "anio_ingreso": {
+      "2006": 4426,
+      "2007": 559,
+      "2008": 86,
+      "2010": 6235,
+      "2011": 13606,
+      "2012": 3904,
+      "2013": 9536,
+      "2014": 17529,
+      "2015": 13045,
+      "2016": 15231,
+      "2017": 26981,
+      "2018": 34678,
+      "2019": 20195,
+      "2020": 18893,
+      "2021": 17767,
+      "2022": 20560,
+      "2023": 6639,
+      "2024": 816,
+      "2025": 616,
+      "2026": 51
+    },
+    "anio_actualizacion": {
+      "2023": 220354,
+      "2026": 373,
+      "null": 10626
+    },
+    "con_contrato": 231306,
+    "sin_contrato": 47,
+    "especies_top": [
+      [
+        "Mangifera indica",
+        6456
+      ],
+      [
+        "Handroanthus chrysanthus",
+        6300
+      ],
+      [
+        "Leucaena leucocephala",
+        4534
+      ],
+      [
+        "Fraxinus uhdei",
+        4335
+      ],
+      [
+        "Tabebuia rosea",
+        3964
+      ],
+      [
+        "Desconocida",
+        3946
+      ],
+      [
+        "Eriobotrya japonica",
+        3430
+      ],
+      [
+        "Cenostigma pluviosum",
+        3390
+      ],
+      [
+        "Dypsis lutescens",
+        3354
+      ],
+      [
+        "Spathodea campanulata",
+        3306
+      ],
+      [
+        "Eucalyptus saligna",
+        3259
+      ],
+      [
+        "Psidium guajava",
+        3105
+      ],
+      [
+        "Ficus benjamina",
+        3084
+      ],
+      [
+        "Bauhinia picta",
+        2990
+      ],
+      [
+        "Brunfelsia pauciflora",
+        2985
+      ]
+    ],
+    "intervencion_top": [
+      [
+        "Inventario inicial",
+        73282
+      ],
+      [
+        "Monitoreo de variables dasometricas",
+        58915
+      ],
+      [
+        "Siembra",
+        40558
+      ],
+      [
+        "Poda de Mantenimiento",
+        23011
+      ],
+      [
+        "Limpieza",
+        17655
+      ],
+      [
+        "Tala",
+        10560
+      ],
+      [
+        "Visita AMVA",
+        2524
+      ],
+      [
+        "Fertilizacion",
+        1254
+      ]
+    ]
+  },
+  "solo_en_contrato": {
+    "n": 234059,
+    "estado_individuo": {
+      "Activo": 212085,
+      "Talado": 20013,
+      "Desaparecido": 1357,
+      "Historico": 604
+    },
+    "estado_arbol": {
+      "null": 28128,
+      "Individuo Sano": 205850,
+      "Individuo Enfermo": 34,
+      "Desconocido": 47
+    },
+    "tipoarbol": {
+      "Común": 233304,
+      "Patrimonio Cultural": 660,
+      "Especial": 95
+    },
+    "obs_top": [
+      [
+        "",
+        57376
+      ],
+      [
+        "Se realizó la intervención bajo los estándares de la resoluc",
+        38382
+      ],
+      [
+        "Se hacen dos mantenimientos en el marco del CI 284 pero sólo",
+        6231
+      ],
+      [
+        "Individuo incluido en inventario forestal para la solicitud ",
+        6113
+      ],
+      [
+        "Se informa a la comunidad aledaña sobre la tala del árbol au",
+        4846
+      ],
+      [
+        "Se atiende a radicados Resolución: 1447 de 28/08/2020; 1119 ",
+        933
+      ],
+      [
+        "Datos Red Ecologica Hueso Pelahueso, ",
+        858
+      ],
+      [
+        "La siembra de los individuos fue realizada entre septiembre ",
+        786
+      ],
+      [
+        "Compensación por intervenciones del Distrito de Medellín.",
+        756
+      ],
+      [
+        "Eliminar ramas secas distribuidas en la copa del individuo. ",
+        719
+      ],
+      [
+        "Debido a la falta de disponibilidad de material vegetal chip",
+        719
+      ],
+      [
+        "En éste sitio el parque Arví realizó intervención en el mes ",
+        675
+      ],
+      [
+        "Se hacen dos mantenimientos en el marco del Contrato 284 per",
+        641
+      ],
+      [
+        "Ficha _Valoración técnica de riesgo en individuo arbóreo, en",
+        565
+      ],
+      [
+        "El registro fotográfico se realiza un mes después del manten",
+        552
+      ]
+    ],
+    "anio_ingreso": {
+      "2006": 4588,
+      "2008": 70,
+      "2010": 2155,
+      "2011": 4104,
+      "2012": 1560,
+      "2013": 2308,
+      "2014": 4285,
+      "2015": 6122,
+      "2016": 10540,
+      "2017": 12050,
+      "2018": 15360,
+      "2019": 11500,
+      "2020": 13634,
+      "2021": 14372,
+      "2022": 22595,
+      "2023": 27858,
+      "2024": 30988,
+      "2025": 31881,
+      "2026": 18089
+    },
+    "anio_actualizacion": {
+      "2023": 30248,
+      "2026": 25909,
+      "null": 177902
+    },
+    "con_contrato": 231785,
+    "sin_contrato": 2274,
+    "especies_top": [
+      [
+        "Mangifera indica",
+        9755
+      ],
+      [
+        "Leucaena leucocephala",
+        7889
+      ],
+      [
+        "Fraxinus uhdei",
+        7829
+      ],
+      [
+        "Ficus benjamina",
+        6637
+      ],
+      [
+        "Handroanthus chrysanthus",
+        5753
+      ],
+      [
+        "Cenostigma pluviosum",
+        5748
+      ],
+      [
+        "Dypsis lutescens",
+        5100
+      ],
+      [
+        "Bauhinia picta",
+        4482
+      ],
+      [
+        "Spathodea campanulata",
+        4375
+      ],
+      [
+        "Desconocida",
+        4330
+      ],
+      [
+        "Persea americana",
+        3908
+      ],
+      [
+        "Pithecellobium dulce",
+        3901
+      ],
+      [
+        "Tabebuia rosea",
+        3674
+      ],
+      [
+        "Psidium guajava",
+        3476
+      ],
+      [
+        "Eucalyptus saligna",
+        3455
+      ]
+    ],
+    "intervencion_top": [
+      [
+        "Monitoreo de variables dasometricas",
+        82513
+      ],
+      [
+        "Inventario inicial",
+        47491
+      ],
+      [
+        "Podas",
+        26152
+      ],
+      [
+        "Tala",
+        19822
+      ],
+      [
+        "Poda de Mantenimiento",
+        16955
+      ],
+      [
+        "Siembra",
+        16105
+      ],
+      [
+        "Mantenimiento",
+        11620
+      ],
+      [
+        "Limpieza",
+        6123
+      ]
+    ]
+  },
+  "por_comuna": {
+    "Belén": {
+      "contrato_activos": 40289,
+      "contrato_total": 43170,
+      "ciudadano_activos": 20294
+    },
+    "Laureles Estadio": {
+      "contrato_activos": 36042,
+      "contrato_total": 38828,
+      "ciudadano_activos": 13327
+    },
+    "Guayabal": {
+      "contrato_activos": 25683,
+      "contrato_total": 27275,
+      "ciudadano_activos": 10509
+    },
+    "La América": {
+      "contrato_activos": 18378,
+      "contrato_total": 19676,
+      "ciudadano_activos": 7127
+    },
+    "Doce de Octubre": {
+      "contrato_activos": 13163,
+      "contrato_total": 14301,
+      "ciudadano_activos": 6828
+    },
+    "Castilla": {
+      "contrato_activos": 29863,
+      "contrato_total": 32284,
+      "ciudadano_activos": 11614
+    },
+    "La Candelaria": {
+      "contrato_activos": 31774,
+      "contrato_total": 33717,
+      "ciudadano_activos": 20349
+    },
+    "Popular": {
+      "contrato_activos": 3669,
+      "contrato_total": 4005,
+      "ciudadano_activos": 2137
+    },
+    "Robledo": {
+      "contrato_activos": 39049,
+      "contrato_total": 41629,
+      "ciudadano_activos": 21817
+    },
+    "Villa Hermosa": {
+      "contrato_activos": 18710,
+      "contrato_total": 20071,
+      "ciudadano_activos": 9984
+    },
+    "San Javier": {
+      "contrato_activos": 13245,
+      "contrato_total": 14376,
+      "ciudadano_activos": 6958
+    },
+    "El Poblado": {
+      "contrato_activos": 58325,
+      "contrato_total": 64183,
+      "ciudadano_activos": 33268
+    },
+    "Corregimiento de San Antonio de Prado": {
+      "contrato_activos": 14143,
+      "contrato_total": 14887,
+      "ciudadano_activos": 10212
+    },
+    "Aranjuez": {
+      "contrato_activos": 14804,
+      "contrato_total": 16194,
+      "ciudadano_activos": 6725
+    },
+    "Buenos Aires": {
+      "contrato_activos": 25577,
+      "contrato_total": 27431,
+      "ciudadano_activos": 13205
+    },
+    "Corregimiento de San Cristóbal": {
+      "contrato_activos": 25076,
+      "contrato_total": 26069,
+      "ciudadano_activos": 16910
+    },
+    "Corregimiento de Santa Elena": {
+      "contrato_activos": 10656,
+      "contrato_total": 12268,
+      "ciudadano_activos": 6684
+    },
+    "Santa Cruz": {
+      "contrato_activos": 2537,
+      "contrato_total": 3002,
+      "ciudadano_activos": 1537
+    },
+    "Manrique": {
+      "contrato_activos": 4771,
+      "contrato_total": 5401,
+      "ciudadano_activos": 2505
+    },
+    "Corregimiento de Altavista": {
+      "contrato_activos": 5637,
+      "contrato_total": 6117,
+      "ciudadano_activos": 3276
+    },
+    "Corregimiento de San Sebastián de Palmitas": {
+      "contrato_activos": 512,
+      "contrato_total": 525,
+      "ciudadano_activos": 505
+    },
+    "La Madera": {
+      "contrato_activos": 2,
+      "contrato_total": 2,
+      "ciudadano_activos": 1
+    },
+    "Altos de Niquía": {
+      "contrato_activos": 0,
+      "contrato_total": 1,
+      "ciudadano_activos": 0
+    }
+  }
+}
