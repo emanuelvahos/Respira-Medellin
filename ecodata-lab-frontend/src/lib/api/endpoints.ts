@@ -12,6 +12,7 @@ export const endpoints = {
   arbolesResumenComuna: "/api/arboles/resumen-comuna",
   arbolesBalance: "/api/arboles/balance",
   ahpV2: "/api/siembra/ahp-v2",
+  calidadDatos: "/api/calidad-datos",
   ndvi: "/api/arboles/ndvi",
   arbolesComunasDetalle: "/api/arboles/comunas-detalle",
   ahpV2Resumen: "/api/siembra/ahp-v2/resumen",

@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import arboles, comunas, pm25, salud, siembra, zonas_verdes
+from app.routers import arboles, calidad, comunas, pm25, salud, siembra, zonas_verdes
 
 settings = get_settings()
 
@@ -56,6 +56,7 @@ app.include_router(siembra.router)
 app.include_router(zonas_verdes.router)
 app.include_router(arboles.router)
 app.include_router(salud.router)
+app.include_router(calidad.router)
 
 
 @app.get("/", tags=["health"])
