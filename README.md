@@ -11,7 +11,7 @@ Medellín. El proyecto **activo** son dos carpetas desplegadas por separado:
 - **`backend/`** — API FastAPI que expone los datasets ya generados por el
   pipeline de ciencia de datos (no recalcula nada, solo sirve JSON/GeoJSON
   tipado). Autocontenida: sus datos viven en `backend/data/`, no depende de
-  ninguna ruta fuera de sí misma. Ver su `README.md` para deploy a Railway.
+  ninguna ruta fuera de sí misma. Ver su `README.md` para deploy a Render.
 
 **`Visualizacion-de-datos/`** es el repositorio original del pipeline de
 ciencia de datos (Python + Streamlit) que produjo los datasets que el backend
@@ -29,6 +29,6 @@ cómo hacerlo.
 | Carpeta | Plataforma | Root Directory a configurar |
 |---|---|---|
 | `ecodata-lab-frontend/` | Vercel | `ecodata-lab-frontend` |
-| `backend/` | Railway | `backend` |
+| `backend/` | Render (`render.yaml`) | `backend` |
 
 Variables de entorno de cada lado, documentadas en su propio README.
