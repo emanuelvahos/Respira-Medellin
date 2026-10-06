@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
+  useArbolesComunasDetalle,
   useComunas,
   useEstacionesPM25,
   usePM25,
@@ -22,6 +23,7 @@ export function ComunaDetailPanel() {
   const resumenQuery = useResumenComuna();
   const pm25Query = usePM25();
   const saludQuery = useSaludResumenComuna();
+  const detalleQuery = useArbolesComunasDetalle();
   const estacionesQuery = useEstacionesPM25();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -49,9 +51,14 @@ export function ComunaDetailPanel() {
   const registrosPm25 = pm25Query.data?.filter(
     (r) => normalizeComunaName(r.comuna) === selectedComuna,
   );
-  const arbolesActuales = registrosPm25?.length
-    ? Math.max(...registrosPm25.map((r) => r.cantidad_arboles_totales))
-    : undefined;
+  const detalle = detalleQuery.data?.find(
+    (d) => normalizeComunaName(d.comuna) === selectedComuna,
+  );
+  const arbolesActuales = detalle
+    ? detalle.arboles_vivos.toLocaleString("es-CO")
+    : registrosPm25?.length
+      ? Math.max(...registrosPm25.map((r) => r.cantidad_arboles_totales))
+      : undefined;
   const saludComuna = saludQuery.data?.comunas.find(
     (c) => normalizeComunaName(c.comuna) === selectedComuna,
   );
@@ -168,6 +175,23 @@ export function ComunaDetailPanel() {
             </div>
           )}
 
+          {detalle && (
+            <section aria-label="Por qué esta prioridad" className="mb-4 rounded-md border bg-muted/40 p-3 text-xs">
+              <h3 className="font-heading text-sm font-semibold text-foreground">Por qué esta prioridad</h3>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-foreground">
+                {detalle.razones.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+              <p className="mt-2 text-muted-foreground">
+                {detalle.arboles_por_1000_hab != null &&
+                  `${detalle.arboles_por_1000_hab.toLocaleString("es-CO")} árboles por 1.000 hab. · `}
+                {detalle.talados.toLocaleString("es-CO")} talados registrados · especie principal:{" "}
+                {detalle.top_especies[0]?.nombre_comun ?? detalle.top_especies[0]?.especie ?? "sin dato"}
+              </p>
+            </section>
+          )}
+
           {resumen && (
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div
@@ -233,7 +257,7 @@ export function ComunaDetailPanel() {
 
               <div>
                 <dt className="text-xs text-muted-foreground">
-                  Árboles registrados
+                  Árboles vivos (SAU)
                 </dt>
                 <dd className="font-medium text-foreground">
                   {arbolesActuales ?? "Sin dato"}
