@@ -45,7 +45,7 @@ desaparecidos: 32.446 · muertos: 10.763 · históricos: 606.
 - **Estado fitosanitario.** ~7.300 vivos sin estado; ~14.000 "Desconocido".
 - **Sin DAP ni altura por individuo.** Ninguna capa los expone.
 - **El modelo AHP v1 sigue usando el Excel antiguo** (`base_datos_arboles`,
-  ~128.000 árboles en 11 comunas): por ejemplo El Poblado 2.209 (modelo) vs
+  ~43.000 árboles en 11 comunas): por ejemplo El Poblado 2.209 (modelo) vs
   58.325 (SAU vivos). El dashboard lo indica. El AHP v2 con el SAU actual es el
   siguiente paso (H1b), en paralelo y sin tocar v1.
 

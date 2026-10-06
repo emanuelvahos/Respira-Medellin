@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useResumenComuna } from "@/lib/api/queries";
+import { useArbolesBalance, useResumenComuna } from "@/lib/api/queries";
 
 function KpiCard({
   label,
@@ -30,14 +30,15 @@ function KpiCard({
 
 export function KpiCards() {
   const resumenQuery = useResumenComuna();
+  const balanceQuery = useArbolesBalance();
 
   if (resumenQuery.isLoading) {
     // Misma estructura de CardHeader + CardTitle + CardContent que la tarjeta
     // real (título + valor grande + hint) — reserva la misma altura para que
     // nada de lo que está debajo salte al llegar los datos (CLS).
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
               <Skeleton className="h-4 w-32" />
@@ -84,8 +85,15 @@ export function KpiCards() {
     0,
   );
 
+  const arbolesVivos = balanceQuery.data?.totales.vivos;
+
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <KpiCard
+        label="Árboles vivos en Medellín"
+        value={arbolesVivos != null ? arbolesVivos.toLocaleString("es-CO") : "Sin dato"}
+        hint="Inventario SAU (Alcaldía), sin talados ni desaparecidos"
+      />
       <KpiCard
         label="PM2.5 promedio ciudad"
         value={pm25PromedioCiudad != null ? `${pm25PromedioCiudad.toFixed(1)} µg/m³` : "Sin dato"}

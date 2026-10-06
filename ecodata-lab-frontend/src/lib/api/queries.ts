@@ -35,6 +35,7 @@ import {
   puntosArbolesResponseSchema,
   resumenArbolesComunaSchema,
 } from "@/types/arbolSau";
+import { ahpV2ComunaSchema, ahpV2ResumenSchema } from "@/types/ahpV2";
 import { resumenSaludRespiratoriaResponseSchema } from "@/types/saludRespiratoria";
 
 async function fetchAndValidate<Schema extends z.ZodTypeAny>(
@@ -170,6 +171,22 @@ export function useArbolesResumenComuna() {
     // Agregado liviano (comuna, top especies, % estado): a diferencia de
     // zonas-verdes, se puede cargar siempre para nutrir el dashboard sin
     // esperar a que el usuario active ninguna capa del mapa.
+  });
+}
+
+export function useAhpV2() {
+  return useQuery({
+    queryKey: ["ahp-v2"],
+    queryFn: () => fetchAndValidate(endpoints.ahpV2, z.array(ahpV2ComunaSchema)),
+    staleTime: 60 * 60 * 1000,
+  });
+}
+
+export function useAhpV2Resumen() {
+  return useQuery({
+    queryKey: ["ahp-v2-resumen"],
+    queryFn: () => fetchAndValidate(endpoints.ahpV2Resumen, ahpV2ResumenSchema),
+    staleTime: 60 * 60 * 1000,
   });
 }
 

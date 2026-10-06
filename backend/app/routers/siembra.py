@@ -3,6 +3,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
+from app.models.ahp_v2 import AhpV2Comuna, AhpV2Resumen
 from app.models.siembra import (
     ProyeccionMaduracion,
     RankingComunaItem,
@@ -19,6 +20,8 @@ from app.services.ahp import (
     calcular_ranking_comunas,
 )
 from app.services.data_loader import (
+    load_ahp_v2_comunas,
+    load_ahp_v2_resumen,
     load_diversificacion_especies_por_id,
     load_fichas_especies,
     load_integracion_pm25_arboles,
@@ -132,6 +135,24 @@ def get_resumen_comuna() -> list[ResumenRecomendacionComuna]:
         *load_scores_ahp_interpolado_idw(),
         *load_scores_ahp_altavista_historico(),
     ]
+
+
+@router.get("/ahp-v2", response_model=list[AhpV2Comuna])
+def get_ahp_v2() -> list[AhpV2Comuna]:
+    """AHP v2 (déficit de mitigadoras sobre el SAU actual) comparado con v1, por comuna.
+
+    NO reemplaza a `/ranking-comunas` (v1, intacto). Misma fórmula y pesos; solo
+    cambia el conteo de árboles. Incluye árboles vivos del SAU y árboles por
+    1.000 habitantes para las 21 comunas y corregimientos (las 6 sin PM2.5 traen
+    conteos pero no score). Ver docs/AHP_V2_SAU.md.
+    """
+    return load_ahp_v2_comunas()
+
+
+@router.get("/ahp-v2/resumen", response_model=AhpV2Resumen)
+def get_ahp_v2_resumen() -> AhpV2Resumen:
+    """Robustez v1 vs v2 (correlación de rangos, coincidencia del top 5) y advertencia metodológica."""
+    return load_ahp_v2_resumen()
 
 
 @router.get("/proyeccion", response_model=ProyeccionMaduracion)

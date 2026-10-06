@@ -1,0 +1,39 @@
+{
+  "especies_mitigadoras": [
+    "bauhinia picta",
+    "calliandra haematocephala",
+    "inga densiflora",
+    "retrophyllum rospigliosii",
+    "zygia longifolia"
+  ],
+  "pesos": {
+    "pm25": 0.45,
+    "deficit": 0.35,
+    "area": 0.2
+  },
+  "benchmark_deficit_pct": 30.0,
+  "arboles_v1_total_11_comunas": 42941,
+  "arboles_vivos_sau_total_11_comunas": 300341,
+  "arboles_vivos_sau_total_medellin": 431908,
+  "spearman_rank_v1_vs_v2_11": 0.636,
+  "top5_v1": [
+    "Belén",
+    "Castilla",
+    "El Poblado",
+    "Guayabal",
+    "La Candelaria"
+  ],
+  "top5_v2": [
+    "Belén",
+    "Castilla",
+    "Guayabal",
+    "La América",
+    "La Candelaria"
+  ],
+  "top5_coinciden": 4,
+  "rango_deficit_v2_pct": [
+    19.45,
+    27.45
+  ],
+  "advertencia": "El déficit v2 varía poco entre comunas (todas tienen entre ~2,5 % y ~6 % de especies mitigadoras frente al benchmark de 30 %): tras el Min-Max, diferencias pequeñas se amplifican a toda la escala [0,1]. Ver docs/VALIDACION_SENSIBILIDAD_AHP.md."
+}

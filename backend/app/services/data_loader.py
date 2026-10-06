@@ -17,6 +17,7 @@ import shapely
 from fastapi import HTTPException
 
 from app.core.config import get_settings
+from app.models.ahp_v2 import AhpV2Comuna, AhpV2Resumen
 from app.models.arbol_sau import ArbolSau, BalanceSau
 from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
@@ -453,6 +454,24 @@ def load_arboles_sau_df() -> pd.DataFrame:
         usecols=lambda c: c in _SAU_COLUMNAS,
         dtype=_SAU_CATEGORICAS,
     )
+
+
+@lru_cache
+def load_ahp_v2_comunas() -> list[AhpV2Comuna]:
+    """AHP v2 (SAU actual) vs v1, por comuna. Ver scripts/calcular_ahp_v2_sau.py."""
+    settings = get_settings()
+    df = _read_csv(settings.data_ahp_v2_sau_por_comuna, "DATA_AHP_V2_SAU_POR_COMUNA")
+    df = df.astype(object).where(pd.notna(df), None)
+    return [AhpV2Comuna.model_validate(row) for row in df.to_dict(orient="records")]
+
+
+@lru_cache
+def load_ahp_v2_resumen() -> AhpV2Resumen:
+    settings = get_settings()
+    path = settings.data_ahp_v2_sau_resumen
+    _require_file(path, "DATA_AHP_V2_SAU_RESUMEN")
+    with path.open(encoding="utf-8") as f:
+        return AhpV2Resumen.model_validate(json.load(f))
 
 
 @lru_cache

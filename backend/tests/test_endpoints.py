@@ -213,3 +213,26 @@ def test_arboles_resumen_comuna_coincide_con_balance():
     # los árboles vivos no incluyen estados muerto/desaparecido
     estados = {e["estado"] for r in resumen for e in r["distribucion_estado"]}
     assert "Individuo Muerto" not in estados and "Individuo Desaparecido" not in estados
+
+
+def test_ahp_v2_cubre_21_comunas_y_no_toca_v1():
+    v2 = client.get("/api/siembra/ahp-v2").json()
+    assert len(v2) == 21
+    con_score = [c for c in v2 if c["score_v2_15"] is not None]
+    assert len(con_score) == 15
+    # las 11 comunas originales tienen score v1 y v2 comparables
+    originales = [c for c in v2 if c["grupo"] == "original"]
+    assert len(originales) == 11
+    assert all(c["score_v1"] is not None and c["score_v2_11"] is not None for c in originales)
+    # el ranking v1 (comparador) sigue exactamente igual que antes de v2
+    v1 = client.get("/api/siembra/ranking-comunas").json()
+    assert [c["comuna"] for c in v1][:2] == ["Guayabal", "Belén"]
+
+
+def test_ahp_v2_resumen_y_conteos_sau():
+    r = client.get("/api/siembra/ahp-v2/resumen").json()
+    balance = client.get("/api/arboles/balance").json()
+    assert r["arboles_vivos_sau_total_medellin"] == balance["totales"]["vivos"]
+    assert -1.0 <= r["spearman_rank_v1_vs_v2_11"] <= 1.0
+    v2 = client.get("/api/siembra/ahp-v2").json()
+    assert sum(c["arboles_vivos_sau"] for c in v2) <= balance["totales"]["vivos"]
