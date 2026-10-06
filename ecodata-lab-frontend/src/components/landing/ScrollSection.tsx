@@ -60,7 +60,7 @@ export function ScrollSection({
     <section
       id={id}
       ref={ref}
-      className={cn("flex min-h-screen items-center py-24", className)}
+      className={cn("flex min-h-dvh items-center py-24", className)}
     >
       {children}
     </section>

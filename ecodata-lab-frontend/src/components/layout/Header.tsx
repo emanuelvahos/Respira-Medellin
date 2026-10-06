@@ -48,12 +48,12 @@ export function Header() {
 
       <nav aria-label="Navegación principal móvil" className="border-t border-border md:hidden">
         <MainContainer>
-          <ul className="flex items-center gap-5 overflow-x-auto py-2 text-sm">
+          <ul className="flex items-center gap-5 overflow-x-auto text-sm">
             {siteConfig.nav.map((item) => (
               <li key={item.href} className="shrink-0">
                 <Link
                   href={item.href}
-                  className="font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                  className="inline-flex min-h-11 items-center px-1 font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
                 >
                   {item.label}
                 </Link>

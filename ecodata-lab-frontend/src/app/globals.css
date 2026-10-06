@@ -206,3 +206,53 @@
     @apply font-heading;
   }
 }
+
+/* Capa base de plataforma para móvil (skill mobile-native) */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  button,
+  a,
+  [role="button"],
+  summary {
+    touch-action: manipulation;
+  }
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1rem);
+  }
+}
+
+/* Paneles con scroll propio no arrastran la página detrás */
+.panel-scroll {
+  overscroll-behavior: contain;
+}
+
+/* Apple Design: respetar preferencias de transparencia y contraste */
+@media (prefers-reduced-transparency: reduce) {
+  header,
+  .backdrop-blur {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  header {
+    background: var(--background) !important;
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --border: oklch(0.45 0.02 150);
+  }
+  .dark {
+    --border: oklch(1 0 0 / 45%);
+  }
+}

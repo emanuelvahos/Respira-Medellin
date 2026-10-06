@@ -99,7 +99,7 @@ export function HomeClient({
           href="/presentacion"
           aria-label="Modo presentación"
           title="Modo presentación"
-          className="fixed bottom-4 right-4 z-40 flex size-9 items-center justify-center rounded-full border border-border bg-card/80 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
+          className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-40 flex size-9 pointer-coarse:size-11 items-center justify-center rounded-full border border-border bg-card/80 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
         >
           <PresentationChartIcon size={18} weight="bold" aria-hidden="true" />
         </Link>
