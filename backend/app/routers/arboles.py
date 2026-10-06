@@ -8,6 +8,8 @@ from app.services.arboles import (
     puntos_en_bbox,
     resumen_por_comuna,
 )
+from app.models.arbol_sau import ArbolesComunaDetalle
+from app.services.arboles_detalle import detalle_comunas
 from app.services.data_loader import load_arboles_sau_balance, load_arboles_sau_df
 
 router = APIRouter(prefix="/api/arboles", tags=["arboles"])
@@ -32,6 +34,14 @@ def get_balance() -> BalanceSau:
     desaparecidos, muertos e históricos (total y por comuna), criterio de
     "árbol vivo" y fechas de corte de la fuente."""
     return load_arboles_sau_balance()
+
+
+@router.get("/comunas-detalle", response_model=list[ArbolesComunaDetalle])
+def get_comunas_detalle() -> list[ArbolesComunaDetalle]:
+    """Detalle de árboles vivos por comuna (SAU): densidad, % de especies
+    mitigadoras, estado, barrios y una explicación en lenguaje claro de por qué
+    la comuna ocupa su posición en la prioridad AHP v2."""
+    return detalle_comunas()
 
 
 @router.get("/clusters", response_model=list[ClusterArboles])

@@ -9,6 +9,7 @@ import { KpiCards } from "@/components/dashboard/KpiCards";
 import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
+import { ArbolesPorComuna } from "@/components/dashboard/ArbolesPorComuna";
 import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
 import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
 import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespiratoriaBarChart";
@@ -92,6 +93,8 @@ function DashboardInner() {
           <RankingScoreChart pesos={pesos} />
         </CardContent>
       </Card>
+
+      <ArbolesPorComuna />
 
       <AhpV2Comparison />
 

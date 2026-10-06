@@ -236,3 +236,19 @@ def test_ahp_v2_resumen_y_conteos_sau():
     assert -1.0 <= r["spearman_rank_v1_vs_v2_11"] <= 1.0
     v2 = client.get("/api/siembra/ahp-v2").json()
     assert sum(c["arboles_vivos_sau"] for c in v2) <= balance["totales"]["vivos"]
+
+
+def test_arboles_comunas_detalle_coherente():
+    det = client.get("/api/arboles/comunas-detalle").json()
+    balance = client.get("/api/arboles/balance").json()
+    assert len(det) == 21
+    # suma = vivos del balance salvo individuos sin comuna asignada (pocos)
+    assert 0 <= balance["totales"]["vivos"] - sum(c["arboles_vivos"] for c in det) < 100
+    for c in det:
+        assert c["razones"]
+        if c["score_v2"] is None:
+            assert "no tiene ningún dato de PM2.5" in c["razones"][0]
+            assert c["contribucion"] is None
+        else:
+            k = c["contribucion"]
+            assert abs(k["pm25"] + k["deficit"] + k["area"] - c["score_v2"]) < 0.01

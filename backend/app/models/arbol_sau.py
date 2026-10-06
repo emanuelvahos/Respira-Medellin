@@ -125,3 +125,57 @@ class BalanceSau(BaseModel):
     criterio_arbol_vivo: str
     totales: BalanceSauTotales
     por_comuna: dict[str, BalanceSauComuna]
+
+
+class BarrioConteo(BaseModel):
+    barrio: str
+    arboles: int
+
+
+class ContribucionAhp(BaseModel):
+    """Aporte de cada criterio al puntaje AHP v2 (peso × valor normalizado)."""
+
+    pm25: float
+    deficit: float
+    area: float
+    maximo_pm25: float
+    maximo_deficit: float
+    maximo_area: float
+
+
+class ArbolesComunaDetalle(BaseModel):
+    """Árboles de una comuna/corregimiento según el SAU, y por qué tiene la prioridad que tiene.
+
+    Todo sale de sau_arboles_urbanos.csv (árboles vivos), sau_arboles_balance.json
+    (talados, desaparecidos, muertos), poblacion_por_comuna.csv y ahp_v2_sau_por_comuna.csv.
+    `registros_por_anio_ingreso` es el año en que el árbol ENTRÓ al inventario
+    (`fecha_ingreso`), no necesariamente el año de siembra.
+    """
+
+    comuna: str
+    arboles_vivos: int
+    porcentaje_de_medellin: float
+    talados: int
+    desaparecidos: int
+    muertos: int
+    mitigadores: int
+    ratio_mitigadores_pct: float | None = None
+    poblacion: int | None = None
+    arboles_por_1000_hab: float | None = None
+    area_km2: float | None = None
+    arboles_por_km2: float | None = None
+    top_especies: list[EspecieConteo]
+    distribucion_estado: list[EstadoFitosanitarioResumen]
+    top_barrios: list[BarrioConteo]
+    registros_por_anio_ingreso: dict[int, int]
+    registros_ultimos_3_anios: int
+    # explicación de la prioridad (None si la comuna no tiene PM2.5, ver `razones`)
+    ranking_v2: int | None = None
+    ranking_v1: int | None = None
+    score_v2: float | None = None
+    pm25_promedio: float | None = None
+    pm25_tipo_dato: str | None = None
+    pm25_confianza: str | None = None
+    tiene_zona_siembra: bool = False
+    contribucion: ContribucionAhp | None = None
+    razones: list[str]
