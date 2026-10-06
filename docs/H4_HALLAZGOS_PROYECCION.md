@@ -31,3 +31,29 @@ Estado: **investigación, sin código cambiado**. Las cifras salen de lecturas a
 
 ## 5. Límites de esta investigación
 Lectura automática de resúmenes de papers: confirmar cifras contra los originales; los parámetros son de otros contextos climáticos (mayormente EE. UU.), no de Medellín; no se evaluó supervivencia específica de las 5 especies recomendadas.
+
+
+## 6. Gobernanza de los parámetros (registro y puerta de publicación)
+
+Aplicando el marco de gobierno de datos: ningún parámetro entra a la proyección sin estar en este registro.
+
+| ID | Parámetro | Valor | Tipo | Fuente | Verificado contra original | Confianza | Revisar |
+|---|---|---|---|---|---|---|---|
+| P1 | Mortalidad anual en establecimiento (≤5 años) | mediana 6,6-7 % | Citado | Roman et al., revisión en Arboriculture & Urban Forestry 45(5) | **No** (lectura automática) | Media | antes de publicar |
+| P2 | Mortalidad anual post-establecimiento | mediana 2,8-3,8 % | Citado | misma | **No** | Media | antes de publicar |
+| P3 | Cuartiles de mortalidad de establecimiento (2,8 / 4,4 / 9,3 %) | intercuartil | Citado, ambiguo | misma | **No**: la lectura mezcla cuartiles de medianas y de estudios | Baja | confirmar en el PDF |
+| P4 | Remoción neta PM2.5 por área de copa | 0,13-0,36 g/m²/año | Citado (EE. UU.) | Nowak et al. 2013 | **No** | Media; contexto distinto a Medellín | antes de publicar |
+| P5 | Resuspensión | ≈34 % (27-43 %) | Citado | Nowak et al. 2013 | **No** | Media | antes de publicar |
+| P6 | Remoción PM2.5 Valle de Aburrá | ≈32,1 t/año | Citado (local) | Arroyave-Maya et al. 2019 | **No** | Media | antes de publicar |
+| P7 | Remoción PM2.5 Medellín / área metropolitana | ≈3 t / ≈83 t | Citado (local), contradice a P6 en magnitud | Estudio Zenodo (efecto marginal) | **No** | Baja | reconciliar |
+| P8 | Años de maduración por especie | 4-40 años | Supuesto (solo Pino Romerón con ancla parcial) | maduracion.py | n/a | Baja | cuando haya DAP del SAU |
+| P9 | Supervivencia por escenario | optimista/esperado/conservador | Supuesto derivado de P1-P3 | cálculo propio | n/a | Baja | tras verificar P1-P3 |
+
+**Puerta de publicación (todas deben cumplirse antes de mostrar una cifra de proyección a un cliente):**
+1. Cada parámetro usado tiene fila en el registro, tipo "Citado" o "Supuesto", y los citados están verificados contra el original (columna "Verificado").
+2. La salida de remoción de PM2.5 se muestra como rango, nunca como valor único, mientras P6 y P7 no se reconcilien.
+3. La interfaz rotula cada parámetro como citado o supuesto.
+4. Se declara que la proyección modela el efecto marginal del plan, no el PM2.5 futuro de la ciudad.
+5. Hay una prueba automática que impide publicar si un parámetro "Citado" no tiene fuente.
+
+**Riesgos de calidad específicos:** (a) transferibilidad: P1-P5 vienen de contextos distintos (mayormente EE. UU.), (b) la contradicción P6 vs P7 de un orden de magnitud, (c) sin edad ni DAP en el SAU no se puede calibrar con datos propios.
