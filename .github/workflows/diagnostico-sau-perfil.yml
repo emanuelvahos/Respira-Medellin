@@ -1,7 +1,7 @@
-name: Diagnóstico SAU únicos (temporal, H1)
+name: Diagnóstico SAU perfil (temporal, H1)
 on:
   push:
-    branches: [diag-sau2]
+    branches: [diag-sau3]
   workflow_dispatch: {}
 permissions:
   contents: write
@@ -15,13 +15,13 @@ jobs:
         with:
           python-version: "3.11.9"
       - run: pip install requests
-      - run: python backend/scripts/diagnosticar_sau_unicos.py
+      - run: python backend/scripts/diagnosticar_sau_perfil.py
       - name: Publicar resultado
         if: always()
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git checkout -b diag-sau2-resultado
-          git add -f backend/data/diagnostico_sau_unicos.json
-          git commit -m "diagnóstico SAU únicos (resultado)" || exit 0
-          git push -f origin diag-sau2-resultado
+          git checkout -b diag-sau3-resultado
+          git add -f backend/data/diagnostico_sau_perfil.json
+          git commit -m "diagnóstico SAU perfil (resultado)" || exit 0
+          git push -f origin diag-sau3-resultado
