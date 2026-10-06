@@ -79,6 +79,27 @@ def main() -> int:
         }
     informe["capas"] = capas
 
+    otros = {}
+    for nombre in [
+        "VA_SistemaArbolUrbano_Base",
+        "VA_SistemaArbolUrbano_App",
+        "VA_SistemaArbolUrbano_AreaForestal",
+        "VA_SistemaArbolUrbano_sincronizado",
+        "VA_SistemaArbolUrbano_Ciudadano_app",
+        "VA_SistemaArbolUrbano_Contrato",
+    ]:
+        for tipo in ("MapServer", "FeatureServer"):
+            svc = f"{BASE}/{nombre}/{tipo}"
+            meta = get(svc)
+            if "layers" not in meta:
+                continue
+            otros[f"{nombre}/{tipo}"] = {}
+            for lyr in meta["layers"]:
+                c = get(f"{svc}/{lyr['id']}/query", where="1=1", returnCountOnly="true")
+                otros[f"{nombre}/{tipo}"][f"{lyr['id']}:{lyr.get('name')}"] = c.get("count", c)
+            break
+    informe["otros_servicios_sau"] = otros
+
     capa1 = f"{SERVICE}/1"
     informe["capa1_count"] = get(f"{capa1}/query", where="1=1", returnCountOnly="true")
     informe["capa1_por_estado_individuo"] = stats_por(capa1, "s_estado_individuo")
