@@ -11,6 +11,7 @@ import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
 import { ArbolesPorComuna } from "@/components/dashboard/ArbolesPorComuna";
 import { NdviEvidencia } from "@/components/dashboard/NdviEvidencia";
+import { CalidadDatosPanel } from "@/components/dashboard/CalidadDatosPanel";
 import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
 import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
 import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespiratoriaBarChart";
@@ -104,6 +105,8 @@ function DashboardInner() {
       <ComunaComparator />
 
       <ProyeccionTemporal />
+
+      <CalidadDatosPanel />
 
       <Card>
         <CardHeader>

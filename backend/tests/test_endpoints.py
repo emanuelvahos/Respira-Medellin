@@ -262,3 +262,17 @@ def test_ndvi_por_comuna_y_correlacion():
     assert len(r["advertencias"]) >= 3
     for c in r["correlaciones"]:
         assert c["n_comunas"] == 16 and -1 <= c["spearman"] <= 1
+
+
+def test_calidad_datos_panel():
+    r = client.get("/api/calidad-datos").json()
+    ids = {f["id"] for f in r["fuentes"]}
+    assert {"sau", "pm25_estaciones", "poblacion", "salud", "zonas_verdes", "ndvi"} <= ids
+    assert all(f["limitaciones"] for f in r["fuentes"])
+    sau = next(f for f in r["fuentes"] if f["id"] == "sau")
+    assert sau["fecha_corte"] and sau["registros"] > 400_000
+    # zonas verdes no publica fecha: debe declararse, no inventarse
+    zv = next(f for f in r["fuentes"] if f["id"] == "zonas_verdes")
+    assert zv["fecha_corte"] is None and zv["estado"] == "sin_fecha"
+    integridad = {c["id"]: c["ok"] for c in r["chequeos"]}
+    assert integridad["suma_vivos"] and integridad["balance_cuadra"] and integridad["21_comunas"]

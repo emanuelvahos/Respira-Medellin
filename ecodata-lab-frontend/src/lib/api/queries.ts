@@ -35,6 +35,7 @@ import {
   puntosArbolesResponseSchema,
   resumenArbolesComunaSchema,
 } from "@/types/arbolSau";
+import { calidadDatosSchema } from "@/types/calidadDatos";
 import { ndviResumenSchema } from "@/types/ndvi";
 import { arbolesComunaDetalleSchema } from "@/types/arbolesDetalle";
 import { ahpV2ComunaSchema, ahpV2ResumenSchema } from "@/types/ahpV2";
@@ -293,6 +294,14 @@ export function useNdvi() {
   return useQuery({
     queryKey: ["ndvi"],
     queryFn: () => fetchAndValidate(endpoints.ndvi, ndviResumenSchema),
+    staleTime: 60 * 60 * 1000,
+  });
+}
+
+export function useCalidadDatos() {
+  return useQuery({
+    queryKey: ["calidad-datos"],
+    queryFn: () => fetchAndValidate(endpoints.calidadDatos, calidadDatosSchema),
     staleTime: 60 * 60 * 1000,
   });
 }
