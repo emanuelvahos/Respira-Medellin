@@ -1,0 +1,210 @@
+{
+  "fuente": {
+    "nombre": "Sistema de Árbol Urbano (SAU) — Alcaldía de Medellín",
+    "servicio": "VA_SistemaArbolUrbano_Contrato/MapServer/3 (Arboles Estado)",
+    "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Contrato/MapServer/3",
+    "municipio": "MEDELLÍN"
+  },
+  "fecha_descarga_utc": "2026-10-06T02:47:33.225852+00:00",
+  "fecha_actualizacion_max_fuente": "2026-10-05",
+  "criterio_arbol_vivo": "s_estado_individuo = 'Activo' y s_estado_arbol distinto de 'Individuo Muerto' y 'Individuo Desaparecido'; un registro por individuo (el más reciente).",
+  "totales": {
+    "filas_descargadas": 507872,
+    "individuos_unicos": 507730,
+    "individuos_con_varias_filas": 142,
+    "filas_sin_codigo_individuo": 4,
+    "vivos": 431908,
+    "vivos_sin_geometria": 0,
+    "talados": 32007,
+    "desaparecidos": 32446,
+    "muertos": 10763,
+    "historicos": 606,
+    "otros": 0
+  },
+  "por_comuna": {
+    "El Poblado": {
+      "vivos": 58325,
+      "talados": 5991,
+      "desaparecidos": 2036,
+      "muertos": 2451,
+      "historicos": 0,
+      "total_registrados": 68803
+    },
+    "Belén": {
+      "vivos": 40289,
+      "talados": 3015,
+      "desaparecidos": 2405,
+      "muertos": 838,
+      "historicos": 10,
+      "total_registrados": 46557
+    },
+    "Robledo": {
+      "vivos": 39048,
+      "talados": 2480,
+      "desaparecidos": 2751,
+      "muertos": 1163,
+      "historicos": 0,
+      "total_registrados": 45442
+    },
+    "Laureles Estadio": {
+      "vivos": 36043,
+      "talados": 2736,
+      "desaparecidos": 2172,
+      "muertos": 684,
+      "historicos": 70,
+      "total_registrados": 41705
+    },
+    "La Candelaria": {
+      "vivos": 31775,
+      "talados": 1907,
+      "desaparecidos": 2284,
+      "muertos": 446,
+      "historicos": 0,
+      "total_registrados": 36412
+    },
+    "Castilla": {
+      "vivos": 29863,
+      "talados": 2383,
+      "desaparecidos": 2523,
+      "muertos": 856,
+      "historicos": 26,
+      "total_registrados": 35651
+    },
+    "Guayabal": {
+      "vivos": 25683,
+      "talados": 1545,
+      "desaparecidos": 2119,
+      "muertos": 515,
+      "historicos": 42,
+      "total_registrados": 29904
+    },
+    "Buenos Aires": {
+      "vivos": 25579,
+      "talados": 1825,
+      "desaparecidos": 1857,
+      "muertos": 459,
+      "historicos": 33,
+      "total_registrados": 29753
+    },
+    "Corregimiento de San Cristóbal": {
+      "vivos": 25076,
+      "talados": 800,
+      "desaparecidos": 4058,
+      "muertos": 931,
+      "historicos": 71,
+      "total_registrados": 30936
+    },
+    "Villa Hermosa": {
+      "vivos": 18710,
+      "talados": 1343,
+      "desaparecidos": 1342,
+      "muertos": 364,
+      "historicos": 43,
+      "total_registrados": 21802
+    },
+    "La América": {
+      "vivos": 18378,
+      "talados": 1278,
+      "desaparecidos": 853,
+      "muertos": 416,
+      "historicos": 13,
+      "total_registrados": 20938
+    },
+    "Aranjuez": {
+      "vivos": 14804,
+      "talados": 1388,
+      "desaparecidos": 1228,
+      "muertos": 290,
+      "historicos": 0,
+      "total_registrados": 17710
+    },
+    "Corregimiento de San Antonio de Prado": {
+      "vivos": 14143,
+      "talados": 599,
+      "desaparecidos": 901,
+      "muertos": 282,
+      "historicos": 135,
+      "total_registrados": 16060
+    },
+    "San Javier": {
+      "vivos": 13245,
+      "talados": 993,
+      "desaparecidos": 1226,
+      "muertos": 321,
+      "historicos": 141,
+      "total_registrados": 15926
+    },
+    "Doce de Octubre": {
+      "vivos": 13163,
+      "talados": 1106,
+      "desaparecidos": 856,
+      "muertos": 294,
+      "historicos": 0,
+      "total_registrados": 15419
+    },
+    "Corregimiento de Santa Elena": {
+      "vivos": 10657,
+      "talados": 720,
+      "desaparecidos": 1676,
+      "muertos": 111,
+      "historicos": 19,
+      "total_registrados": 13183
+    },
+    "Corregimiento de Altavista": {
+      "vivos": 5636,
+      "talados": 488,
+      "desaparecidos": 270,
+      "muertos": 74,
+      "historicos": 2,
+      "total_registrados": 6470
+    },
+    "Manrique": {
+      "vivos": 4771,
+      "talados": 641,
+      "desaparecidos": 510,
+      "muertos": 125,
+      "historicos": 0,
+      "total_registrados": 6047
+    },
+    "Popular": {
+      "vivos": 3669,
+      "talados": 282,
+      "desaparecidos": 654,
+      "muertos": 73,
+      "historicos": 0,
+      "total_registrados": 4678
+    },
+    "Santa Cruz": {
+      "vivos": 2537,
+      "talados": 468,
+      "desaparecidos": 691,
+      "muertos": 69,
+      "historicos": 1,
+      "total_registrados": 3766
+    },
+    "Corregimiento de San Sebastián de Palmitas": {
+      "vivos": 512,
+      "talados": 18,
+      "desaparecidos": 34,
+      "muertos": 1,
+      "historicos": 0,
+      "total_registrados": 565
+    },
+    "La Madera": {
+      "vivos": 2,
+      "talados": 0,
+      "desaparecidos": 0,
+      "muertos": 0,
+      "historicos": 0,
+      "total_registrados": 2
+    },
+    "Altos de Niquía": {
+      "vivos": 0,
+      "talados": 1,
+      "desaparecidos": 0,
+      "muertos": 0,
+      "historicos": 0,
+      "total_registrados": 1
+    }
+  }
+}
