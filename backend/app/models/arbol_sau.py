@@ -2,25 +2,22 @@ from pydantic import BaseModel
 
 
 class ArbolSau(BaseModel):
-    """Fila de sau_arboles_urbanos.csv (individuo real del SAU).
+    """Fila de sau_arboles_urbanos.csv: un árbol VIVO de Medellín (SAU).
 
-    Fuente: servicio ArcGIS REST público
-    `VA_SistemaArbolUrbano_Ciudadano/MapServer/1` ("Arbol Urbano") — ver
-    backend/README.md, sección "Fuente de sau_arboles_urbanos.csv".
+    Fuente (desde H1, 2026-10): servicio ArcGIS REST público
+    `VA_SistemaArbolUrbano_Contrato/MapServer/3` ("Arboles Estado"), solo
+    municipio Medellín, un registro por individuo, solo árboles vivos (activos
+    y no muertos/desaparecidos). Talados y desaparecidos NO están en este
+    archivo: se cuentan en sau_arboles_balance.json. Ver docs/H1_VERIFICACION_SAU.md.
     """
 
     objectid: int
-    id_individuo_disperso: float | None = None
     s_especie: str | None = None
     nombre_comun: str | None = None
-    tipoarbol: str | None = None
     s_estado_arbol: str | None = None
-    s_estado_individuo: str | None = None
-    municipio: str | None = None
     comuna: str | None = None
     barrio: str | None = None
-    fecha_ingreso: str | None = None
-    fecha_actualizacion: str | None = None
+    anio_ingreso: int | None = None
     lon: float
     lat: float
 
@@ -40,7 +37,7 @@ class EstadoFitosanitarioResumen(BaseModel):
 class ResumenArbolesComuna(BaseModel):
     """Agregado por comuna: conteo real, diversidad de especies y estado fitosanitario.
 
-    Liviano a propósito (no expone geometría ni los 339.724 puntos crudos):
+    Liviano a propósito (no expone geometría ni los puntos crudos):
     es lo que alimenta el dashboard y los KPIs informativos, no el mapa de
     puntos individuales — ver /api/arboles/clusters y /api/arboles/puntos
     para eso.
@@ -88,3 +85,43 @@ class PuntosArbolesResponse(BaseModel):
     puntos: list[ArbolPunto]
     truncado: bool
     limite: int
+
+
+class BalanceSauComuna(BaseModel):
+    """Conteo por categoría de un comuna: lo vivo se muestra, lo demás se declara."""
+
+    vivos: int
+    talados: int
+    desaparecidos: int
+    muertos: int
+    historicos: int
+    total_registrados: int
+
+
+class BalanceSauTotales(BaseModel):
+    filas_descargadas: int
+    individuos_unicos: int
+    individuos_con_varias_filas: int
+    filas_sin_codigo_individuo: int
+    vivos: int
+    vivos_sin_geometria: int
+    talados: int
+    desaparecidos: int
+    muertos: int
+    historicos: int
+    otros: int
+
+
+class BalanceSau(BaseModel):
+    """Balance transparente del inventario SAU de Medellín (sau_arboles_balance.json).
+
+    Incluye metadatos de corte (fecha de descarga y fecha de actualización más
+    reciente de la fuente) y el criterio exacto de "árbol vivo".
+    """
+
+    fuente: dict[str, str]
+    fecha_descarga_utc: str
+    fecha_actualizacion_max_fuente: str | None = None
+    criterio_arbol_vivo: str
+    totales: BalanceSauTotales
+    por_comuna: dict[str, BalanceSauComuna]

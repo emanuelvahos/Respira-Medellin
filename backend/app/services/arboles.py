@@ -1,8 +1,8 @@
-"""Agregaciones sobre el inventario real del SAU (339.724 árboles).
+"""Agregaciones sobre el inventario real del SAU (árboles vivos de Medellín).
 
-Ningún endpoint de este módulo devuelve los 339.724 puntos crudos en una sola
+Ningún endpoint de este módulo devuelve los puntos crudos en una sola
 respuesta — el mismo problema de framerate que causó el inventario de zonas
-verdes (48.348 polígonos, ~23MB) se repetiría multiplicado ~7x aquí. En su
+verdes (48.348 polígonos, ~23MB) se repetiría multiplicado ~9x aquí. En su
 lugar:
 
 - `resumen_por_comuna`: agregados livianos (conteos, top especies, % estado
@@ -42,12 +42,12 @@ DEFAULT_CLUSTER_CELL_DEG = 0.01
 def resumen_por_comuna(df: pd.DataFrame) -> list[ResumenArbolesComuna]:
     resultado: list[ResumenArbolesComuna] = []
     df_validas = df[df["comuna"].notna()]
-    for comuna, grupo in df_validas.groupby("comuna"):
+    for comuna, grupo in df_validas.groupby("comuna", observed=True):
         total = len(grupo)
 
         especies = (
             grupo[grupo["s_especie"].notna()]
-            .groupby(["s_especie", "nombre_comun"], dropna=False)
+            .groupby(["s_especie", "nombre_comun"], dropna=False, observed=True)
             .size()
             .sort_values(ascending=False)
             .head(TOP_ESPECIES_N)
@@ -59,7 +59,7 @@ def resumen_por_comuna(df: pd.DataFrame) -> list[ResumenArbolesComuna]:
 
         estados = (
             grupo[grupo["s_estado_arbol"].notna()]
-            .groupby("s_estado_arbol")
+            .groupby("s_estado_arbol", observed=True)
             .size()
             .sort_values(ascending=False)
         )
@@ -143,5 +143,8 @@ def puntos_en_bbox(
     # -> misma muestra (evita parpadeo si React Query refetchea el mismo bbox).
     subset = subset if not truncado else subset.sample(n=limit, random_state=42)
 
+    # Las columnas de texto son `category` (ver load_arboles_sau_df): NaN -> None
+    # solo sobre el subconjunto (<= limit filas), nunca sobre todo el DataFrame.
+    subset = subset.astype(object).where(pd.notna(subset), None)
     puntos = [ArbolPunto.model_validate(row) for row in subset.to_dict(orient="records")]
     return puntos, truncado

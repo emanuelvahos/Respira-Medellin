@@ -30,6 +30,7 @@ import {
 } from "@/types/siembra";
 import { zonasVerdesFeatureCollectionSchema } from "@/types/zonaVerde";
 import {
+  balanceSauSchema,
   clusterArbolesSchema,
   puntosArbolesResponseSchema,
   resumenArbolesComunaSchema,
@@ -172,6 +173,14 @@ export function useArbolesResumenComuna() {
   });
 }
 
+export function useArbolesBalance() {
+  return useQuery({
+    queryKey: ["arboles-balance"],
+    queryFn: () => fetchAndValidate(endpoints.arbolesBalance, balanceSauSchema),
+    staleTime: 60 * 60 * 1000,
+  });
+}
+
 export function useArbolesClusters(enabled: boolean, cellSizeDeg?: number) {
   return useQuery({
     queryKey: ["arboles-clusters", cellSizeDeg ?? "default"],
@@ -179,7 +188,7 @@ export function useArbolesClusters(enabled: boolean, cellSizeDeg?: number) {
       fetchAndValidate(arbolesClustersUrl(cellSizeDeg), z.array(clusterArbolesSchema)),
     // Capa de árboles apagada por defecto (igual que zonas-verdes); solo se
     // pide cuando el usuario la activa, y solo en modo clustered (liviano:
-    // el número de celdas depende del área, no de los 339.724 árboles).
+    // el número de celdas depende del área, no de los árboles).
     enabled,
   });
 }

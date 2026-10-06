@@ -2,14 +2,20 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useArbolesResumenComuna } from "@/lib/api/queries";
+import { useArbolesBalance, useArbolesResumenComuna } from "@/lib/api/queries";
 
-const FECHA_DESCARGA_SAU = "2026-08-12";
+function formatFecha(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
 
 export function ArbolesSauStats() {
   const query = useArbolesResumenComuna();
+  const balanceQuery = useArbolesBalance();
 
-  if (query.isLoading) {
+  if (query.isLoading || balanceQuery.isLoading) {
     // Mismo layout que la tarjeta real (header con título+descripción, dos
     // columnas de 5 filas cada una) — el salto de una tarjeta de una sola
     // línea a esta tarjeta de dos columnas era uno de los mayores
@@ -51,6 +57,9 @@ export function ArbolesSauStats() {
 
   const comunas = query.data;
   const totalArboles = comunas.reduce((acc, c) => acc + c.total_arboles, 0);
+  const balance = balanceQuery.data;
+  const corteFuente = formatFecha(balance?.fecha_actualizacion_max_fuente);
+  const descarga = formatFecha(balance?.fecha_descarga_utc);
 
   // Diversidad de especies: agrega top_especies por comuna (cada comuna ya
   // trae solo su top 5) — es una aproximación de "especies más comunes en la
@@ -87,12 +96,18 @@ export function ArbolesSauStats() {
       <CardHeader>
         <CardTitle>Inventario real del SAU</CardTitle>
         <CardDescription>
-          {totalArboles.toLocaleString("es-CO")} árboles registrados en{" "}
-          {comunas.length} comunas — fuente distinta al pipeline de recomendación de
-          siembra (que sigue usando exclusivamente{" "}
-          <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">base_datos_arboles</code>).
-          Datos: Sistema de Árbol Urbano, Alcaldía de Medellín, descargados el{" "}
-          {FECHA_DESCARGA_SAU}.
+          {totalArboles.toLocaleString("es-CO")} árboles vivos registrados en Medellín (
+          {comunas.length} comunas y corregimientos). Se cuentan solo los árboles activos que no
+          figuran como muertos ni desaparecidos
+          {balance
+            ? `; aparte constan ${balance.totales.talados.toLocaleString("es-CO")} talados, ${(balance.totales.desaparecidos + balance.totales.muertos).toLocaleString("es-CO")} desaparecidos o muertos y ${balance.totales.historicos.toLocaleString("es-CO")} históricos, que no se suman`
+            : ""}
+          . Fuente: Sistema de Árbol Urbano (SAU), Alcaldía de Medellín
+          {corteFuente ? `, última actualización de la fuente ${corteFuente}` : ""}
+          {descarga ? `, descargado el ${descarga}` : ""}. Este inventario es distinto del
+          que usa hoy el ranking de recomendación de siembra (
+          <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">base_datos_arboles</code>
+          ), que se está actualizando.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-2">
