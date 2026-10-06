@@ -1,0 +1,31 @@
+name: Diagnóstico SAU (temporal, H1)
+
+# Temporal: se dispara con push a la rama diag-sau o manualmente. Escribe
+# backend/data/diagnostico_sau.json y lo commitea a la rama diag-sau-resultado.
+on:
+  push:
+    branches: [diag-sau]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  diagnostico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+      - run: pip install requests
+      - name: Ejecutar diagnóstico
+        run: python backend/scripts/diagnosticar_sau.py
+      - name: Publicar resultado
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git checkout -b diag-sau-resultado
+          git add -f backend/data/diagnostico_sau.json
+          git commit -m "diagnóstico SAU (resultado)"
+          git push -f origin diag-sau-resultado
