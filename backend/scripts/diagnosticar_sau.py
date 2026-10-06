@@ -100,6 +100,26 @@ def main() -> int:
             break
     informe["otros_servicios_sau"] = otros
 
+    detalle = {}
+    for etiqueta, url in {
+        "sincronizado_0": f"{BASE}/VA_SistemaArbolUrbano_sincronizado/MapServer/0",
+        "contrato_5": f"{BASE}/VA_SistemaArbolUrbano_Contrato/MapServer/5",
+        "contrato_3": f"{BASE}/VA_SistemaArbolUrbano_Contrato/MapServer/3",
+        "contrato_4": f"{BASE}/VA_SistemaArbolUrbano_Contrato/MapServer/4",
+        "evu_5": f"{BASE}/VA_SistemaArbolUrbano_Base/MapServer/5",
+    }.items():
+        meta = get(url)
+        campos = [c["name"] for c in meta.get("fields", [])]
+        muestra = get(f"{url}/query", where="1=1", outFields="*", resultRecordCount="2", returnGeometry="false")
+        d = {"nombre": meta.get("name"), "tipo": meta.get("type"), "campos": campos,
+             "muestra": [f.get("attributes") for f in muestra.get("features", [])] if "features" in muestra else muestra}
+        for cand in ("municipio", "s_estado_individuo", "s_estado_arbol", "estado", "s_estado", "tipo_elemento", "tipo_cobertura"):
+            real = next((c for c in campos if c.lower() == cand), None)
+            if real:
+                d["por_" + real] = stats_por(url, real)
+        detalle[etiqueta] = d
+    informe["detalle_otros"] = detalle
+
     capa1 = f"{SERVICE}/1"
     informe["capa1_count"] = get(f"{capa1}/query", where="1=1", returnCountOnly="true")
     informe["capa1_por_estado_individuo"] = stats_por(capa1, "s_estado_individuo")
