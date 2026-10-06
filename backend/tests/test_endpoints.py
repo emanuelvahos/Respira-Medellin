@@ -252,3 +252,13 @@ def test_arboles_comunas_detalle_coherente():
         else:
             k = c["contribucion"]
             assert abs(k["pm25"] + k["deficit"] + k["area"] - c["score_v2"]) < 0.01
+
+
+def test_ndvi_por_comuna_y_correlacion():
+    r = client.get("/api/arboles/ndvi").json()
+    assert len(r["comunas"]) == 21
+    assert sum(1 for c in r["comunas"] if c["es_urbana"]) == 16
+    assert all(-1 <= c["ndvi_mediana"] <= 1 for c in r["comunas"])
+    assert len(r["advertencias"]) >= 3
+    for c in r["correlaciones"]:
+        assert c["n_comunas"] == 16 and -1 <= c["spearman"] <= 1
