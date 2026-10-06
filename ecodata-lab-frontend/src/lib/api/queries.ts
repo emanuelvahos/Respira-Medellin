@@ -35,6 +35,7 @@ import {
   puntosArbolesResponseSchema,
   resumenArbolesComunaSchema,
 } from "@/types/arbolSau";
+import { ndviResumenSchema } from "@/types/ndvi";
 import { arbolesComunaDetalleSchema } from "@/types/arbolesDetalle";
 import { ahpV2ComunaSchema, ahpV2ResumenSchema } from "@/types/ahpV2";
 import { resumenSaludRespiratoriaResponseSchema } from "@/types/saludRespiratoria";
@@ -284,6 +285,14 @@ export function useArbolesComunasDetalle() {
   return useQuery({
     queryKey: ["arboles-comunas-detalle"],
     queryFn: () => fetchAndValidate(endpoints.arbolesComunasDetalle, z.array(arbolesComunaDetalleSchema)),
+    staleTime: 60 * 60 * 1000,
+  });
+}
+
+export function useNdvi() {
+  return useQuery({
+    queryKey: ["ndvi"],
+    queryFn: () => fetchAndValidate(endpoints.ndvi, ndviResumenSchema),
     staleTime: 60 * 60 * 1000,
   });
 }

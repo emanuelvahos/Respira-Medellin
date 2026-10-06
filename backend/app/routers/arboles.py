@@ -9,6 +9,8 @@ from app.services.arboles import (
     resumen_por_comuna,
 )
 from app.models.arbol_sau import ArbolesComunaDetalle
+from app.models.ndvi import NdviResumen
+from app.services.ndvi import ndvi_resumen
 from app.services.arboles_detalle import detalle_comunas
 from app.services.data_loader import load_arboles_sau_balance, load_arboles_sau_df
 
@@ -42,6 +44,13 @@ def get_comunas_detalle() -> list[ArbolesComunaDetalle]:
     mitigadoras, estado, barrios y una explicación en lenguaje claro de por qué
     la comuna ocupa su posición en la prioridad AHP v2."""
     return detalle_comunas()
+
+
+@router.get("/ndvi", response_model=NdviResumen)
+def get_ndvi() -> NdviResumen:
+    """NDVI Sentinel-2 por comuna (evidencia satelital complementaria) y su
+    relación con los árboles del SAU. No es prueba de impacto sobre el PM2.5."""
+    return ndvi_resumen()
 
 
 @router.get("/clusters", response_model=list[ClusterArboles])

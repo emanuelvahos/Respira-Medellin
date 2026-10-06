@@ -1,0 +1,10 @@
+{
+  "fuente": "Sentinel-2 L2A (Copernicus) vía Microsoft Planetary Computer",
+  "periodo": "2025-10-11/2026-10-06",
+  "escenas_candidatas": 93,
+  "fechas_utilizadas": 59,
+  "resolucion_m": 20,
+  "umbral_vegetacion_densa": 0.6,
+  "nube_max_escena_pct": 40.0,
+  "generado": "2026-10-06"
+}

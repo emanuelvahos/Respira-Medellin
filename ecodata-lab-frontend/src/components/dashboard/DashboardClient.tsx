@@ -10,6 +10,7 @@ import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
 import { ArbolesPorComuna } from "@/components/dashboard/ArbolesPorComuna";
+import { NdviEvidencia } from "@/components/dashboard/NdviEvidencia";
 import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
 import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
 import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespiratoriaBarChart";
@@ -95,6 +96,8 @@ function DashboardInner() {
       </Card>
 
       <ArbolesPorComuna />
+
+      <NdviEvidencia />
 
       <AhpV2Comparison />
 
