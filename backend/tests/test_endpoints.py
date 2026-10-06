@@ -191,3 +191,25 @@ def test_salud_resumen_comuna():
     data = resp.json()
     assert "metodologia" in data
     assert data["metodologia"]
+
+
+def test_arboles_balance_expone_vivos_y_corte():
+    resp = client.get("/api/arboles/balance")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["totales"]["vivos"] > 400_000
+    assert data["fecha_actualizacion_max_fuente"]
+    # el balance cuadra: cada individuo único cae en exactamente una categoría
+    t = data["totales"]
+    assert t["vivos"] + t["talados"] + t["desaparecidos"] + t["muertos"] + t["historicos"] + t["otros"] == t["individuos_unicos"]
+    # y el resumen por comuna suma lo mismo que el total de vivos
+    assert sum(c["vivos"] for c in data["por_comuna"].values()) == t["vivos"]
+
+
+def test_arboles_resumen_comuna_coincide_con_balance():
+    balance = client.get("/api/arboles/balance").json()
+    resumen = client.get("/api/arboles/resumen-comuna").json()
+    assert sum(r["total_arboles"] for r in resumen) == balance["totales"]["vivos"]
+    # los árboles vivos no incluyen estados muerto/desaparecido
+    estados = {e["estado"] for r in resumen for e in r["distribucion_estado"]}
+    assert "Individuo Muerto" not in estados and "Individuo Desaparecido" not in estados

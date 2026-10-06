@@ -155,7 +155,7 @@ export const useMapStore = create<MapState>((set) => ({
     // conciencia desde el toggle.
     zonasVerdes: false,
     pm25: false,
-    // 339.724 árboles reales (SAU): apagada por defecto, igual que
+    // árboles reales (SAU): apagada por defecto, igual que
     // zonas-verdes — se activa a conciencia desde el toggle (`MapLayerToggles`),
     // y siempre carga primero en modo clustered (liviano, `arbolesSauZoomCercano`
     // en `MapCanvas`), nunca los puntos crudos, hasta acercar el zoom lo

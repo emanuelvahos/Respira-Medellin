@@ -805,29 +805,17 @@ inspeccionando la pestaña Network del navegador. `?f=json` en la raíz del
 servicio no declara ningún término de uso/licencia (`copyrightText` vacío);
 es infraestructura pública sin restricción documentada.
 
-- **Servicio**: `https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Ciudadano/MapServer/1` (capa "Arbol Urbano").
-- **Descargado**: 2026-08-12, con `backend/scripts/fetch_sau_arboles.py`.
-- **Método**: paginado (`resultOffset`/`resultRecordCount=2000`, tope real
-  del servicio), throttled a 1 request/segundo (~170 requests, obligatorio —
-  es un servicio público compartido, no una API comercial), con reintentos
-  ante fallos de red puntuales y deduplicación por `objectid`.
-- **Volumen**: 339.724 árboles reales (`returnCountOnly` del servicio,
-  confirmado contra el conteo final descargado — el script imprime y
-  compara ambos al terminar).
-- **Formato de almacenamiento**: CSV (no GeoJSON) con 13 columnas —
-  `s_especie`, `nombre_comun`, `tipoarbol`, `s_estado_arbol`,
-  `s_estado_individuo`, `municipio`, `comuna`, `barrio`, `fecha_ingreso`,
-  `fecha_actualizacion`, `lon`/`lat` (WGS84, ya reproyectadas desde el
-  EPSG:3116 nativo del servicio) y `objectid`/`id_individuo_disperso`. Se
-  eligió CSV sobre GeoJSON porque a este volumen (339k filas) el overhead de
-  estructura GeoJSON (`type`/`geometry`/`properties` por feature) infla el
-  archivo sin necesidad — un CSV con columnas `lon`/`lat` planas es
-  suficiente para las agregaciones de `app/services/arboles.py` y mucho más
-  compacto.
+- **Servicio (desde H1, 2026-10-06)**: `https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Contrato/MapServer/3` (capa "Arboles Estado"). Antes se usaba la capa pública `Ciudadano/1`, que resultó ser una foto de octubre de 2023 con solo 238.079 árboles de Medellín. La verificación completa (conteos únicos por capa, cruces, comparación Estado vs Contrato) está en [`docs/H1_VERIFICACION_SAU.md`](../docs/H1_VERIFICACION_SAU.md).
+- **Alcance**: solo municipio MEDELLÍN (el servicio cubre los 10 municipios del Valle de Aburrá).
+- **Un registro por árbol**: por `cod_individuo_disperso_amva`, el de `fecha_actualizacion` más reciente.
+- **"Árbol vivo"**: `s_estado_individuo = 'Activo'` y `s_estado_arbol` distinto de `Individuo Muerto` / `Individuo Desaparecido`. Solo los vivos van a `sau_arboles_urbanos.csv`. Talados, desaparecidos, muertos e históricos se declaran en `sau_arboles_balance.json` (endpoint `/api/arboles/balance`) y no se suman.
+- **Descarga**: `backend/scripts/fetch_sau_arboles.py` (paginado de 2.000, throttled, ~25 min; con `--comparar-contrato` genera además `sau_comparacion_capas.json`). Se ejecuta en GitHub Actions porque el servidor de la Alcaldía no es alcanzable desde todos los entornos.
+- **Volumen (2026-10-06)**: 507.730 individuos únicos de Medellín en la capa, de los cuales **431.908 vivos**, 32.007 talados, 32.446 desaparecidos, 10.763 muertos y 606 históricos. Fecha de actualización más reciente de la fuente: 2026-10-05.
+- **Formato**: CSV liviano (58 MB) con `objectid`, `s_especie`, `nombre_comun`, `s_estado_arbol`, `comuna`, `barrio`, `anio_ingreso`, `lon`, `lat` (WGS84). El backend carga las columnas de texto como `category` (~18 MB en RAM, importante en Render free con 512 MB).
 
-**Ningún endpoint expone los 339.724 puntos crudos en una sola respuesta**
+**Ningún endpoint expone los puntos crudos en una sola respuesta**
 (mismo problema de framerate que ya se vio con zonas verdes, 48.348
-polígonos, pero aquí el volumen es ~7x mayor):
+polígonos, pero aquí el volumen es ~9x mayor):
 
 1. `/api/arboles/resumen-comuna`: agregados por comuna (conteo, top 5
    especies, % de estado fitosanitario) — decenas de filas, no cientos de

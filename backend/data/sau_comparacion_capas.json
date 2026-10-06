@@ -1,0 +1,20 @@
+{
+  "individuos_estado": 507726,
+  "individuos_contrato": 465417,
+  "en_ambos": 465411,
+  "solo_en_estado": 42315,
+  "solo_en_contrato": 6,
+  "solo_en_estado_por_categoria": {
+    "talado": 1398,
+    "desaparecido": 30154,
+    "muerto": 10763
+  },
+  "solo_en_contrato_por_categoria": {
+    "vivo": 6
+  },
+  "vivos_estado": 431904,
+  "vivos_contrato": 431910,
+  "en_ambos_distinto_estado_arbol": 0,
+  "en_ambos_distinto_estado_individuo": 0,
+  "en_ambos_vivo_en_contrato_no_vivo_en_estado": 0
+}

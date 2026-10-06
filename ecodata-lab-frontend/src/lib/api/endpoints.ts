@@ -10,6 +10,7 @@ export const endpoints = {
   resumenComuna: "/api/siembra/resumen-comuna",
   zonasVerdes: "/api/zonas-verdes",
   arbolesResumenComuna: "/api/arboles/resumen-comuna",
+  arbolesBalance: "/api/arboles/balance",
   saludResumenComuna: "/api/salud/resumen-comuna",
   poblacionComuna: "/api/comunas/poblacion",
 } as const;

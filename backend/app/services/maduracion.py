@@ -23,7 +23,7 @@ multiplicando (nunca reemplazando) los datos reales ya existentes
    convención general de arboricultura urbana (rápido/medio/lento ajustado
    por porte final de la especie), NO medida en Medellín ni en estas
    especies puntuales.
-3. **El SAU (339.724 árboles) no tiene un campo real de madurez ni de DAP
+3. **El SAU no tiene un campo real de madurez ni de DAP
    por individuo** en la capa pública actual (`sau_arboles_urbanos.csv`,
    confirmado contra los 26 campos que expone el servicio ArcGIS origen,
    ver `backend/scripts/fetch_sau_arboles.py`) — no fue posible anclar esto

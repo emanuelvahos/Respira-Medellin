@@ -17,7 +17,7 @@ import shapely
 from fastapi import HTTPException
 
 from app.core.config import get_settings
-from app.models.arbol_sau import ArbolSau
+from app.models.arbol_sau import ArbolSau, BalanceSau
 from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
@@ -415,23 +415,59 @@ def load_inventario_zonas_verdes_geojson() -> dict:
         return json.load(f)
 
 
+_SAU_COLUMNAS = {
+    "objectid",
+    "s_especie",
+    "nombre_comun",
+    "s_estado_arbol",
+    "comuna",
+    "barrio",
+    "anio_ingreso",
+    "lon",
+    "lat",
+}
+_SAU_CATEGORICAS = {
+    "s_especie": "category",
+    "nombre_comun": "category",
+    "s_estado_arbol": "category",
+    "comuna": "category",
+    "barrio": "category",
+}
+
+
 @lru_cache
 def load_arboles_sau_df() -> pd.DataFrame:
-    """DataFrame crudo de sau_arboles_urbanos.csv, cacheado en memoria.
+    """DataFrame de sau_arboles_urbanos.csv (árboles vivos de Medellín), cacheado.
 
-    Se expone como DataFrame (no `list[ArbolSau]`) porque las agregaciones de
-    `app/services/arboles.py` (resumen por comuna, grid de clustering, bbox)
-    son mucho más rápidas con pandas/numpy vectorizado que iterando 339.724
-    objetos Pydantic en Python puro.
+    Las columnas de texto se cargan como `category`: con ~430.000 filas el
+    DataFrame ocupa ~15 MB en vez de ~300 MB (el backend corre en Render free,
+    512 MB de RAM). Los NaN de las categóricas se convierten a None al momento
+    de serializar (ver `puntos_en_bbox`), no aquí.
     """
     settings = get_settings()
-    df = _read_csv(settings.data_sau_arboles_urbanos, "DATA_SAU_ARBOLES_URBANOS")
-    df = df.astype(object).where(pd.notna(df), None)
-    return df
+    path = settings.data_sau_arboles_urbanos
+    _require_file(path, "DATA_SAU_ARBOLES_URBANOS")
+    return pd.read_csv(
+        path,
+        encoding="utf-8-sig",
+        usecols=lambda c: c in _SAU_COLUMNAS,
+        dtype=_SAU_CATEGORICAS,
+    )
+
+
+@lru_cache
+def load_arboles_sau_balance() -> BalanceSau:
+    """Balance por categoría (vivos, talados, desaparecidos...) y metadatos de corte."""
+    settings = get_settings()
+    path = settings.data_sau_arboles_balance
+    _require_file(path, "DATA_SAU_ARBOLES_BALANCE")
+    with path.open(encoding="utf-8") as f:
+        return BalanceSau.model_validate(json.load(f))
 
 
 def load_arboles_sau() -> list[ArbolSau]:
     df = load_arboles_sau_df()
+    df = df.astype(object).where(pd.notna(df), None)
     return [ArbolSau.model_validate(row) for row in df.to_dict(orient="records")]
 
 

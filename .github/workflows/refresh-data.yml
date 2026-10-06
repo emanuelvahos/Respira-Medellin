@@ -24,6 +24,7 @@ jobs:
   refresh-sau:
     name: Refrescar SAU (árboles urbanos)
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: backend
@@ -64,7 +65,9 @@ jobs:
             checklist de refresco.
           branch: auto/refresh-sau-arboles
           delete-branch: true
-          add-paths: backend/data/sau_arboles_urbanos.csv
+          add-paths: |
+            backend/data/sau_arboles_urbanos.csv
+            backend/data/sau_arboles_balance.json
 
   refresh-salud:
     name: Refrescar salud respiratoria (Metrosalud)

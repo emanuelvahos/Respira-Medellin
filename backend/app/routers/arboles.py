@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from app.models.arbol_sau import ClusterArboles, PuntosArbolesResponse, ResumenArbolesComuna
+from app.models.arbol_sau import BalanceSau, ClusterArboles, PuntosArbolesResponse, ResumenArbolesComuna
 from app.services.arboles import (
     DEFAULT_CLUSTER_CELL_DEG,
     MAX_PUNTOS_POR_REQUEST,
@@ -8,7 +8,7 @@ from app.services.arboles import (
     puntos_en_bbox,
     resumen_por_comuna,
 )
-from app.services.data_loader import load_arboles_sau_df
+from app.services.data_loader import load_arboles_sau_balance, load_arboles_sau_df
 
 router = APIRouter(prefix="/api/arboles", tags=["arboles"])
 
@@ -17,13 +17,21 @@ router = APIRouter(prefix="/api/arboles", tags=["arboles"])
 def get_resumen_comuna() -> list[ResumenArbolesComuna]:
     """Conteo real de árboles por comuna, top 5 especies y % de estado fitosanitario.
 
-    Fuente: inventario real del SAU (~339.724 árboles), no el pipeline
-    original de `base_datos_arboles`. Agregado liviano pensado para el
+    Fuente: inventario real del SAU (árboles vivos de Medellín, capa Estado),
+    no el pipeline original de `base_datos_arboles`. Agregado liviano pensado para el
     dashboard — ver `/api/arboles/clusters` y `/api/arboles/puntos` para el
     mapa.
     """
     df = load_arboles_sau_df()
     return resumen_por_comuna(df)
+
+
+@router.get("/balance", response_model=BalanceSau)
+def get_balance() -> BalanceSau:
+    """Balance transparente del inventario SAU de Medellín: vivos, talados,
+    desaparecidos, muertos e históricos (total y por comuna), criterio de
+    "árbol vivo" y fechas de corte de la fuente."""
+    return load_arboles_sau_balance()
 
 
 @router.get("/clusters", response_model=list[ClusterArboles])

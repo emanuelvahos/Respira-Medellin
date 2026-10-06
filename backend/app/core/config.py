@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     data_inventario_zonas_verdes_procesado: Path = Path("./data/zonas_verdes_procesado.geojson")
     data_solicitud_pm25_estaciones: Path
     data_sau_arboles_urbanos: Path
+    data_sau_arboles_balance: Path = Path("./data/sau_arboles_balance.json")
     data_salud_respiratoria_resumen_comuna: Path
     data_poblacion_por_comuna: Path
 
