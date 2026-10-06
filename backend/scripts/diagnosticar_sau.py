@@ -120,6 +120,17 @@ def main() -> int:
         detalle[etiqueta] = d
     informe["detalle_otros"] = detalle
 
+    distintos = {}
+    for etiqueta, url, campo in [
+        ("ciudadano_1", f"{BASE}/VA_SistemaArbolUrbano_Ciudadano/MapServer/1", "cod_individuo_disperso_amva"),
+        ("sincronizado_0", f"{BASE}/VA_SistemaArbolUrbano_sincronizado/MapServer/0", "cod_individuo_disperso_amva"),
+        ("contrato_5", f"{BASE}/VA_SistemaArbolUrbano_Contrato/MapServer/5", "cod_individuo_disperso_amva"),
+        ("contrato_3", f"{BASE}/VA_SistemaArbolUrbano_Contrato/MapServer/3", "cod_individuo_disperso_amva"),
+    ]:
+        distintos[etiqueta] = get(f"{url}/query", where="1=1", outFields=campo,
+                                  returnDistinctValues="true", returnCountOnly="true")
+    informe["individuos_distintos"] = distintos
+
     capa1 = f"{SERVICE}/1"
     informe["capa1_count"] = get(f"{capa1}/query", where="1=1", returnCountOnly="true")
     informe["capa1_por_estado_individuo"] = stats_por(capa1, "s_estado_individuo")
