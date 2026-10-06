@@ -9,6 +9,7 @@ import { KpiCards } from "@/components/dashboard/KpiCards";
 import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
+import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
 import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
 import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespiratoriaBarChart";
 import { Pm25SaludComparacion } from "@/components/dashboard/Pm25SaludComparacion";
@@ -92,6 +93,8 @@ function DashboardInner() {
         </CardContent>
       </Card>
 
+      <AhpV2Comparison />
+
       <ComunaComparator />
 
       <ProyeccionTemporal />
@@ -141,8 +144,8 @@ function DashboardPageSkeleton() {
         <Skeleton className="h-9 w-40 shrink-0" />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
               <Skeleton className="h-4 w-32" />
@@ -168,7 +171,7 @@ function DashboardPageSkeleton() {
         ))}
       </div>
 
-      {Array.from({ length: 4 }).map((_, i) => (
+      {Array.from({ length: 5 }).map((_, i) => (
         <Card key={i}>
           <CardHeader>
             <Skeleton className="h-5 w-72" />

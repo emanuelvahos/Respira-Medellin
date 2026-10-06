@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     data_solicitud_pm25_estaciones: Path
     data_sau_arboles_urbanos: Path
     data_sau_arboles_balance: Path = Path("./data/sau_arboles_balance.json")
+    data_ahp_v2_sau_por_comuna: Path = Path("./data/ahp_v2_sau_por_comuna.csv")
+    data_ahp_v2_sau_resumen: Path = Path("./data/ahp_v2_sau_resumen.json")
     data_salud_respiratoria_resumen_comuna: Path
     data_poblacion_por_comuna: Path
 
