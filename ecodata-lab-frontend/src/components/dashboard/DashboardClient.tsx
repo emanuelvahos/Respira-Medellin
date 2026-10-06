@@ -10,6 +10,9 @@ import { Pm25BarChart } from "@/components/dashboard/Pm25BarChart";
 import { Pm25TrendChart } from "@/components/dashboard/Pm25TrendChart";
 import { ComunasTable } from "@/components/dashboard/ComunasTable";
 import { ArbolesPorComuna } from "@/components/dashboard/ArbolesPorComuna";
+import { DatosAlBadge } from "@/components/dashboard/DatosAlBadge";
+import { ResumenEjecutivo } from "@/components/dashboard/ResumenEjecutivo";
+import { SeccionesIndice } from "@/components/dashboard/SeccionesIndice";
 import { NdviEvidencia } from "@/components/dashboard/NdviEvidencia";
 import { CalidadDatosPanel } from "@/components/dashboard/CalidadDatosPanel";
 import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
@@ -63,22 +66,33 @@ function DashboardInner() {
             pesos del modelo AHP (0.45 PM2.5 / 0.35 déficit / 0.20 área) que
             hasta ahora estaban fijados sin análisis de sensibilidad.
           </p>
+          <DatosAlBadge />
         </div>
         <CopyLinkButton label="Copiar link de este escenario" />
       </div>
 
-      <KpiCards />
+      <SeccionesIndice />
 
+      <section id="resumen" className="scroll-mt-32 space-y-6">
+        <ResumenEjecutivo />
+        <KpiCards />
+      </section>
+
+      <section id="arboles" className="scroll-mt-32 space-y-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Pm25BarChart />
         <Pm25TrendChart />
       </div>
 
       <ArbolesSauStats />
+      <ArbolesPorComuna />
+      </section>
 
       <SaludRespiratoriaBarChart />
       <Pm25SaludComparacion />
 
+      <section id="prioridad" className="scroll-mt-32 space-y-8">
+      <AhpV2Comparison />
       <Card>
         <CardHeader>
           <CardTitle>Comparador de escenarios AHP</CardTitle>
@@ -95,16 +109,17 @@ function DashboardInner() {
           <RankingScoreChart pesos={pesos} />
         </CardContent>
       </Card>
+      </section>
 
-      <ArbolesPorComuna />
-
+      <section id="evidencia" className="scroll-mt-32 space-y-8">
       <NdviEvidencia />
+      </section>
 
-      <AhpV2Comparison />
+      <section id="proyeccion" className="scroll-mt-32 space-y-8">
+      <ProyeccionTemporal />
+      </section>
 
       <ComunaComparator />
-
-      <ProyeccionTemporal />
 
       <CalidadDatosPanel />
 
@@ -152,6 +167,15 @@ function DashboardPageSkeleton() {
         </div>
         <Skeleton className="h-9 w-40 shrink-0" />
       </div>
+
+      <Skeleton className="h-11 w-full" />
+      <Card>
+        <CardContent className="space-y-2">
+          <Skeleton className="h-5 w-full max-w-2xl" />
+          <Skeleton className="h-5 w-full max-w-xl" />
+          <Skeleton className="h-5 w-full max-w-2xl" />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (

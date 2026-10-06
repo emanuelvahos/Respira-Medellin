@@ -145,7 +145,7 @@ export function PresentationClient() {
             onClick={exitPresentation}
             aria-label="Salir del modo presentación"
             title="Salir (Esc)"
-            className="fixed right-4 top-4 z-[60] flex size-9 items-center justify-center rounded-full bg-card/80 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
+            className="fixed right-4 top-[calc(1rem+env(safe-area-inset-top))] z-[60] flex size-9 pointer-coarse:size-11 items-center justify-center rounded-full bg-card/80 text-muted-foreground backdrop-blur transition-colors hover:text-foreground"
           >
             <XIcon size={18} weight="bold" />
           </button>

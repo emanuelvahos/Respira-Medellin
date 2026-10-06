@@ -60,7 +60,7 @@ export function NdviEvidencia() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Comuna</TableHead>
+                <TableHead className="sticky left-0 z-10 bg-card">Comuna</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead className="min-w-40">NDVI (mediana)</TableHead>
                 <TableHead className="text-right">% vegetación densa</TableHead>
@@ -71,7 +71,7 @@ export function NdviEvidencia() {
             <TableBody>
               {r.comunas.map((c) => (
                 <TableRow key={c.comuna}>
-                  <TableCell className="font-medium">{c.comuna}</TableCell>
+                  <TableCell className="sticky left-0 z-10 bg-card font-medium">{c.comuna}</TableCell>
                   <TableCell>{c.es_urbana ? "Urbana" : "Corregimiento"}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

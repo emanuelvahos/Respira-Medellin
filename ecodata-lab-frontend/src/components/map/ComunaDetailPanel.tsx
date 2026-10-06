@@ -81,7 +81,7 @@ export function ComunaDetailPanel() {
     <MapPanelPortal>
     <aside
       className={cn(
-        "fixed top-16 bottom-0 right-0 z-20 w-full max-w-sm overflow-y-auto border-l border-border bg-card p-5 shadow-xl transition-transform duration-300 ease-out",
+        "fixed top-16 bottom-0 right-0 z-20 w-full max-w-sm panel-scroll overflow-y-auto border-l border-border bg-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-xl transition-transform duration-300 ease-out",
         isOpen ? "translate-x-0" : "translate-x-full",
       )}
       aria-hidden={!isOpen}
@@ -98,7 +98,7 @@ export function ComunaDetailPanel() {
               ref={closeButtonRef}
               type="button"
               onClick={() => setSelectedComuna(null)}
-              className="rounded-sm p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex items-center justify-center rounded-sm p-1 pointer-coarse:size-11 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Cerrar panel de comuna"
             >
               <XIcon size={20} />

@@ -33,7 +33,7 @@ export function CalidadDatosPanel() {
   }
   const r = q.data;
   return (
-    <Card id="calidad-datos">
+    <Card id="calidad-datos" className="scroll-mt-32">
       <CardHeader>
         <CardTitle>Calidad y vigencia de los datos</CardTitle>
         <CardDescription>

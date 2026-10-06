@@ -38,11 +38,38 @@ export function ArbolesPorComuna() {
           inventario, no necesariamente siembras recientes.
         </CardDescription>
       </CardHeader>
-      <CardContent className="overflow-x-auto">
+      <CardContent>
+        <ul className="grid gap-3 sm:hidden" aria-label="Árboles por comuna">
+          {q.data.map((c) => (
+            <li key={c.comuna} className="rounded-lg border border-border p-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-medium">{c.comuna}</span>
+                <span className="text-xs text-muted-foreground">
+                  {c.ranking_v2 != null ? `Prioridad #${c.ranking_v2}` : "Sin dato PM2.5"}
+                </span>
+              </div>
+              <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <dt className="text-muted-foreground">Árboles vivos</dt>
+                  <dd className="tabular-nums font-medium">{fmt(c.arboles_vivos)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Por 1.000 hab.</dt>
+                  <dd className="tabular-nums font-medium">{fmt(c.arboles_por_1000_hab, 1)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">% mitigadoras</dt>
+                  <dd className="tabular-nums font-medium">{fmt(c.ratio_mitigadores_pct, 1)}</dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden sm:block">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Comuna</TableHead>
+              <TableHead className="sticky left-0 z-10 bg-card">Comuna</TableHead>
               <TableHead className="text-right">Árboles vivos</TableHead>
               <TableHead className="text-right">Por 1.000 hab.</TableHead>
               <TableHead className="text-right">Por km²</TableHead>
@@ -55,7 +82,7 @@ export function ArbolesPorComuna() {
           <TableBody>
             {q.data.map((c) => (
               <TableRow key={c.comuna}>
-                <TableCell className="font-medium">{c.comuna}</TableCell>
+                <TableCell className="sticky left-0 z-10 bg-card font-medium">{c.comuna}</TableCell>
                 <TableCell className="text-right tabular-nums">{fmt(c.arboles_vivos)}</TableCell>
                 <TableCell className="text-right tabular-nums">{fmt(c.arboles_por_1000_hab, 1)}</TableCell>
                 <TableCell className="text-right tabular-nums">{fmt(c.arboles_por_km2)}</TableCell>
@@ -69,6 +96,7 @@ export function ArbolesPorComuna() {
             ))}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
     </Card>
   );
