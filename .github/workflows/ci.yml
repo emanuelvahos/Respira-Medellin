@@ -46,6 +46,20 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    env:
+      # Rutas obligatorias de Settings (sin default); mismas que .env.example
+      DATA_INTEGRACION_PM25_ARBOLES: ./data/integracion_v2_pm25_arboles_medellin.csv
+      DATA_AUDITORIA_ESTACIONES_COMUNAS: ./data/auditoria_estaciones_comunas.csv
+      DATA_RELACIONES_BLOQUE2: ./data/relaciones_v2_bloque2.csv
+      DATA_RECOMENDACION_SIEMBRA_ZONA: ./data/recomendacion_siembra_por_zona.csv
+      DATA_RESUMEN_RECOMENDACION_COMUNA: ./data/resumen_recomendacion_por_comuna.csv
+      DATA_ZONAS_PRIORIZADAS_SIEMBRA: ./data/zonas_priorizadas_siembra.geojson
+      DATA_LIMITE_CATASTRAL_COMUNAS: ./data/limite_catastral_de_comun.geojson
+      DATA_INVENTARIO_ZONAS_VERDES: ./data/inventario_zonas_verdes.geojson
+      DATA_SOLICITUD_PM25_ESTACIONES: ./data/Solicitud_PM25_DP1763941.csv
+      DATA_SAU_ARBOLES_URBANOS: ./data/sau_arboles_urbanos.csv
+      DATA_SALUD_RESPIRATORIA_RESUMEN_COMUNA: ./data/salud_respiratoria_resumen_comuna.json
+      DATA_POBLACION_POR_COMUNA: ./data/poblacion_por_comuna.csv
     steps:
       - uses: actions/checkout@v4
 
