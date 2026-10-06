@@ -1,0 +1,190 @@
+{
+  "generado_utc": "2026-10-06T01:31:10.280126+00:00",
+  "capas": {
+    "ciudadano_1": {
+      "filas": 330973,
+      "unicos_por_cod_amva": 330962,
+      "unicos_por_municipio_id": 330963,
+      "filas_sin_cod": 1,
+      "max_filas_por_individuo": 2,
+      "unicos_por_municipio": {
+        "MEDELLÍN": 238079,
+        "CALDAS": 3548,
+        "BELLO": 19857,
+        "LA ESTRELLA": 4838,
+        "ITAGÜÍ": 8332,
+        "SABANETA": 4052,
+        "BARBOSA": 3053,
+        "GIRARDOTA": 4560,
+        "COPACABANA": 8720,
+        "ENVIGADO": 35923
+      },
+      "filas_por_estado_individuo": {
+        "Activo": 316157,
+        "Desaparecido": 1317,
+        "Talado": 13497,
+        "Historico": 2
+      },
+      "filas_por_estado_arbol": {
+        "Individuo Sano": 286680,
+        "Desconocido": 25231,
+        "Individuo Muerto": 9659,
+        "Individuo Enfermo": 9403
+      },
+      "campos_usados": [
+        "objectid",
+        "cod_individuo_disperso_amva",
+        "id_individuo_disperso",
+        "municipio",
+        "s_estado_individuo",
+        "s_estado_arbol",
+        "numero_intervenciones",
+        "fecha_actualizacion"
+      ],
+      "segundos": 226
+    },
+    "sincronizado_0": {
+      "filas": 426310,
+      "unicos_por_cod_amva": 426305,
+      "unicos_por_municipio_id": 426310,
+      "filas_sin_cod": 5,
+      "max_filas_por_individuo": 1,
+      "unicos_por_municipio": {
+        "MEDELLÍN": 301285,
+        "BELLO": 32786,
+        "ITAGÜÍ": 11541,
+        "COPACABANA": 9430,
+        "CALDAS": 3276,
+        "SABANETA": 6140,
+        "ENVIGADO": 44467,
+        "None": 2020,
+        "LA ESTRELLA": 5290,
+        "BARBOSA": 4322,
+        "GIRARDOTA": 5748
+      },
+      "filas_por_estado_individuo": {
+        "null": 426310
+      },
+      "filas_por_estado_arbol": {
+        "null": 22517,
+        "Individuo Desaparecido": 23305,
+        "Individuo Sano": 328594,
+        "Desconocido": 33600,
+        "Individuo Muerto": 7497,
+        "Individuo Enfermo": 10797
+      },
+      "campos_usados": [
+        "objectid",
+        "cod_individuo_disperso_amva",
+        "id_individuo_disperso",
+        "municipio",
+        "s_estado_arbol",
+        "numero_intervenciones"
+      ],
+      "segundos": 231
+    },
+    "contrato_5": {
+      "filas": 782189,
+      "unicos_por_cod_amva": 781997,
+      "unicos_por_municipio_id": 782002,
+      "filas_sin_cod": 5,
+      "max_filas_por_individuo": 2,
+      "unicos_por_municipio": {
+        "MEDELLÍN": 465406,
+        "BELLO": 86403,
+        "ITAGÜÍ": 63869,
+        "CALDAS": 10263,
+        "LA ESTRELLA": 21109,
+        "SABANETA": 24938,
+        "BARBOSA": 6492,
+        "GIRARDOTA": 12835,
+        "COPACABANA": 23417,
+        "ENVIGADO": 67265
+      },
+      "filas_por_estado_individuo": {
+        "Activo": 740245,
+        "Talado": 38827,
+        "Desaparecido": 2511,
+        "Historico": 606
+      },
+      "filas_por_estado_arbol": {
+        "null": 36510,
+        "Individuo Sano": 710959,
+        "Desconocido": 25278,
+        "Individuo Enfermo": 9442
+      },
+      "campos_usados": [
+        "objectid",
+        "cod_individuo_disperso_amva",
+        "id_individuo_disperso",
+        "municipio",
+        "s_estado_individuo",
+        "s_estado_arbol",
+        "numero_intervenciones",
+        "fecha_actualizacion"
+      ],
+      "segundos": 708
+    },
+    "contrato_3": {
+      "filas": 847308,
+      "unicos_por_cod_amva": 847097,
+      "unicos_por_municipio_id": 847102,
+      "filas_sin_cod": 5,
+      "max_filas_por_individuo": 2,
+      "unicos_por_municipio": {
+        "MEDELLÍN": 507722,
+        "BELLO": 96667,
+        "ITAGÜÍ": 66576,
+        "COPACABANA": 25888,
+        "CALDAS": 10785,
+        "LA ESTRELLA": 22480,
+        "SABANETA": 25728,
+        "BARBOSA": 7333,
+        "GIRARDOTA": 14006,
+        "ENVIGADO": 69912
+      },
+      "filas_por_estado_individuo": {
+        "Desaparecido": 20029,
+        "Activo": 786110,
+        "Talado": 40563,
+        "Historico": 606
+      },
+      "filas_por_estado_arbol": {
+        "Individuo Desaparecido": 46984,
+        "null": 36510,
+        "Individuo Sano": 710971,
+        "Desconocido": 25278,
+        "Individuo Muerto": 18123,
+        "Individuo Enfermo": 9442
+      },
+      "campos_usados": [
+        "objectid",
+        "cod_individuo_disperso_amva",
+        "id_individuo_disperso",
+        "municipio",
+        "s_estado_individuo",
+        "s_estado_arbol",
+        "numero_intervenciones",
+        "fecha_actualizacion"
+      ],
+      "segundos": 765
+    }
+  },
+  "cruces_contra_ciudadano_1": {
+    "sincronizado_0": {
+      "en_ambos": 270362,
+      "solo_en_esa_capa": 155943,
+      "solo_en_ciudadano": 60600
+    },
+    "contrato_5": {
+      "en_ambos": 321303,
+      "solo_en_esa_capa": 460694,
+      "solo_en_ciudadano": 9659
+    },
+    "contrato_3": {
+      "en_ambos": 330962,
+      "solo_en_esa_capa": 516135,
+      "solo_en_ciudadano": 0
+    }
+  }
+}
