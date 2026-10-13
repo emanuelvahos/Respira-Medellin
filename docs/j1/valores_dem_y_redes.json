@@ -1,0 +1,672 @@
+{
+ "imagenes": {
+  "Modelo_digital_de_elevacion_medellin_2024": {
+   "extent": {
+    "xmin": 4698974.44186295,
+    "ymin": 2239446.0700197904,
+    "xmax": 4726835.44186295,
+    "ymax": 2263390.0700197904,
+    "spatialReference": {
+     "wkid": 9377,
+     "latestWkid": 9377
+    }
+   },
+   "pixel": 1,
+   "sr": 9377,
+   "serviceDescription": "ServiciosImagen/Modelo_digital_de_elevacion_medellin_2024",
+   "copyright": "",
+   "poblado": "1582.58",
+   "centro": "1472.94",
+   "robledo": "1605.2"
+  },
+  "Modelo_digital_de_elevacion_Medellin": {
+   "extent": {
+    "xmin": 816242.7021446824,
+    "ymin": 1172489.9238103335,
+    "xmax": 846271.8527181731,
+    "ymax": 1197512.548780216,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "pixel": 5.001524079528757,
+   "sr": null,
+   "serviceDescription": "ServiciosImagen/Modelo_digital_de_elevacion_Medellin",
+   "copyright": "",
+   "poblado": "1583.77",
+   "centro": "1471.75",
+   "robledo": "1605.1"
+  },
+  "Modelo_digital_de_pendiente_gr_AMVA": {
+   "extent": {
+    "xmin": 818266.1374588615,
+    "ymin": 1153014.9150048203,
+    "xmax": 873443.7883805499,
+    "ymax": 1212105.2357687976,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "pixel": 10.0068282411477,
+   "sr": null,
+   "serviceDescription": "ServiciosImagen/Modelo_digital_de_pendiente_gr_AMVA",
+   "copyright": "",
+   "poblado": "10.9801",
+   "centro": "1.5626",
+   "robledo": "8.87876"
+  },
+  "Modelo_digital_de_elevacion_AMVA": {
+   "extent": {
+    "xmin": 818266.1374588601,
+    "ymin": 1153014.9150048047,
+    "xmax": 873443.7883805485,
+    "ymax": 1212105.2357687817,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "pixel": 10.0068282411477,
+   "sr": null,
+   "serviceDescription": "ServiciosImagen/Modelo_digital_de_elevacion_AMVA",
+   "copyright": "",
+   "poblado": "1583.9",
+   "centro": "1471.48",
+   "robledo": "1602.98"
+  }
+ },
+ "redes": {
+  "distinct_tipo": {
+   "displayFieldName": "LOCALIZACION",
+   "fieldAliases": {
+    "tipo_servicio": "tipo_servicio"
+   },
+   "fields": [
+    {
+     "name": "tipo_servicio",
+     "type": "esriFieldTypeString",
+     "alias": "tipo_servicio",
+     "length": 255
+    }
+   ],
+   "features": [
+    {
+     "attributes": {
+      "tipo_servicio": "Alcantarillado"
+     }
+    },
+    {
+     "attributes": {
+      "tipo_servicio": "Gas"
+     }
+    },
+    {
+     "attributes": {
+      "tipo_servicio": "Acueducto"
+     }
+    },
+    {
+     "attributes": {
+      "tipo_servicio": "Energía"
+     }
+    }
+   ]
+  },
+  "distinct_elemento": {
+   "displayFieldName": "LOCALIZACION",
+   "fieldAliases": {
+    "elemento": "elemento"
+   },
+   "fields": [
+    {
+     "name": "elemento",
+     "type": "esriFieldTypeString",
+     "alias": "elemento",
+     "length": 255
+    }
+   ],
+   "features": [
+    {
+     "attributes": {
+      "elemento": "Redes de transmisión de energía"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Sistemas de distribución de EPM - Agua Potable"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Redes de interceptores"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Sistemas de distribución de EPM - Agua Cruda"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Redes de colectores"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Redes de gas"
+     }
+    },
+    {
+     "attributes": {
+      "elemento": "Sistemas de Distribución Veredal"
+     }
+    }
+   ]
+  },
+  "distinct_localizacion": {
+   "displayFieldName": "LOCALIZACION",
+   "fieldAliases": {
+    "localizacion": "localizacion"
+   },
+   "fields": [
+    {
+     "name": "localizacion",
+     "type": "esriFieldTypeString",
+     "alias": "localizacion",
+     "length": 255
+    }
+   ],
+   "features": [
+    {
+     "attributes": {
+      "localizacion": "BELEN - RODEO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": null
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ZAMORA - HORIZONTE"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "TASAJERA - OCCIDENTE"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "R09-91"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ANCON SUR - ISA EPM 2"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "SALTO - ZAMORA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ENVIGADO - ANCON SUR"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUAYABAL - SAN DIEGO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - ZAMORA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELLO - CENTRAL 2"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ITAGUI - ENVIGADO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "R15-90"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ANCON SUR - GUAYABAL"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "PIEDRAS BLANCAS - VILLA HERMOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - SAN DIEGO I"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELLO - PIEDRAS BLANCAS"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUATAPE - MIRAFLORES"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELLO - CENTRAL 1"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELEN - ANCON SUR"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "HORIZONTE - COLOMBIA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CENTRAL - GUAYABAL II"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "PORCE II - BARBOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUADALUPE IV - OCCIDENTE"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GIRARDOTA - ENKA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUAYABAL - POBLADO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "R13-90"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - ANCON SUR"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - BARBOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - SAN DIEGO II"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUAYABAL - ENVIGADO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - BELEN II"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CABANAS - COLOMBIA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELLO - CASTILLA II"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "POBLADO - SAN DIEGO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CENTRAL - GUAYABAL I"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "RIOGRANDE - BELLO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUATAPE - BARBOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - VILLA HERMOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CORDOBA - MIRAFLORES"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "PIEDRAS BLANCAS - GIRARDOTA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUATAPE - ENVIGADO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "RODEO - ITAGUI"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "R11-90"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - COLOMBIA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "SALTO - BARBOSA III"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "SALTO IV - BARBOSA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GIRARDOTA - ZAMORA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "SALTO IV - BELLO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "RIOGRANDE - GIRARDOTA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "TASAJERA - BELLO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "GUADALUPE IV - BARBOSA I"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "R09-90"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - ENVIGADO"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "COLOMBIA - BELEN"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ANCON SUR - ISA EPM 1"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BELLO - CASTILLA I"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - ANCON SUR"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BARBOSA - TASAJERA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "MIRAFLORES - PIEDRAS BLANCAS"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CASTILLA - CENTRAL I"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "BARBOSA - GIRARDOTA"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "CASTILLA - CENTRAL II"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "OCCIDENTE - CABANAS"
+     }
+    },
+    {
+     "attributes": {
+      "localizacion": "ORIENTE - ENVIGADO"
+     }
+    }
+   ]
+  },
+  "cerca_poblado": [
+   {
+    "tipo_servicio": "Alcantarillado",
+    "elemento": "Redes de colectores",
+    "localizacion": null
+   },
+   {
+    "tipo_servicio": "Alcantarillado",
+    "elemento": "Redes de colectores",
+    "localizacion": null
+   }
+  ],
+  "cerca_centro": [
+   {
+    "tipo_servicio": "Alcantarillado",
+    "elemento": "Redes de colectores",
+    "localizacion": null
+   }
+  ],
+  "cerca_robledo": [
+   {
+    "tipo_servicio": "Acueducto",
+    "elemento": "Sistemas de distribución de EPM - Agua Potable",
+    "localizacion": null
+   },
+   {
+    "tipo_servicio": "Acueducto",
+    "elemento": "Sistemas de distribución de EPM - Agua Potable",
+    "localizacion": null
+   },
+   {
+    "tipo_servicio": "Alcantarillado",
+    "elemento": "Redes de colectores",
+    "localizacion": null
+   },
+   {
+    "tipo_servicio": "Acueducto",
+    "elemento": "Sistemas de distribución de EPM - Agua Potable",
+    "localizacion": null
+   }
+  ]
+ },
+ "evu_narb": {
+  "displayFieldName": "",
+  "fieldAliases": {
+   "narb_aprox": "narb_aprox",
+   "n": "n"
+  },
+  "fields": [
+   {
+    "name": "narb_aprox",
+    "type": "esriFieldTypeString",
+    "alias": "narb_aprox",
+    "length": 50
+   },
+   {
+    "name": "n",
+    "type": "esriFieldTypeBigInteger",
+    "alias": "n"
+   }
+  ],
+  "features": [
+   {
+    "attributes": {
+     "narb_aprox": "Rango 6",
+     "n": 445
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 2",
+     "n": 6601
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 3",
+     "n": 3136
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 7",
+     "n": 2496
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 4",
+     "n": 1069
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 5",
+     "n": 777
+    }
+   },
+   {
+    "attributes": {
+     "narb_aprox": "Rango 1",
+     "n": 180392
+    }
+   }
+  ]
+ },
+ "retiros": {
+  "displayFieldName": "",
+  "fieldAliases": {
+   "faja_retiro": "faja_retiro",
+   "n": "n"
+  },
+  "fields": [
+   {
+    "name": "faja_retiro",
+    "type": "esriFieldTypeInteger",
+    "alias": "faja_retiro"
+   },
+   {
+    "name": "n",
+    "type": "esriFieldTypeBigInteger",
+    "alias": "n"
+   }
+  ],
+  "features": [
+   {
+    "attributes": {
+     "faja_retiro": 20,
+     "n": 191
+    }
+   },
+   {
+    "attributes": {
+     "faja_retiro": 30,
+     "n": 235
+    }
+   },
+   {
+    "attributes": {
+     "faja_retiro": 15,
+     "n": 293
+    }
+   },
+   {
+    "attributes": {
+     "faja_retiro": 10,
+     "n": 500
+    }
+   },
+   {
+    "attributes": {
+     "faja_retiro": 60,
+     "n": 2
+    }
+   },
+   {
+    "attributes": {
+     "faja_retiro": 25,
+     "n": 68
+    }
+   }
+  ]
+ }
+}
