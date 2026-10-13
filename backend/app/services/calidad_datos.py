@@ -54,6 +54,7 @@ def calcular(hoy: date | None = None) -> CalidadDatos:
 
     pm = pd.read_csv(s.data_solicitud_pm25_estaciones, usecols=["Fecha"], parse_dates=["Fecha"])
     pm_fin = pm["Fecha"].max().date().isoformat()
+    terreno_meta = json.loads(s.data_capas_terreno_manifest.read_text(encoding="utf-8")) if s.data_capas_terreno_manifest.exists() else {}
     ndvi_meta = json.loads(s.data_ndvi_meta.read_text(encoding="utf-8"))
     alta = pd.read_csv(s.data_ahp_v2_sau_por_comuna.parent / "pm25_historico_altavista.csv")
     alta_fin = str(alta["fecha_ultimo_dato_real"].max())
@@ -122,6 +123,19 @@ def calcular(hoy: date | None = None) -> CalidadDatos:
             confianza="media", registros=None, cobertura="Medellín; polígonos con filtro de viabilidad propio",
             actualizacion="Manual cada 6-12 meses",
             limitaciones=["El archivo descargado no trae fecha de actualización verificable.", "La viabilidad de siembra es un filtro propio, no una validación de campo."],
+        ),
+        _fuente(
+            hoy, id="terreno", nombre="Capas de terreno y redes (Alcaldía de Medellín)", proveedor="Alcaldía de Medellín (ArcGIS REST) y AMVA",
+            usada_en="Aptitud del terreno por zona y puntos indicativos de siembra",
+            fecha_corte=terreno_meta.get("fecha_consulta"), cadencia_recomendada_dias=365, confianza="media",
+            registros=sum(c.get("registros", 0) for c in terreno_meta.get("capas", {}).values()) or None,
+            cobertura="Área de las zonas de siembra; pendiente a 10 m, amenaza, riesgo, retiros, líneas de tensión, andenes, postes y redes",
+            actualizacion="Script (calcular_aptitud_terreno.py) en GitHub Actions",
+            limitaciones=[
+                "La fecha indicada es la de consulta: la amenaza y el riesgo son de 2026, pero las redes de servicios son de 2014 y varias capas no publican fecha de corte.",
+                "Las redes de servicios son de escala de ordenamiento territorial: no sustituyen el plano de interferencias de EPM.",
+                "Los umbrales de aptitud son criterio propio, sin norma oficial; no hay datos agronómicos de suelo.",
+            ],
         ),
         _fuente(
             hoy, id="ndvi", nombre="NDVI Sentinel-2 L2A por comuna", proveedor="Copernicus vía Microsoft Planetary Computer",

@@ -10,6 +10,8 @@ import {
   useComunas,
   useResumenComuna,
   useZonasSiembraGeojson,
+  useZonaAptitud,
+  usePuntosIndicativos,
   useZonasVerdes,
   useEstacionesPM25,
   useArbolesClusters,
@@ -28,6 +30,7 @@ import {
 } from "@/store/mapStore";
 import type { Bbox } from "@/lib/api/endpoints";
 import { createComunasLayer } from "@/components/map/layers/comunasLayer";
+import { createPuntosIndicativosLayer } from "@/components/map/layers/puntosIndicativosLayer";
 import { createZonasSiembraLayer, type ZonaSiembraFeature } from "@/components/map/layers/zonasSiembraLayer";
 import { createZonasVerdesLayer } from "@/components/map/layers/zonasVerdesLayer";
 import { createArbolesClustersLayer, createArbolesPuntosLayer } from "@/components/map/layers/arbolesSauLayer";
@@ -60,6 +63,7 @@ export function MapCanvas() {
     mapStyle,
     mostrarZonasDescartadas,
     setSelectedZonaSiembra,
+    selectedZonaSiembra,
   } = useMapStore();
 
   const reducedMotion = usePrefersReducedMotion();
@@ -162,6 +166,15 @@ export function MapCanvas() {
     [layers.zonasSiembra, zonasSiembraQuery.data, mostrarZonasDescartadas, setSelectedZonaSiembra],
   );
 
+  // Nivel 2 (J2): puntos indicativos de la zona seleccionada; solo si el backend los habilita.
+  const zonaSelId = selectedZonaSiembra?.properties.id_poligono ?? null;
+  const aptitudSel = useZonaAptitud(zonaSelId);
+  const puntosQuery = usePuntosIndicativos(zonaSelId, aptitudSel.data?.puntos_publicos === true);
+  const puntosLayer = useMemo(
+    () => createPuntosIndicativosLayer({ data: puntosQuery.data }),
+    [puntosQuery.data],
+  );
+
   const zonasVerdesLayer = useMemo(
     () =>
       layers.zonasVerdes
@@ -239,6 +252,7 @@ export function MapCanvas() {
         // seleccionando la comuna en cualquier otro punto de su polígono.
         comunasLayer,
         zonasSiembraLayer,
+        puntosLayer,
         arbolesClustersLayer,
         arbolesPuntosLayer,
       ].filter(Boolean),
@@ -246,6 +260,7 @@ export function MapCanvas() {
       zonasVerdesLayer,
       pm25Layer,
       zonasSiembraLayer,
+      puntosLayer,
       comunasLayer,
       arbolesClustersLayer,
       arbolesPuntosLayer,

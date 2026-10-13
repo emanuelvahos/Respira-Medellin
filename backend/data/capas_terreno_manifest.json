@@ -1,0 +1,84 @@
+{
+ "fecha_consulta": "2026-10-13",
+ "capas": {
+  "mov_masa": {
+   "nombre": "Amenaza por movimiento en masa",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/6",
+   "registros": 552,
+   "hash_geometrias": "0481950ffe2740f1",
+   "estado": "ok"
+  },
+  "inundacion": {
+   "nombre": "Amenaza por inundación",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/5",
+   "registros": 361,
+   "hash_geometrias": "6f2f8fcbc379c70a",
+   "estado": "ok"
+  },
+  "torrencial": {
+   "nombre": "Amenaza por avenida torrencial",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/4",
+   "registros": 29,
+   "hash_geometrias": "6c496a638d7421b0",
+   "estado": "ok"
+  },
+  "riesgo_mm": {
+   "nombre": "Riesgo por movimiento en masa",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/9",
+   "registros": 102,
+   "hash_geometrias": "9f9f106557ae231d",
+   "estado": "ok"
+  },
+  "retiros": {
+   "nombre": "Retiros a quebradas",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VM_04_Estructura_Ecologica_Principal/MapServer/8",
+   "registros": 703,
+   "hash_geometrias": "3fbcf994c8779aa8",
+   "estado": "ok"
+  },
+  "tension": {
+   "nombre": "Influencia de redes de tensión",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Contrato/MapServer/6",
+   "registros": 441,
+   "hash_geometrias": "58e48774b5ba01fe",
+   "estado": "ok"
+  },
+  "anden": {
+   "nombre": "Andenes",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Infraestructura_Fisica/MapServer/0",
+   "registros": 27853,
+   "hash_geometrias": "3fb6d14ebc610dbc",
+   "estado": "ok"
+  },
+  "poste": {
+   "nombre": "Postes de alumbrado",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/vivienda_ciudad_terri/VM_Alumbrado_Publico/MapServer/1",
+   "registros": 34360,
+   "hash_geometrias": "b7ecc9668eda8afb",
+   "estado": "ok"
+  },
+  "redes": {
+   "nombre": "Redes de servicios (POT, 2014)",
+   "url": "https://www.medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VM_15_Subs_Servicios_Publicos/MapServer/7",
+   "registros": 2386,
+   "hash_geometrias": "cf9dc5e48d5e79c1",
+   "estado": "ok"
+  }
+ },
+ "pendiente": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosImagen/Modelo_digital_de_pendiente_gr_AMVA/ImageServer",
+  "pixel_m": 10.0068,
+  "filas": 1223,
+  "columnas": 742,
+  "pct_valido": 100.0,
+  "media_grados": 8.15,
+  "p95_grados": 26.77
+ },
+ "resumen": {
+  "zonas": 1648,
+  "apta": 949,
+  "apta_con_condiciones": 623,
+  "no_apta": 76,
+  "puntos_indicativos": 3132
+ }
+}
