@@ -79,6 +79,37 @@ ALTERNAS = {
 }
 
 
+def _descargar_esri(session, ruta, env):
+    """Respaldo: f=json de Esri (líneas/puntos) si f=geojson no devuelve nada."""
+    from shapely.geometry import LineString, MultiLineString
+
+    url = f"{BASE}/{ruta}/query"
+    filas, offset = [], 0
+    while True:
+        j = _get(session, url, {
+            "f": "json", "where": "1=1", "geometry": env, "geometryType": "esriGeometryEnvelope", "inSR": CRS,
+            "outSR": CRS, "spatialRel": "esriSpatialRelIntersects", "outFields": "*", "returnGeometry": "true",
+            "resultOffset": offset, "resultRecordCount": 2000,
+        }).json()
+        page = j.get("features", [])
+        for f in page:
+            g = f.get("geometry") or {}
+            if "paths" in g:
+                geom = MultiLineString([LineString(p) for p in g["paths"] if len(p) > 1])
+            elif "x" in g:
+                geom = Point(g["x"], g["y"])
+            else:
+                continue
+            filas.append({**f.get("attributes", {}), "geometry": geom})
+        if not page or not j.get("exceededTransferLimit"):
+            break
+        offset += len(page)
+    if not filas:
+        return gpd.GeoDataFrame(geometry=[], crs=CRS)
+    gdf = gpd.GeoDataFrame(filas, geometry="geometry", crs=CRS)
+    return gdf.explode(index_parts=False).reset_index(drop=True)
+
+
 def descargar_capa(session, ruta: str, bounds, ordenar=True) -> gpd.GeoDataFrame:
     url = f"{BASE}/{ruta}/query"
     xmin, ymin, xmax, ymax = bounds
@@ -93,6 +124,8 @@ def descargar_capa(session, ruta: str, bounds, ordenar=True) -> gpd.GeoDataFrame
         })
         j = r.json()
         page = j.get("features", [])
+        if not page and offset == 0:
+            print("sin features en", ruta, r.text[:300].replace("\n", " "), flush=True)
         feats += page
         if not page or not (j.get("exceededTransferLimit") or j.get("properties", {}).get("exceededTransferLimit")):
             if len(page) < 2000:
@@ -101,7 +134,7 @@ def descargar_capa(session, ruta: str, bounds, ordenar=True) -> gpd.GeoDataFrame
         if offset > 400_000:
             break
     if not feats:
-        return gpd.GeoDataFrame(geometry=[], crs=CRS)
+        return _descargar_esri(session, ruta, env)
     gdf = gpd.GeoDataFrame.from_features(feats, crs=CRS)
     gdf = gdf[gdf.geometry.notna() & ~gdf.geometry.is_empty]
     return gdf.explode(index_parts=False).reset_index(drop=True)
@@ -394,11 +427,13 @@ def main():
         ruta = usada
         capas[k] = g
         h = hashlib.sha256(pd.util.hash_pandas_object(g.geometry.to_wkb(), index=False).values.tobytes()).hexdigest()[:16] if len(g) else None
-        manifest["capas"][k] = {"nombre": nombre, "url": f"{BASE}/{ruta}", "registros": int(len(g)), "hash_geometrias": h, "estado": "ok"}
+        manifest["capas"][k] = {"nombre": nombre, "url": f"{BASE}/{ruta}", "registros": int(len(g)), "hash_geometrias": h,
+                                "estado": "ok" if len(g) else "sin_registros_en_el_area"}
         print(k, len(g), flush=True)
     mosaico, origen, px = descargar_pendiente(s, tuple(zonas.total_bounds))
     manifest["pendiente"] = {"url": SLOPE_URL, "pixel_m": px, "filas": int(mosaico.shape[0]), "columnas": int(mosaico.shape[1]),
-                             "pct_valido": round(float(np.isfinite(mosaico).mean()) * 100, 1)}
+                             "pct_valido": round(float(np.isfinite(mosaico).mean()) * 100, 1),
+                             "media_grados": round(float(np.nanmean(mosaico)), 2), "p95_grados": round(float(np.nanpercentile(mosaico, 95)), 2)}
     arb = pd.read_csv(out / "sau_arboles_urbanos.csv", usecols=["lon", "lat", "s_estado_arbol"])
     arb = arb.dropna(subset=["lon", "lat"])
     pts = gpd.GeoSeries(gpd.points_from_xy(arb["lon"], arb["lat"]), crs=4326).to_crs(CRS)
