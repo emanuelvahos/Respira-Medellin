@@ -1,0 +1,11 @@
+mov_masa 552
+inundacion 361
+torrencial 29
+riesgo_mm 102
+retiros 703
+tension 441
+anden 27853
+poste 34360
+sin features en ordenamiento_ter/VM_15_Subs_Servicios_Publicos/MapServer/7 {"error":{"code":400,"message":"Invalid or missing input parameters.","details":[]}}
+redes 2386
+{"zonas": 1648, "apta": 949, "apta_con_condiciones": 623, "no_apta": 76, "puntos_indicativos": 3132}
