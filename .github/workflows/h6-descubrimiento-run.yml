@@ -1,0 +1,28 @@
+name: h6-descubrimiento-run
+on:
+  push:
+    branches: [h6-descubrimiento-run]
+jobs:
+  descubrir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install requests
+      - run: python backend/scripts/descubrir_fuentes_terreno.py out 2>&1 | tail -30
+      - name: Texto del Plan de Silvicultura
+        run: |
+          which pdftotext || sudo apt-get install -y poppler-utils >/dev/null
+          [ -f out/plan_silvicultura.pdf ] && pdftotext -layout out/plan_silvicultura.pdf out/plan_silvicultura.txt && wc -c out/plan_silvicultura.txt || echo "sin pdf"
+          rm -f out/plan_silvicultura.pdf
+      - name: Publicar resultado
+        run: |
+          git config user.name bot; git config user.email bot@example.com
+          git checkout -b h6-descubrimiento-result
+          git add -f out
+          git commit -m "resultado descubrimiento"
+          git push -f origin h6-descubrimiento-result
