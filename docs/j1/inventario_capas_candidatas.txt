@@ -1,0 +1,466 @@
+VA_DGRD/0|Organismos de socorro|Point|8|objectid,direccion,comuna,barrio,x,y,entidad,responsable,telefono1,telefono2,fax,celular
+VA_DGRD/1|Hidrantes|Multipoint|12838|objectid,diametro,descarga,color_hidr,fabricante,estado,grupo,propietari,tipo_refer,tipo_agua,nombre_cir,estado_ope
+VA_DGRD/3|Drenaje sencillo|Polyline|817|objectid,jerarquia,nombre,shape,st_length(shape),fecha_adopcion,fecha_actualizacion
+VA_DGRD/4|Amenaza Avenidas Torrenciales|Polygon|115|objectid,codigo,categoria,grado_amenaza,shape,st_area(shape),st_perimeter(shape),categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion
+VA_DGRD/5|Amenaza Inundaciones|Polygon|716|objectid,codigo,categoria,grado_amenaza,shape,st_area(shape),st_perimeter(shape),categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion
+VA_DGRD/6|Amenaza Movimiento en Masa|Polygon|2376|objectid,codigo,categoria,grado_amenaza,shape,st_area(shape),st_perimeter(shape),categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion
+VA_DGRD/7|Riesgos Avenidas Torrenciales|Polygon|266|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VA_DGRD/8|Riesgos Inundaciones|Polygon|176|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VA_DGRD/9|Riesgos Movimiento en Masa|Polygon|736|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VA_DGRD/10|Retiro a corrientes|Polygon|1289|objectid,faja_retiro,categoria_proteccion,subcategoria_proteccion,shape,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+VA_DGRD/11|Equipamientos|Polygon|2139|objectid,cbml,nombre,tipo,orden,componentes,nivel,categoria,codigo,cod_barrio,cod_comuna,nom_barrio
+VA_Interv_Rec_Hidrico/0|TQuebrada|Polyline|10312|objectid,idtram,codqueb,codtram,cotipotramo,coforma,celda,comattalud,comatlecho,cofuncionalidad,cotipopendiente,basei
+VA_SistemaArbolUrbano_App/0|Arboles Patrimonio Cultural|Multipoint|696|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_App/1|Arbol Urbano|Multipoint|330793|objectid,id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio
+VA_SistemaArbolUrbano_App/2|Limite BarrioVereda|Polygon|767|objectid,codigo,nombre,identificacion,limitecomunacorregimientoid,limitemunicipioid,subtipo_barriovereda,shape,codigo_amva,st_area(shape),st_perimeter(shape),municipio
+VA_SistemaArbolUrbano_App/3|Limite ComunaCorregimiento|Polygon|49|objectid,codigo,nombre,identificacion,limitemunicipioid,subtipo_comunacorregimiento,shape,st_area(shape),st_perimeter(shape),codigo_amva
+VA_SistemaArbolUrbano_App/4|Limite Area Metropolitana|Polygon|10|shape,st_area(shape),st_perimeter(shape),objectid,codigo,nombre,identificacion,ley_numero,fecha_creacion,norma,link_documento
+VA_SistemaArbolUrbano_AreaForestal/0|Parcela|Point|239|geom,coord_x,coord_y,observacion,radio_m,fecha_creacion,foto,cod_parcela,cod_area_intervencion,id_usuario,fecha_ingreso,fecha_actualizacion
+VA_SistemaArbolUrbano_AreaForestal/1|Area intervencion|Polygon|253|geom,cod_area_intervencion,area,fecha_inicial_establecimiento,fecha_final_establecimiento,cuenca,microcuenca,abastecedora,foto,id_sistema_forestal,id_usuario,fecha_ingreso
+VA_SistemaArbolUrbano_AreaForestal/2|Lote|Polygon|195|geom,cbml,area,cod_barrio,id_tipo_lote,id_estado,fecha_ingreso,id_usuario,fecha_actualizacion,ESRI_OID
+VA_SistemaArbolUrbano_Base/0|Quebrada|Polyline|4212|objectid,codqueb,tipocauce,nombre,orden,dirflujo,observacion,enabled,shape,st_length(shape)
+VA_SistemaArbolUrbano_Base/2|Manzana_AMVA|Polygon|17673|objectid_12,barrioveredaid,cobama,id_manzana,shape,cod_municipio,cobama_amva,st_area(shape),st_perimeter(shape)
+VA_SistemaArbolUrbano_Base/5|Espacio Verde Urbano EVU|Polygon|194916|objectid,id_poligono,proyecto,sistema_pmepvu,componente,clasefuncional,categoria_msu,espacioverdeurbano,zv_interna,subcategoria,cobertura,narb_aprox
+VA_SistemaArbolUrbano_Base/6|Redes Ecologicas|Polygon|2220|objectid,llave,s_descripc,s_tipoelem,perimetro,sig_amva_d,codigo_red,poligono,nombre_red,nombre,shape,st_area(shape)
+VA_SistemaArbolUrbano_Ciudadano_app/2|vwg_reporte_arboles_mapa|Point|0|id,id_contrato,id_individuo,geox,geoy,geom,ESRI_OID
+VA_SistemaArbolUrbano_Ciudadano_app/6|Influencia redes tension|Polygon|934|objectid,g3e_stylei,g3e_fno,g3e_cno,g3e_fid,g3e_cid,estado,empresa_or,nombre_ope,nombre_mtt,mercado,departamen
+VA_SistemaArbolUrbano_Ciudadano/1|Arbol Urbano|Multipoint|330814|objectid,id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio
+VA_SistemaArbolUrbano_Contrato/0|Nombre Especie|Multipoint|783448|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_Contrato/1|Codigo Arbol|Multipoint|783448|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_Contrato/3|Arboles Estado|Multipoint|848647|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_Contrato/4|Arboles Talados o Trasplantados|Multipoint|35690|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_Contrato/5|Arboles|Multipoint|783448|id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,s_observaciones,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VA_SistemaArbolUrbano_sincronizado/0|Arboles|Point|426310|objectid,id_individuo_disperso,cod_individuo_disperso_amva,id_intervencion,s_especie,nombre_comun,tipoarbol,s_estado_arbol,numero_intervenciones,s_intervencion,municipio,comuna
+VC_areas_importancia_ecologica/0|Reservas guardabosques|Polygon|17|objectid,reserva,microcuen,cuenca,corregim,shape,st_area(shape),st_perimeter(shape)
+VC_areas_importancia_ecologica/1|Áreas de declaratoria de protección|Polygon|10|objectid,nombre,categoria,documento,fuente,shape,st_area(shape),st_perimeter(shape)
+VC_ECAS/0|estacion_clas_aprovechamiento|Point|46|objectid,id,nombrepres,sigla,direccion,g_x,g_y,g_latitud,g_longitud,g_ccomcat,g_ncomcat,g_nbarrcat
+VC_Gestion_Ambiental/1|Fuentes semilleras|Point|89|objectid,codigo,especie,dap_cm,pom_m,ht_m,volumen_m3,forma,predio,shape,est_fito,nt_n_o_s_s
+VC_Gestion_Ambiental/2|Ecoparques|Polygon|81|objectid,nombre,quebrada_asociada,dominio,funcion,categoria,subcategoria,jerarquia,orden,direccion_referencia,cbml,id_zona
+VC_Gestion_Ambiental/3|IntervencionesForestales|Polygon|160|objectid,id_finca,tipo_lote,area_pol_ha,no_arboles,est_i,est_f,mtto1_i,mtto1_f,mtto2_i,mtto2_f,mtto3_i
+VC_Gestion_Riesgo/6|Alarmas|Point|11|objectid,nombre_siata,subcuenca,nombre_comuna_corr,nombre_barrio_vereda,shape
+VC_Gestion_Riesgo/7|Amenaza afluencia masiva|Polygon|63|objectid,id_amenaza,nombre,magnitud,shape
+VC_Gestion_Riesgo/8|Amenaza de incendios forestales|Polygon|409|objectid,id_amenanza,uso_actual,magnitud,homo,shape
+VC_Gestion_Riesgo/9|Amenaza tecnológica|Polygon|35|objectid,id_amenaza,nombre,magnitud,shape
+VC_Gestion_Riesgo/10|Puntos de encuentro|Point|39|objectid,id_puntoencuentro,punto_encuentro,quebrada,nombre_comuna_corr,nombre_barrio_vereda,shape
+VC_Gestion_Riesgo/11|Rutas de evacuación|Polyline|101|objectid,ruta_evacuacion,punto_encuentro,shape,st_length(shape)
+VC_Gestion_Riesgo/12|Sensores de nivel|Point|13|objectid,nombre_siata,nombre_barrio_vereda,subcuenca,nombre_comuna_corr,shape
+VC_Gestion_Riesgo/13|Susceptibilidad de sismos|Polygon|40|objectid,id_amenaza,aceleracion,shape
+VC_Ordenamiento_Amb_Territorio/0|Areas_Protegidas|Polygon|207|objectid,zonificacion,estructura_ecologica,categoria_proteccion,subcategoria_proteccion,shape,documento_declaratoria,st_area(shape),st_perimeter(shape),componentes,elementos,id_zona
+VC_Ordenamiento_Amb_Territorio/1|Red Conectividad Ecologica|Polygon|776|objectid,tipo,corredor_simap,nombre_area_interes,elemento,shape,st_area(shape),st_perimeter(shape),categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion
+VC_Ordenamiento_Amb_Territorio/2|Paramo Las Baldias|Polygon|1|objectid,id,nombre,hectareas,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/3|Areas con Declaratoria Proteccion|Polygon|10|objectid,nombre,categoria,fuente,shape,documento,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/4|Distritos|Polygon|23|objectid,distrito,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/5|Red Ecologica Teorica|Polygon|199|objectid,shape,elemento,elementoconectividad,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/6|Predios Visitados|Polygon|878|objectid,cbml,shape,x_origen_n,y_origen_n,longitud,latitud,periodo_vi,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/7|Cobertura_Pred_Exencion_2009|Polygon|682|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/8|Cobertura_Pred_Exencion_2010|Polygon|652|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/9|Cobertura_Pred_Exencion_2011|Polygon|990|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/10|Cobertura_Pred_Exencion_2012|Polygon|437|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/11|Cobertura_Pred_Exencion_2013|Polygon|255|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/12|Cobertura_Pred_Exencion_2014|Polygon|169|objectid,cbml,convencion,clasificacion,descripcion,clasificacion_suelo,catuso_suelo,subcatuso_suelo,observaciones,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/13|Cobertura_Pred_Exencion_2015|Polygon|488|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/14|Cobertura_Pred_Exencion_2016|Polygon|216|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/15|Cobertura_Pred_Exencion_2017|Polygon|103|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/16|Cobertura_Pred_Exencion_2018|Polygon|628|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/17|Cobertura_Pred_Exencion_2019|Polygon|617|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/18|Cobertura_Pred_Exencion_2020|Polygon|19|objectid,cbml,convencion,cobertura,categoria,subcategoria,clasificacion_suelo,observaciones,descripcion,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/19|Coberturas Terrestres 2019|Polygon|77769|objectid,gridcode,tipo,shape,st_area(shape),st_perimeter(shape)
+VC_Ordenamiento_Amb_Territorio/20|Coberturas Terrestres 2021|Polygon|79436|objectid,gridcode,tipo,shape,st_area(shape),st_perimeter(shape)
+VC_Predios_catastrales_beneficio_tirbutario/0|Cobertura de Predios para beneficios tributarios 2022|Polygon|36|objectid,cbml,atlas.medioambiente.cobertura_pred_exencion_2022.area,nom_cober,cob_nivel3,porc_cob,cob_n3_nom,elemento,subc_prot,categ_uso,zonifica,clas_suelo
+VC_Predios_catastrales_beneficio_tirbutario/1|Cobertura de Predios para beneficios tributarios 2023|Polygon|83|objectid,cbml,atlas.medioambiente.cobertura_pred_exencion_2023.area,nom_cober,cob_nivel3,porc_cob,cob_n3_nom,elemento,subc_prot,categ_uso,zonifica,clas_suelo
+VC_Predios_catastrales_beneficio_tirbutario/2|Cobertura de Predios para beneficios tributarios 2024|Polygon|1047|objectid,cbml,atlas.medioambiente.cobertura_pred_exencion_2024.area,nom_cober,cob_nivel3,porc_cob,cob_n3_nom,elemento,subc_prot,categ_uso,zonifica,clas_suelo
+VC_Predios_catastrales_beneficio_tirbutario/3|Cobertura de Predios para beneficios tributarios 2025|Polygon|762|objectid,cbml,atlas.medioambiente.cobertura_pred_exencion_2025.area,nom_cober,cob_nivel3,porc_cob,cob_n3_nom,elemento,subc_prot,categ_uso,zonifica,clas_suelo
+VC_Predios_catastrales_beneficio_tirbutario/4|Predios catastrales con beneficio tributario 2009 a 2025|Polygon|878|objectid,cbml,x_origen_n,y_origen_n,longitud,latitud,periodo_vi,shape,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/0|Ojos de sal|Point|6|objectid,shape,nombre,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion
+VC_Rec_Natural_Renovable/1|Red Hidrica|Polyline|817|objectid,jerarquia,nombre,shape,fecha_adopcion,fecha_actualizacion,st_length(shape)
+VC_Rec_Natural_Renovable/2|Sistema Orografico|Polygon|75|objectid,nombre,referencia_acuerdo,categoria_proteccion,subcategoria_proteccion,elemento,shape,id_zona,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VC_Rec_Natural_Renovable/3|Retiros a rios y quebradas|Polygon|1289|objectid,faja_retiro,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/4|Inventario Zonas Verdes|Polygon|48348|objectid,id_pl,id_poligono,tipologia,categoria,subcategoria,cober_dom,narb_aprox,cubierta_verde,potencial_verde,infraestructura,equipamiento
+VC_Rec_Natural_Renovable/5|Reservas Guardabosques|Polygon|17|objectid,cuenca,shape,reserva,microcuen,corregim,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/6|Calidad Retiros|Polygon|74|objectid,id_ma,ubicacion,shape,iir2012,e_iir2012,iir2013,e_iir2013,iir2015,e_iir2015,iir2017,e_iir2017
+VC_Rec_Natural_Renovable/7|Cuencas y micrcocuencas abastecedoras|Polygon|27|objectid,nombre,shape,categoria_proteccion,subcategoria_proteccion,surte_acueducto,corregimiento,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/8|Humedales - Lagunas|Polygon|113|objectid,nombre,categoria_proteccion,subcategoria_proteccion,shape,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/9|Retiro a humedales|Polygon|82|objectid,faja_retiro,categoria_proteccion,subcategoria_proteccion,shape,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/10|Cuencas orden cero|Polygon|43|objectid,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/11|ZV Sist Hidrografico|Polygon|243|objectid,orden,nivel,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/12|Rio Medellin|Polygon|1|objectid,shape_leng,nmgrio,shape,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Rec_Natural_Renovable/13|Cuerpos de agua de referencia|Polygon|5|objectid,shape,nombre,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Residuos/0|Centro de Acopio|Point|11|objectid,direccion,tipo,coord_x,coord_y,nombre,shape
+VC_Residuos/1|Compraventas|Point|344|objectid,id_compraventa,ano,coordenada_x,coordenada_y,nombre_compraventa,comuna_correg,barrio,direccion,tipo_compraventa,clasificacion_compraventa,tiempo_actividad_meses
+VC_Residuos/2|ECAS|Point|27|objectid,asociacion,comuna,barrio_vereda,periodo,id,cod_comuna,shape,x_origen_nacional,y_origen_nacional,longitud,latitud
+VC_Residuos/3|Rutas|Polyline|977|objectid,id_ruta,id_recuperador,hora_inicio,comuna_inicio,barrio_inicio,direccion_inicio,hora_final,comuna_final,barrio_final,direccion_final,fecha
+VC_Residuos/4|Acopio escombros|Point|14|objectid,direccion,nombre,codigo,localizacion,tipo,estado,shape,fecha_adopcion,fecha_actualizacion
+VC_Residuos/5|Aseo|Point|14|objectid,direccion,nombre,codigo,localizacion,tipo,estado,shape,fecha_adopcion,fecha_actualizacion
+VC_Restauracion_proteccion_ambiental/1|Intervenciones forestales|Polygon|160|objectid,nomb_finca,id_finca,tipo_lote,cod_interv,id_int_gen,area_pol_ha,no_arboles,sist_fores,inic_plant,fin_plant,est_i
+VM_CoberturasTerrestres2021/0|Coberturas Terrestres 2021 Nivel 4|Polygon|19221|objectid,shape,n1_cobert,n2_cobert,n3_cobert,n4_cobert,area_ha,uso_act,cto,nomenclat,st_perimeter(shape),st_area(shape)
+VM_DAGRD/0|Geologia|Polygon|2588|objectid,unidad,descripcion,shape,st_area(shape),st_perimeter(shape)
+VM_DAGRD/2|Estudios convencionales|Polygon|237|objectid,cod_comuna_corr,cod_barrio_vereda,nombre_comuna_corr,nombre_barrio_vereda,titulo,n_contrato,contratista,tipo_estudio,anio,estado,shape
+VM_DAGRD/3|Obras mitigacion|Point|131|objectid_12,cod_comuna_corr,nombre_comuna_corr,cod_barrio_vereda,nombre_barrio_vereda,contrato_n,anio,objeto,contratista,obra_ejecutada,valor_obra,direccion
+VM_DAGRD/5|Inspecciones_SIRE (2021-actualidad)|Point|None|id,responsable_id,estado_id,comentario,fecha,numero_lesionados,numero_muertos,tipo_incidente_id,fenomeno_amenazante_id,incidente_id,origen_id,calificacion_incidentes
+VM_DAGRD/6|Inspecciones_ACCESS (2008 al 2021)|Point|72686|objectid_12,fccodficha,direccion,nombre_comuna_corr,nombre_barrio_vereda,tipo_evento,fecha_solicitud,fecha_visita,evacuacion_def,evacuacion_temp,cod_comuna_corr,cod_barrio_vereda
+VM_DAGRD/8|Monitoreo geotecnico|Point|68|objectid,nombre_comuna_corr,nombre_barrio_vereda,cod_comuna_corr,cod_barrio_vereda,sector,instrumento,latitud,longitud,estado,profund_instalacion,profund_actual
+VM_DAGRD/11|Amenaza tecnologica|Polygon|35|objectid,id_amenaza,nombre,magnitud,shape,st_area(shape),st_perimeter(shape)
+VM_DAGRD/12|Susceptibilidad sismos|Polygon|40|objectid,id_amenaza,aceleracion,shape,st_area(shape),st_perimeter(shape)
+VM_DAGRD/15|Puntos encuentro|Point|39|objectid,tramo,id_puntoencuentro,punto_encuentro,id_sector,sector,subsector,quebrada,cod_comuna_corr,nombre_comuna_corr,cod_barrio_vereda,nombre_barrio_vereda
+VM_DAGRD/17|Rutas evacuacion|Polyline|101|objectid,ruta_evacuacion,punto_encuentro,sector,subsector,shape,st_length(shape)
+VM_Gestion_Riesgo_Publico/8|Inspecciones SIRE_2021_actualidad|Point|None|objectid,evento_id,shape,numero_lesionados,numero_muertos,id,responsable_id,estado_id,comentario,fecha,tipo_incidente_id,fenomeno_amenazante_id
+VM_Gestion_Riesgo_Publico/9|Inspecciones ACCESS_2008_2021|Point|72686|objectid_12,nombre_comuna_corr,nombre_barrio_vereda,tipo_evento,fecha_visita,evacuacion_def,evacuacion_temp,shape
+VM_Gestion_Riesgo_Publico/14|Obras de mitigacion|Point|131|objectid_12,nombre_comuna_corr,nombre_barrio_vereda,contrato_n,anio,objeto,contratista,obra_ejecutada,estado,shape
+VM_Gestion_Riesgo_Publico/19|Rutas de evacuacion|Polyline|101|objectid,ruta_evacuacion,punto_encuentro,shape,st_length(shape)
+VM_Monitoreo_Calidad_Agua/0|Bocatomas Acueductos Veredales|Point|76|tipo,acueducto,cuenca,shape,objectid,fecha_actualizacion,descripcion,x_origen_nacional,y_origen_nacional,longitud,latitud
+VM_Monitoreo_Calidad_Agua/1|Sitios Muestreo|Point|75|objectid,sector,nombre,x,y,altura,id_ma,fecha,ubicacion,shape,quebrada,coliformes_totales
+VM_PSA_Hidrico/0|Area Elegible PSA|Polygon|23|objectid,elegibilidad,shape,st_area(shape),st_perimeter(shape)
+VM_PSA_Hidrico/1|Predios beneficiados PSAH|Polygon|75|objectid,cbml,tipo,vereda,corregimiento,cuenca_abastecedora,cuenca_hidro,area_total,area_psa,f_inicio,f_final,shape
+VM_PSA_Hidrico/2|Accion predios PSAH|Polygon|145|objectid,coberturas,cbml,areapago_ha,accion,shape,st_area(shape),st_perimeter(shape)
+VM_StoryMap_Coberturas/0|Coberturas 1998|Polygon|15|objectid,nombre_cob,Shape__Area,Shape__Length
+VM_StoryMap_Coberturas/1|Coberturas 2004|Polygon|13|objectid,nombre,Shape__Area,Shape__Length
+VM_StoryMap_Coberturas/2|Ccoberturas 2008|Polygon|13|objectid,cob_cor08,Shape__Area,Shape__Length
+VM_StoryMap_Coberturas/3|Coberturas 2012|Polygon|13|objectid,nivel_2,Shape__Area,Shape__Length
+VM_Red_Bibliotecas/0|Red de Bibliotecas|Point|32|objectid,ubicacion,nombre,telefono,tipo,comuna,barrio,horario,label,x_coord,y_coord,link_foto
+movimientosenmasa_dagrd_survey/0|_1_de_formulario|Point|1|objectid,globalid,nombre_p,adminurl_1,comuna,cod_comuna,adminurl_2,barrio,cod_barrio,origen,fecha_hora,material
+VC_Infraestructura_Fisica/0|Anden|Polyline|42965|objectid,codigo,orden_elemento,id_segmento,ancho,altura,longitud,estado,homogeneo,homolgado,obstaculo,material
+VC_Infraestructura_Fisica/2|Inventario de Espacio Publico de Esparcimiento y Encuentro|Polygon|1507|objectid,nombre,cbml,categoria,orden,dominio,funcion,nivel,shape,st_area(shape),st_perimeter(shape),subcategor
+VC_Limite_Politico_Admtivo/3|Clasificacion del Suelo|Polygon|242|objectid,codigo_tratamiento,nombre,clase_suelo,categoria_suelo,catdllorestring,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VC_Transporte/4|Red Ciclista|Polyline|149|objectid,corredor,municipio,comuna,nom_comuna,estado,anio_construido,ente_constructor,ubicacion,tipo,nombre_ciclorruta,tipologia_redciclista
+VM_Cartografia_City_Urban_2022/7|red_hidrografica|Polyline|173|objectid_1,objectid,codes,shape_leng,shape,st_length(shape)
+VM_Cartografia_City_Urban_2025/6|red_hidrografica|Polyline|67|objectid_1,objectid,descriptio,shape_leng,shape,st_length(shape)
+VA_Fichas_SEPOT/0|Ficha Punto|Point|52|objectid,id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,tipo_elemento,shape
+VA_Fichas_SEPOT/1|Ficha Linea|Polyline|46|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_length(shape)
+VA_Fichas_SEPOT/2|Ficha Quebrada|Polyline|447|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_length(shape)
+VA_Fichas_SEPOT/3|Ficha Vias UrbRur|Polyline|121|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_length(shape)
+VA_Fichas_SEPOT/4|Ficha Proyecto Vial|Polyline|89|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_length(shape)
+VA_Fichas_SEPOT/5|Ficha Malla vial|Polyline|495|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_length(shape)
+VA_Fichas_SEPOT/6|Ficha Lote|Polygon|3871|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/7|Ficha Barrio|Polygon|195|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/8|Ficha Humedales|Polygon|19|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/9|Ficha Retiro a Humedales|Polygon|1|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/10|Ficha Tratamiento|Polygon|76|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/11|Ficha Poligono|Polygon|515|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/12|Ficha Comuna|Polygon|163|id_ficha,nro_ficha,tipo_ficha,sub_tipo_ficha,estado,objectid,tipo_elemento,shape,nombre,codigo,st_area(shape),st_perimeter(shape)
+VA_Fichas_SEPOT/16|Riesgos|Polygon|720|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,shape,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VA_POT48_Reporte_UsoSuelo_R/1|Lote|Polygon|310512|st_area(shape),st_perimeter(shape),objectid,cbml,cobama,numero_predio,tipo_lote,forma,anotaciones,numero_edificacion,area_lote,relacion_superficie
+VA_POT48_Reporte_UsoSuelo_R/3|Manzana|Polygon|10836|st_area(shape),st_perimeter(shape),objectid,cobama,barrioveredaid,tipo_manzana,shape,fecha_sincronizacion
+VA_POT48_Reporte_UsoSuelo_R/4|Nomenclatura Domiciliaria|Point|511599|objectid,cbml,via,placa,shape,numero_placa,direccioncodificada,direccionencasillada,longitud,latitud,codigo_postal,streetview
+VA_POT48_Reporte_UsoSuelo_R/5|Nomenclatura Vial|Polyline|42381|st_length(shape),objectid,id_nm_vial,comuna,version,grupo_via,tipo_via,numero_via,apendice_via,orientacion_via,via_principal,id_nm_generadora
+VA_POT48_Reporte_UsoSuelo_R/6|Corredores rurales|Polygon|4|objectid,nombre,corredor,shape,identificacion,nombre_tramo,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/7|Áreas de interés estratégico - Sistema Hidrográfico|Polygon|1289|objectid,faja_retiro,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/9| Humedales - Lagunas|Polygon|113|objectid,nombre,categoria_proteccion,subcategoria_proteccion,shape,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/11|Cuencas abastecedoras|Polygon|27|objectid,nombre,categoria_proteccion,subcategoria_proteccion,shape,surte_acueducto,corregimiento,id_elemento,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/15|Amenazas|Polygon|984|objectid,codigo,categoria,grado_amenaza,shape,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/17|Amenaza Inundaciones|Polygon|137|objectid,codigo,categoria,grado_amenaza,shape,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/18|Jerarquía Centralidades|Polygon|16|objectid,nombre,orden,accion,estado,jerarquia,caracter,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_R/19|Usos Rurales|Polygon|189|objectid,corregimiento,shape,categoria_uso,cod_cat_uso,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_POT48_Reporte_UsoSuelo_U/20|Usos Generales del Suelo Urbano|Polygon|25446|objectid,cod_cat_uso,cod_subcat_uso,shape,areagraluso,subcategoria,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+VC_Uso_Ocupacion_Territorio/0|Tratamiento|Polygon|522|objectid,codigo_tratamiento,tratamiento,tipo,densadici,denstotal,icadici,ictotal,alturavariable,alturaadicio,franjabase,franjaadici
+VM_01_Modelo_Ocupacion/0|ClasificacionSuelo|Polygon|242|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,codigo_tratamiento,nombre,clase_suelo,categoria_suelo,catdllorestring
+VM_02_Clasificacion_Suelo/0|amenaza_mov_masa|Polygon|2347|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom
+VM_02_Clasificacion_Suelo/1|amenaza_inundaciones|Polygon|708|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_02_Clasificacion_Suelo/2|amenaza_avtorrenciales|Polygon|45|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_02_Clasificacion_Suelo/3|areas_protegidas|Polygon|207|t_id,id_zona,id_elemento,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,zonificacion,estructura_ecologica,categoria_proteccion,subcategoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/1|1. Áreas de conservación y protección ambiental|Polygon|207|t_id,id_zona,id_elemento,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,zonificacion,estructura_ecologica,categoria_proteccion,subcategoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/3|Sistema hidrográfico|Polygon|1289|geom,objectid,faja_retiro,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_leng,categoria_proteccion,subcategoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/4|Ojos_Sal|Point|6|fecha_adopcion,fecha_actualizacion,geom,t_id,subcategoria_proteccion,nombre,categoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/6|4. Áreas del sistema de servicios públicos domiciliarios |Point|29|fecha_adopcion,fecha_actualizacion,geom,t_id,elemento,localizacion,administrador
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/7|Centros de acopio|Point|14|t_id,fecha_adopcion,fecha_actualizacion,geom,localizacion,tipo,estado,direccion,nombre,codigo
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/8|3. Inmuebles considerados patrimonio cultural|Point|3|geom,x,y,fecha_adopcion,fecha_actualizacion,t_id,grupo,subgrupo,nombre,doc_origen,tipo
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/9|CATEGORÍAS DE SUELO SUBURBANO - DESARROLLO RESTRINGIDO|Polygon|216|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,codigo_tratamiento,nombre,clase_suelo,categoria_suelo,catdllorestring
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/10|Áreas de interés recreativo y paisajístico|Polygon|16|t_id,objectid,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,subcategoria_proteccion,tipo,corredor_simap,nombre_area_interes,elemento
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/13| Cerros y cadenas montañosas estructurantes|Polygon|75|geom,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,t_id,id_zona,id_elemento,nombre,referencia_acuerdo,categoria_proteccion,subcategoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/14|Red de conectividad ecológica|Polygon|776|t_id,objectid,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,subcategoria_proteccion,tipo,corredor_simap,nombre_area_interes,elemento
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/15|Cuencas hidrográficas de orden cero|Polygon|43|geom,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_length,categoria_proteccion,subcategoria_proteccion
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/16|Cuencas abastecedoras de acueductos|Polygon|27|geom,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,t_id,id_elemento,nombre,categoria_proteccion,subcategoria_proteccion,surte_acueducto,corregimiento
+VM_03_Cat_Suelo_Protecc_Producc_Suburb/18|2. Áreas de protección para la producción|Polygon|None|t_id,objectid,fecha_actu,shape_leng,shape_area,geom,cod_cat_us,fecha_adop,corregimiento,categoria_uso,subcategoria_proteccion,categoria_proteccion
+VM_04_Estructura_Ecologica_Principal/4|Red hídrica|Polyline|817|fecha_adopcion,shape_length,geom,t_id,fecha_actualizacion,jerarquia,nombre
+VM_04_Estructura_Ecologica_Principal/7|Retiros a humedales|Polygon|82|geom,faja_retiro,shape_area,t_id,id_elemento,fecha_adopcion,fecha_actualizacion,shape_length,categoria_proteccion,subcategoria_proteccion
+VM_04_Estructura_Ecologica_Principal/8|Retiros a la red hídrica|Polygon|1289|geom,objectid,faja_retiro,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_leng,categoria_proteccion,subcategoria_proteccion
+VM_04_Estructura_Ecologica_Principal/10|Red de conectividad ecológica |Polygon|776|t_id,objectid,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,subcategoria_proteccion,tipo,corredor_simap,nombre_area_interes,elemento
+VM_05_Amenazas_Movimientos_Masa/2|Amenaza por movimientos en masa|Polygon|2376|objectid,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VM_06_Amenazas_Inundaciones/1|Zona de amenaza alta por avenidas torrenciales|Polygon|45|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_06_Amenazas_Inundaciones/2|Amenaza por inundaciones|Polygon|716|objectid,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VM_07_Amenazas_Avenidas_Torrenciales/2|Amenaza alta por avenidas torrenciales|Polygon|115|objectid,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VM_08_Zona_Condicion_Riego_Alto_Riesgo_NM/2|Riesgos_Inundaciones|Polygon|176|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VM_08_Zona_Condicion_Riego_Alto_Riesgo_NM/3|Riesgos_AvTorrenciales|Polygon|266|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VM_08_Zona_Condicion_Riego_Alto_Riesgo_NM/4|Riesgos_Mov_Masa|Polygon|736|objectid,codigo,nombre,riesgo,descripcion,tipo_amenaza,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape)
+VM_10_Sistema_Publico_Colectivo/2|SITE.AcueductoPotabilizacion|Point|29|fecha_adopcion,fecha_actualizacion,geom,t_id,elemento,localizacion,administrador
+VM_10_Sistema_Publico_Colectivo/3|planeacion_pot.pot_2014.vias_urbanorural|Polyline|1030|t_id,objectid,id_element,fecha_adopcion,fecha_actualizacion,shape_leng,geom,retiro,nombre,label,jerarquizacion_via,clasificacion_via
+VM_10_Sistema_Publico_Colectivo/5|Subestación de energía|Polygon|26|geom,shape_length,shape_area,t_id,fecha_adopcion,fecha_actualizacion,nombre,direccion,municipio
+VM_10_Sistema_Publico_Colectivo/10|Red peatonal estructurante **|Polyline|1314|t_id,objectid,fecha_adopcion,fecha_actualizacion,shape_leng,geom,tipo_redpeatonal,estado,jerarquia_via,label
+VM_11_Subs_Espacio_Publico_Esparcimiento_Encuentro_Exist/3|EspacioPublico_Esparcimiento_Encuentro|Polygon|3743|t_id,objectid,orden,funcion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,label,cod_barrio,cod_comuna
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/3| Espacio público proyectado|Polygon|480|t_id,objectid,funcion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,subcategoria,nombre,categoria,orden
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/5|ZonaVerdePubl_SistHidrog|Polygon|243|geom,objectid,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_leng,orden,nivel
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/6|AreasVerdesAsociadas|Polygon|2679|t_id,objectid,fecha_actualizacion,shape_leng,shape_area,geom,fecha_adopcion,nombre,categoria,tipo,comuna_corregimiento
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/7|Espacio público existente|Polygon|3743|t_id,objectid,orden,funcion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,label,cod_barrio,cod_comuna
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/8|Equipamientos|Polygon|2136|t_id,objectid,categoria,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom,codigo,cod_barrio,cod_comuna,nom_barrio
+VM_12_Subs_Espacio_Publico_Esparcimiento_Encuentro_Proy/9|Macroproyectos|Polygon|12|t_id,zona,subzona,label,identificacion,clasificacion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_15_Subs_Servicios_Publicos/3|Acueducto|Point|29|fecha_adopcion,fecha_actualizacion,geom,t_id,elemento,localizacion,administrador
+VM_15_Subs_Servicios_Publicos/6|Cobertura y Perímetro Sanitario|Polygon|174|geom,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_length,categoria,fuente
+VM_15_Subs_Servicios_Publicos/7|Redes de servicios|Polyline|14629|geom,fecha_actualizacion,shape_length,t_id,fecha_adopcion,localizacion,elemento,tipo_servicio
+VM_22_Tratamientos_Urbanos/0|Tratamientos Urbanos|Polygon|386|geom,objectid,cesousos,porcanmin,eqcntviv,eqcntousos,vderviv,vderouso,identificador,fecha_adopcion,fecha_actualizacion,shape_leng
+VM_23_Uso_General_Suelo_Urbano/1|Sistema de centralidades|Polygon|78|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,caracter,nombre,orden,accion,estado,jerarquia
+VM_23_Uso_General_Suelo_Urbano/2|UsosGnalesSueloUrbano|Polygon|25446|t_id,objectid,cod_cat_uso,cod_subcat_uso,shape_area,geom,fecha_adopcion,fecha_actualizacion,shape_leng,areagraluso,subcategoria
+VM_27_Indice_Construccion_Max_Total_Venta_Derechos/2|planeacion_pot.pot_2014.zonasreceptoras_LAbel|Polygon|47|geom,eqcntousos,vderviv,vderouso,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,t_id,densbase,densadici,icbase
+VM_27_Indice_Construccion_Max_Total_Venta_Derechos/3|planeacion_pot.pot_2014.zonasreceptoras_1346|Polygon|47|geom,eqcntousos,vderviv,vderouso,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,t_id,densbase,densadici,icbase
+VM_31_Tratamiento_Rural/2|Riesgos_AvTorrenciales|Polygon|228|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,categoria_proteccion,subcategoria_proteccion,codigo,nombre,riesgo,descripcion
+VM_31_Tratamiento_Rural/3|Riesgos_Inundaciones|Polygon|165|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,categoria_proteccion,subcategoria_proteccion,codigo,nombre,riesgo,descripcion
+VM_31_Tratamiento_Rural/4|Riesgos_Mov_Masa|Polygon|589|t_id,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom,categoria_proteccion,subcategoria_proteccion,codigo,nombre,riesgo,descripcion
+VM_31_Tratamiento_Rural/5|Amenaza_Mov_Masa|Polygon|2347|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom
+VM_31_Tratamiento_Rural/6|Amenaza por Inundaciones|Polygon|708|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_31_Tratamiento_Rural/7|Avenidas_Torrenciales|Polygon|45|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_31_Tratamiento_Rural/8|Tratamientos rurales|Polygon|136|geom,objectid,cesousos,porcanmin,eqcntviv,eqcntousos,vderviv,vderouso,identificador,fecha_adopcion,fecha_actualizacion,shape_leng
+VM_32_Uso_Suelo_Rural/2|Corredores Rurales|Polygon|4|t_id,objectid,shape_leng,shape_area,geom,corredor,fecha_adopcion,fecha_actualizacion,nombre,nombre_tramo,identifica
+VM_32_Uso_Suelo_Rural/8|Amenaza_Mov_Masa|Polygon|949|t_id,codigo,categoria,grado_amenaza,categoria_proteccion,subcategoria_proteccion,fecha_adopcion,fecha_actualizacion,shape_leng,shape_area,geom
+VM_32_Uso_Suelo_Rural/11|Usos generales del suelo|Polygon|None|t_id,objectid,fecha_actu,shape_leng,shape_area,geom,cod_cat_us,fecha_adop,corregimiento,categoria_uso,subcategoria_proteccion,categoria_proteccion
+VM_33_Instrumentos_Planificacion/4|planeacion_pot.pot_2014.distritoruralcampesino|Polygon|69|geom,shape_area,t_id,fecha_adopcion,fecha_actualizacion,shape_length,corregimiento,codigo_tratamiento
+VM_33_Instrumentos_Planificacion/5|planeacion_pot.pot_2014.unidadesplanificacionrural|Polygon|22|geom,fecha_actualizacion,shape_length,shape_area,t_id,fecha_adopcion,codigo,nombre,clasificacion_upr,categoria
+VM_33_Instrumentos_Planificacion/6|planeacion_pot.pot_2014.pui_ambitoladera|Polygon|5|t_id,no,ladera,nivel,fecha_adopcion,fecha_actualizacion,shape_length,shape_area,geom
+VM_34_POT_2025/2|Red hidrica|Polyline|817|shape_length,geom,t_id,jerarquia,nombre
+VM_34_POT_2025/5|Retiros a la red hidrica|Polygon|1289|geom,faja_retiro,shape_area,t_id,shape_leng,categoria_proteccion,subcategoria_proteccion
+VM_34_POT_2025/13|Red de conectividad ecologica|Polygon|776|t_id,shape_leng,shape_area,geom,subcategoria_proteccion,tipo,corredor_simap,nombre_area_interes,elemento,categoria_proteccion
+VM_Espacio_Publico/0|espacio_publico|Polygon|1507|objectid,nombre,cbml,categoria,dominio,funcion,nivel,subcategor,cod_barrio,cod_comuna,nom_barrio,orden
+VM_Espacio_Publico/1|ep_barrial_vecinal|Polygon|2|objectid,ambito,area_2014,area_2019,area_2021,area_2022,shape,area_2023,st_area(shape),st_perimeter(shape)
+VM_Espacio_Publico/2|ep_barrio|Polygon|248|objectid,codigo,nombre,limitecomunacorregimientoid,ep_barrio_2019,calif_epbarrio_2019,ep_barrio_2020,calif_epbarrio_2020,shape,ep_barrio_2021,calif_epbarrio_2021,ep_barrio_2022
+VM_Espacio_Publico/3|ep_comcorr|Polygon|23|objectid,codigo,comuna,nombre,ep_comuna_2012,ep_comuna_2013,ep_comuna_2014,ep_comuna_2015,ep_comuna_2016,ep_comuna_2017,ep_comuna_2018,ep_comuna_2019
+VM_Espacio_Publico/4|ep_urbano|Polygon|1|objectid,clase_suelo,m2_urbano_2012,poblacion_cabecera_2012,epurbano_2012,m2_urbano_2013,poblacion_cabecera_2013,epurbano_2013,m2_urbano_2014,poblacion_cabecera_2014,epurbano_2014,m2_urbano_2015
+VM_Espacio_Publico/5|ep_mpal|Polygon|1|objectid,m2_municipal_2012,poblacion_total_2012,epmunicipal_2012,m2_municipal_2013,poblacion_total_2013,epmunicipal_2013,m2_municipal_2014,poblacion_total_2014,epmunicipal_2014,m2_municipal_2015,poblacion_total_2015
+VM_MacroproyectoRioSur/3|Red Peatonal|Polyline|74|objectid,tipo,fuente,shape,st_length(shape)
+VM_MacroproyectoRioSur/8|Posteria Energia Propuesta|Point|88|objectid,shape
+VM_MacroproyectoRioSur/9|Red de Energia Propuesta|Polyline|27|objectid,tipo_linea,shape,st_length(shape)
+VM_MacroproyectoRioSur/10|Tuberia Alcantarillado Propuesta|Polyline|100|objectid,tipo_agua,shape,st_length(shape)
+VM_MacroproyectoRioSur/11|Tuberia Acueducto Propuesta|Polyline|51|objectid,tipo_tuberia,clase,diametro,shape,st_length(shape)
+VM_MacroproyectoRioSur/12|Red de Gas Propuesta|Polyline|10|objectid,diametro,longitud,shape,st_length(shape)
+VM_MacroproyectoRioSur/22|Cargas Urbanisticas|Polygon|2535|objectid,macroproyecto_subzona,codigo_poligono,tipo,codigo,nombre,cambio,prioridad,reparto,carga,shape,st_area(shape)
+VM_MacroproyectoRioSur/23|Red Ecologica Compl Propuesta|Polygon|790|objectid,aie,macroproyecto,codigo_poligono,nombre,tipo,elemento,shape,st_area(shape),st_perimeter(shape)
+VM_POT46_Acuerdo_046_2006/0|Usos del Suelo|Polygon|12462|objectid,nombre,ambito,categoria,subcategoria,orden,zarnr,clasificacion_suelo,shape,st_area(shape),st_perimeter(shape)
+VM_POT46_Acuerdo_046_2006/1|Tratamiento e Intervenciones|Polygon|391|objectid,codigo_poligono,nombre,areatratamiento,subtipo_poligono,tipo,m2suelo_hab_residencial,m2suelo_100m2_cons_otros,amc_an_res,amc_an_otros,amc_an_vis_t1y2,m2cons_viv_residencial
+VM_POT46_Acuerdo_046_2006/2|Clasificacion del Suelo|Polygon|56|objectid,nombre,area_has,subtipo_clas_suelo,densidad_campestre,densidad_campesina,shape,st_area(shape),st_perimeter(shape)
+VM_POT46_Acuerdo_046_2006/6|Zonas Riesgo no recuperable|Polygon|266|objectid,codigo,nombre,subtipo_clas_riesgo,area_has,shape,st_area(shape),st_perimeter(shape)
+VM_POT46_Acuerdo_046_2006/8|Retiros a Corrientes de Agua|Polygon|2491|objectid,enumeracion,observacion,subtipo_proteccion,distancia,nombre,shape,st_area(shape),st_perimeter(shape)
+VM_POT48_Base/7|Malla vial|Polyline|42381|objectid,tipo_via,name,nombre_comun,municipio,label,shape,id_nm_vial,orientacion_cruce,longitud,fecha_actualizacion,fecha_sincronizacion
+VM_POT48_Estructura_ecologica/8|Retiro a rios y quebradas|Polygon|1289|objectid,faja_retiro,categoria_proteccion,subcategoria_proteccion,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VM_POT48_Sistema_colectivo/1|Redes Servicios Publicos|Polyline|14629|objectid,elemento,tipo_servicio,shape,st_length(shape),fecha_adopcion,fecha_actualizacion
+VM_POT48_Sistema_colectivo/2|Subestacion de energia|Polygon|26|objectid,nombre,shape,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+VM_POT48_Sistema_colectivo/3|Cobertura y Perimetro Sanitario|Polygon|174|objectid,categoria,shape,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+VM_POT48_Sistema_colectivo/15|Red peatonal|Polyline|1314|objectid,tipo_redpeatonal,estado,jerarquia_via,label,shape,st_length(shape),fecha_adopcion,fecha_actualizacion
+VM_POT48_Suelo_Proteccion/0|Plantas potabilizacion acueducto|Point|29|objectid,localizacion,administrador,shape,elemento,fecha_adopcion,fecha_actualizacion
+VM_POT48_Suelo_Proteccion/6|Areas protegidas|Polygon|207|objectid,zonificacion,estructura_ecologica,shape,categoria_proteccion,subcategoria_proteccion,documento_declaratoria,componentes,elementos,id_zona,id_elemento,fecha_adopcion
+VM_POT48_Suelo_Proteccion/14|Proteccion para la produccion|Polygon|133|objectid,corregimiento,categoria_uso,cod_cat_uso,categoria_proteccion,subcategoria_proteccion,shape,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+VM_Recorrido_Suelo/0|recorrido_suelo|Point|12|objectid,nombre,shape
+VM_Policia_MAP5/4|Cobertura Camaras Policia|Polygon|46|objectid,name,folderpath,symbolid,altmode,base,clamped,extruded,snippet,popupinfo,nombre,frecuencia
+solicitudes/8|Usos Suelo_Eventos|Polygon|25155|objectid,areagraluso,subcategoria,idpermiso,idevento,observaciones,shape,st_area(shape),st_perimeter(shape)
+Base_Catastral/9|Quebradas Medio Amb|Polyline|4212|objectid,nombre,shape,codqueb,observacion,tipocauce,orden,dirflujo,enabled,st_length(shape)
+ConsultaOperadorCatastral_geo/1|Clasificacion_Suelo|Polygon|242|objectid,codigo_tratamiento,nombre,clase_suelo,categoria_suelo,catdllorestring,shape,st_area(shape),st_perimeter(shape),fecha_adopcion,fecha_actualizacion
+ConsultaOperadorCatastral_geo/25|ZGE POT Vigente|Polygon|5831|objectid,comuna,valor_m2,cod_valor,vigencia,shape,st_area(shape),st_perimeter(shape),fecha_sincronizacion
+CartografiaBase_BN_Seguridad/7|Hidrografia Medellin|Polyline|817|objectid,nombre,shape,jerarquia,fecha_adopcion,fecha_actualizacion,st_length(shape)
+CartografiaBase_BN_Seguridad/17|EspacioPublico_Existente|Polygon|3743|objectid,nombre,cbml,categoria,orden,dominio,funcion,nivel,subcategoria,label,shape,cod_barrio
+CartografiaBase/27|Hidrografia POT|Polyline|817|objectid,jerarquia,nombre,shape,fecha_adopcion,fecha_actualizacion,st_length(shape)
+MAP6_Indicadores/7|Tratamiento POT vigente|Polygon|523|objectid,tipo,zona,shape,codigo_tratamiento,tratamiento,categoria_tratamiento,clase_suelo,st_area(shape),st_perimeter(shape)
+VC_Infraest_Gestion_Transporte/5|Red Caminera|Polygon|172|objectid,estado,comuna,direccion,shape,nombre_red,anio_const,nom_comuna,st_area(shape),st_perimeter(shape)
+VM_Movilidad_Humana/0|Red Ciclistica|Polyline|149|objectid,corredor,municipio,comuna,nom_comuna,estado,anio_construido,ente_constructor,ubicacion,tipo,nombre_ciclorruta,tipologia_redciclista
+VA_ConsultaOperadorCatastral_geo/1|Toponimia|Point|12137|objectid,cobama,nombre,tipo_sitio,tipo_importancia,cbml,shape,x_magnamed,y_magnamed,longitud,latitud,x_origen_nacional
+VA_ConsultaOperadorCatastral_geo/2|Nomenclatura Vial|Polyline|42792|objectid,municipio,version,tipo_via,comuna,label,via_principal,via_generadora,importancia,shape,orientacion_cruce,longitud
+VA_ConsultaOperadorCatastral_geo/3|Nomenclatura Domiciliaria|Point|521279|objectid,cbml,angulo,tipo_via,orientacion_via,numero_via,apendice_via,orientacion_cruce,numero_cruce,apendice_cruce,interior,numero_mejora
+VA_ConsultaOperadorCatastral_geo/4|Limite Barrio Vereda|Polygon|349|objectid,codigo,nombre_barrio,shape,indicador_ur,sector,nombre_comuna,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/5|Comuna|Polygon|21|objectid,shape,sector,nombre,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/6|Puntos Colindancia Lote|Point|21064|objectid,cbml,tipo_linea,colindante,puntotipo,acuerdo,exactitud_horizontal,desc_lindero,cx,cy,dist,orden
+VA_ConsultaOperadorCatastral_geo/7|Linea Cota Lote|Polyline|1024764|objectid,shape,right_cbml,left_cbml,fecha_registro,st_length(shape)
+VA_ConsultaOperadorCatastral_geo/8|Manzana|Polygon|10847|objectid,cobama,tipo_manzana,shape,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/9|Lote|Polygon|313326|objectid,cbml,cobama,numero_predio,tipo_lote,forma,anotaciones,numero_edificacion,area_lote,relacion_superficie,longitud,latitud
+VA_ConsultaOperadorCatastral_geo/10|IEP|Polygon|168616|objectid,cbml,iep,tipo_const,num_plantas_tipo,nm_subplanta,shape,piso_ubicacion,anotaciones,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/11|Punto Levantamiento LADM|Point|0|objectid,cbml,puntotipo,fotoidentificacion,exactitud_horizontal,shape,x_origen_nacional,y_origen_nacional
+VA_ConsultaOperadorCatastral_geo/12|Punto Levantamiento Const|Point|9204|objectid,cbml,shape,puntotipo,fotoidentificacion,exactitud_horizontal,x_origen_nacional,y_origen_nacional
+VA_ConsultaOperadorCatastral_geo/13|Linea Cota Construcción|Polyline|8185984|objectid,cbml,shape,st_length(shape)
+VA_ConsultaOperadorCatastral_geo/14|Construccion|Polygon|1200927|objectid,cbml,tipo_construccion,numero_edificacion,numero_mejora,numero_pisos,numero_sotanos,numero_mezanines,anotaciones,shape,id_construccion,area_construida
+VA_ConsultaOperadorCatastral_geo/15|Construccion_con_Area|Polygon|1123210|objectid,cbml,numero_pisos,numero_sotanos,numero_mezanines,numero_edificacion,numero_mejora,shape,id_construccion,area_construida,numero_semisotanos,st_area(shape)
+VA_ConsultaOperadorCatastral_geo/16|Construccion LADM|Polygon|307205|objectid,cbml,cobama,numero_edificacion,numero_mejora,tipo_construccion,numero_pisos,numero_sotanos,numero_mezanines,anotaciones,id_construccion,area_construida
+VA_ConsultaOperadorCatastral_geo/17|CPPC|Polygon|313326|objectid,cbml,cobama,numero_predio,tipo_lote,subtipo_lote,forma,anotaciones,numero_edificacion,shape,area_lote,relacion_superficie
+VA_ConsultaOperadorCatastral_geo/19|Bienes Inmuebles|Polygon|21662|objectid,cbml,matricula,tipo,cod_activo,activo_fijo,observaciones,id2,shape,fecha_edicion,fecha_creacion,editor
+VA_ConsultaOperadorCatastral_geo/20|Limite Administrativo|Polygon|332|objectid,codigo,nombre,abreviatura,identificacion,limitecomunacorregimientoid,zhfisicageoeconomicaid,limitemunicipioid,vigencia_formacion,subtipo_barriovereda,link_documento,shape
+VA_ConsultaOperadorCatastral_geo/21|Estacion Metro|Polygon|73|objectid,nombre,tipo,linea,link,codigo,codigo_comuna_barrio,direccion,telefono,cbml,matricula,escritura_publica
+VA_ConsultaOperadorCatastral_geo/22|Lineas_Sistema Metro|Polyline|14|objectid,nombre,linea,tipo,estado,label,shape,codigo_linea,fecha_actualizacion,st_length(shape)
+VA_ConsultaOperadorCatastral_geo/23|Rios - Quebradas|Polyline|4212|objectid,nombre,shape,codqueb,tipocauce,orden,dirflujo,observacion,enabled,st_length(shape)
+VA_ConsultaOperadorCatastral_geo/24|Limite Urbano-Rural POT|Polygon|242|shape,nombre,objectid,codigo_tratamiento,clase_suelo,categoria_suelo,catdllorestring,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/25|Perimetro Urbano POT|Polygon|4|shape,nombre,objectid,codigo_tratamiento,clase_suelo,categoria_suelo,catdllorestring,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/26|Retiros de Quebrada Acuerdo48_2014|Polygon|3|objectid,categoria,subcategorias,nombrecategoria,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/27|TratamientoIntervencion_Acuerdo48|Polygon|522|objectid,codigo_tratamiento,tratamiento,tipo,densadici,denstotal,icadici,ictotal,alturavariable,alturaadicio,franjabase,franjaadici
+VA_ConsultaOperadorCatastral_geo/28|Suelos de Protección_Acuerdo48|Polygon|37|objectid,categoria,subcategorias,nombrecategoria,shape,fecha_adopcion,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VA_ConsultaOperadorCatastral_geo/29|Limite Departamento|Polygon|124|objectid,municipio,zona,porcentaje,shape,id_elemento,st_area(shape),st_perimeter(shape)
+VA_Plantilla/0|PtoLineaCotaPredio|Point|6670|objectid,cbml,este,norte,dist,colindante,cod,codsig,id_pto_colindancia,letra,shape,iep
+VA_Plantilla/1|PtoLineaCotaConstr|Point|0|objectid,cbml,shape,puntotipo,fotoidentificacion,exactitud_horizontal,x_origen_nacional,y_origen_nacional
+VA_Plantilla/2|PtoLineaCota|Point|0|objectid,cbml,cx,cy,dist,colindante,cod,codsig,letra,letra_sig,orden,orientacion_pto
+VA_Plantilla/3|Drenaje_Sencillo|Polyline|4212|objectid,nombre,shape,codqueb,tipocauce,orden,dirflujo,observacion,enabled,st_length(shape)
+VA_Plantilla/4|Municipios|Polygon|125|objectid,municipio,zona,shape,porcentaje,id_elemento,st_area(shape),st_perimeter(shape)
+VA_Plantilla/5|NomenclaturaDomiciliaria|Point|521279|objectid,id_nm_dom,id_nm_vial,cbml,numero_mejora,tipo_nm,tipo_via,numero_via,apendice_via,orientacion_via,via,tipo_cruce
+VA_Plantilla/6|lineaCotaPredio|Polyline|12|objectid,cbml,iep,tipo_const,num_plantas_tipo,nm_subplanta,piso_ubicacion,anotaciones,orig_fid,shape,st_length(shape)
+VA_Plantilla/7|LineaCota|Polyline|0|objectid,shape,right_cbml,left_cbml,fecha_registro,st_length(shape)
+VA_Plantilla/8|lineaCotaConstr|Polyline|14|objectid,cbml,shape,st_length(shape)
+VA_Plantilla/9|MallaVial|Polyline|42792|objectid,id_nm_vial,comuna,version,grupo_via,tipo_via,numero_via,apendice_via,orientacion_via,via_principal,id_nm_generadora,via_generadora
+VA_Plantilla/11|Predio|Polygon|168616|objectid,cbml,iep,tipo_const,num_plantas_tipo,nm_subplanta,shape,piso_ubicacion,anotaciones,st_area(shape),st_perimeter(shape)
+VA_Roturas/2|En Ejecucion (Inicial)|Point|5527|objectid,id_rotura,nro_intervencion,fecha_recibo,radicado,ejecutor,estado_rotura,nombre_proyecto,ubicacion_proyecto,nombre_solicitante,nro_contrato,nro_poliza
+VA_Roturas/3|En Prórroga|Point|21|objectid,id_rotura,nro_intervencion,fecha_recibo,radicado,ejecutor,estado_rotura,nombre_proyecto,ubicacion_proyecto,nombre_solicitante,nro_contrato,nro_poliza
+VA_Roturas/4|Cerrado|Point|0|objectid,id_rotura,nro_intervencion,fecha_recibo,radicado,ejecutor,estado_rotura,nombre_proyecto,ubicacion_proyecto,nombre_solicitante,nro_contrato,nro_poliza
+VA_SGV_Baches_Historico/0|Aceptado|Point|531|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches_Historico/1|Descartado|Point|7109|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches_Historico/2|Duplicado|Point|7430|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches_Historico/3|Ejecutado|Point|32010|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches_Historico/4|Ejecutado Externo|Point|19|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches_Historico/5|Reportado|Point|2224|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,fecha,telefono,direccion,email
+VA_SGV_Baches/0|Aceptado|Point|3298|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado
+VA_SGV_Baches/1|Descartado|Point|15863|id_bache,objectid,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado,observacion,descarte
+VA_SGV_Baches/2|Duplicado|Point|16125|id_bache,objectid,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado,observacion,descarte
+VA_SGV_Baches/3|Ejecutado|Point|59689|id_bache,objectid,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado,observacion,descarte
+VA_SGV_Baches/4|Ejecutado Externo|Point|1986|id_bache,objectid,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado,observacion,descarte
+VA_SGV_Baches/5|Reportado|Point|3207|id_bache,objectid,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado,observacion,descarte
+VA_SGVial_EsparcimientoEncuentro/0|Esparcimiento y encuentro|Polygon|3024|objectid,cbml,id_espacio,longitud,latitud,x_origen_n,y_origen_n,direccion,nombre,comuna,barrio,dominio
+VA_SGVial_GestionIA/0|Deterioro Andenes y Separadores|Polyline|444570|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionIA/1|Intervencion Andenes y Separadores |Polyline|444570|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionIA/2|Deterioro Bordillos|Polyline|299670|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionIA/3|Intervencion Bordillos |Polyline|299670|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionIA/4|Deterioro CicloRutas|Polyline|6170|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionIA/5|Intervencion CicloRutas|Polyline|6170|object_id,ano_analisis,ic,id_elemento,color,mantenimiento,shape,ESRI_OID
+VA_SGVial_GestionMV/0|Deterioro DOL|Polyline|1056|objectid,id_segmento,orden_elemento,anio_analisis,id_calzada,n,shape,sn,dol,opi,iri,mdr
+VA_SGVial_GestionMV/1|Deterioro MDR|Polyline|1056|objectid,id_segmento,orden_elemento,anio_analisis,id_calzada,n,shape,sn,dol,opi,iri,mdr
+VA_SGVial_GestionMV/2|Deterioro IRI|Polyline|1056|objectid,id_segmento,orden_elemento,anio_analisis,id_calzada,n,shape,sn,dol,opi,iri,mdr
+VA_SGVial_GestionMV/3|Deterioro OPI|Polyline|1056|objectid,id_segmento,orden_elemento,anio_analisis,id_calzada,n,shape,sn,dol,opi,iri,mdr
+VA_SGVial_GestionMV/4|Intervención|Polyline|1056|objectid,id_segmento,orden_elemento,anio_analisis,id_calzada,n,shape,sn,dol,opi,iri,mdr
+VA_SGVial_IA/0|Senal Vertical|Point|17601|object_id,abscisa_inicial,abscisa_final,tipo_senal,senal_shape,ESRI_OID
+VA_SGVial_IA/1|Senal Horizontal|Polyline|72820|object_id,abscisa_inicial,abscisa_final,tipo_senal,senal_shape,ESRI_OID
+VA_SGVial_IA/2|Andén - Separador|Polyline|44633|codigo,object_id,orden_elemento,id_segmento,ancho,altura,longitud,ic,ds_ic,estado,homogeneo,homolgado
+VA_SGVial_IA/3|Bordillo|Polyline|30148|altura,longitud,estado,homologado,homogeneo,alturaic,ice_b,ice_b_calculado,codigo,id_infraesasociada,fecha_ult_inter,fecha_creacion
+VA_SGVial_IA/4|Zonaverde|Polyline|18389|iac,ancho,longitud,id_infraesasociada,codigo,fecha_ult_inter,fecha_creacion,es_infraes_aso,ult_usuario,id_elemento,shape,ESRI_OID
+VA_SGVial_IA/5|Cicloruta|Polyline|617|estado,longitud,ancho,homologado,ice_c,ice_c_calculado,e1,e2,id_usodesuelo,codigo,id_infraesasociada,id_material_ciclo_ruta
+VA_SGVial_MV/0|IRI|Polyline|25032|codigo,object_id,id_op,via_pot,longitud,area,shape,estado,estado_mdr,estado_opi,ESRI_OID,iri
+VA_SGVial_MV/1|OPI|Polyline|25032|codigo,object_id,id_op,via_pot,longitud,area,shape,estado,estado_mdr,estado_opi,ESRI_OID,iri
+VA_SGVial_MV/2|MDR|Polyline|25032|codigo,object_id,id_op,via_pot,longitud,area,shape,estado,estado_mdr,estado_opi,ESRI_OID,iri
+VA_SGVial_MV/3|Calzadas|Polyline|25031|object_id,codigo,id_elemento,nm_from,nm_offset,nm_to,orden_elemento,id_segmento,shape,ancho_calzada,area_calzada,fecha_calculo_if
+VA_SGVial_Obligaciones_Urbanisticas/0|Obligaciones Urbanisticas|Point|5662|object_id,id,ds_licencia,ds_nombre,ds_direccion,ds_constructor,ds_responsable,ds_telefono1,ds_telefono2,cd_cbml,id_tipo_obra,id_supervisor
+VA_SGVial_Segmentos/1|Segmentos SAV|Polyline|23580|id_op,object_id,calzada_vehiculo,longitud,fecha_inventario,shape,via_gen,via_desde,via_hasta,corredor_vial,via_pot,uso_suelo
+VA_SGVial_Segmentos/2|Segmento|Polyline|23580|id_op,object_id,calzada_vehiculo,longitud,fecha_inventario,shape,via_gen,via_desde,via_hasta,corredor_vial,via_pot,uso_suelo
+VA_siro_CUOS/0|Registrado|Point|11|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/1|En revisión|Point|12|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/2|En corrección|Point|1|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/3|Revisado|Point|1|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/4|En espera de contrato|Point|8|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/5|Anulado|Point|2|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/6|Ejecutado|Point|2|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/7|En ejecución|Point|27|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/8|Suspendido|Point|3|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_siro_CUOS/9|En verificación|Point|4|objectid,id_actividad,fecha_registro,fecha_aprobacion,codigo,nombre,id_estado,ubicacion,estado,color,num_necesidad,id_necesidad
+VA_Siro_espaciopublico/1|Mirador Panorámico|Polygon|6|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/2|Parque|Polygon|791|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/3|Parque Cívico|Polygon|25|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/4|Plaza|Polygon|83|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/5|ZV Sist Hidrografico|Polygon|305|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/6|ZV Sist Movilidad|Polygon|276|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/7|ZV Sist Orografico|Polygon|0|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_espaciopublico/8|Zona verde Recreacional|Polygon|1574|objectid,tipo,division,subtipo,cbml,codigo_ep,codigo_ep_antiguo,nombre,direccion,direccion_antigua,codbarrio,codbarrio_antiguo
+VA_Siro_jardines/0|Jardines|Polygon|7377|objectid,nom_jardin,shape,id_jardin,area_real,tipo_poligono
+VA_Siro_puente/1|Puente|Polyline|1993|objectid,id,nombre,nombre_simple,codigo_puente,id_op_sav,direccion,barrios,comunas,tipo_puente,obstaculo_salva,anoconstruccion
+VA_siro_tramites/0|No ha ingresado solicitud a la entidad|Point|2|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_siro_tramites/1|Tramite en curso|Point|2|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_siro_tramites/2|Tramite resuelto|Point|2|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_siro_tramites/3|Trámite archivado|Point|1|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_siro_tramites/4|Desistimiento del trámite|Point|1|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_siro_tramites/5|Sin Información|Point|1|objectid,id_tramite,id_contrato,id_co,observaciones,id_estado,tiempo_vencimiento,id_usuario,fecha_inicio,radicado_solicitud_inicial,auto_de_inicio,fecha_auto_inicio
+VA_Siro/2|Espacio Publico|Polygon|3743|objectid,nombre,cbml,categoria,orden,dominio,nivel,subcategoria,label,cod_barrio,cod_comuna,nom_barrio
+VA_Solicitudes_pqrs/1|Fichas Sec. Medio Ambiente |Point|13719|objectid,id_solicitud,fecha_solicitud,radicado_solicitud,fecha_radicado_respuesta,radicado_respuesta,codigo_comuna,nombre_comuna,codigo_barrio,nombre_barrio,informe_dagrd,direccion
+VA_Solicitudes_pqrs/2|Solicitud Sec. Infraestructura Física|Point|28697|objectid,id_solicitud,asunto,radicado_externo,informe_dagrd,codigo_comuna,nombre_comuna,codigo_barrio,nombre_barrio,direccion,tipo_solicitud,observaciones__texto_solicitud
+VA_Solicitudes_pqrs/3|Solicitud Sec. Medio Ambiente|Point|13582|objectid,fecha,radicado_solicitud,codigo_quebrada,quebrada,cuenca_principal,nombre_comuna,nombre_barrio,informe_dagrd,direccion,fecha_recibido_equipo_sh,problema__peticion
+VA_Solicitudes_pqrs/4|Solicitud Sec. Movilidad|Point|5|objectid,id_solicitud,fecha,radicado,asunto,nombre_ciudadano,codigo_comuna,nombre_comuna,codigo_barrio,nombre_barrio,direccion,tipo_solicitud
+VA_Solicitudes_Urbamed/0|Solicitudes|Polygon|40588|objectid,shape,cbml,lote,cantidad,categoria,direccion
+VC_captaciones/0|Captaciones|Point|37|objectid,id,coord_x,coord_y,prestador,caudal_ls,corregimie,descripcio,fuente,shape
+VC_Catastro_VCT/0|Puntos de Interes o Nombre del predio|Point|11958|objectid,nombre,shape,cobama,tipo_sitio,tipo_importancia,cbml,longitud,latitud,x_origen_nacional,y_origen_nacional,fecha_sincronizacion
+VC_Catastro_VCT/1|Zonas Geoconomicas POT48 Vigente|Polygon|5831|objectid,comuna,valor_m2,cod_valor,shape,vigencia,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VC_Catastro_VCT/2|Zonas Homogeneas Fisicas Urbanas|Polygon|89926|objectid,comuna,shape,codigo_zona_fisica,vigencia,dig_1_desc_cls,dig_1_cod_cls,dig_2_3_desc_cats,dig_2_3_cod_cats,dig_4_5_desc_upot,dig_4_5_cod_upot,dig_6_7_desc_trat
+VC_Catastro_VCT/3|Zonas Homogeneas Fisicas  Rurales|Polygon|47625|objectid,shape,descripcion_carac,codigo_zhfr,dig_1_desc_clsr,dig_1_cod_clsr,dig_2_3_desc_catr,dig_2_3_cod_catr,dig_4_5_desc_usopotr,dig_4_5_cod_usopotr,dig_6_7_desc_tratr,dig_6_7_cod_tratr
+VC_Catastro_VCT/4|Limite Barrio Vereda Catastral|Polygon|349|objectid,shape,comuna,barrio,codigo,nombre_barrio,indicador_ur,sector,nombre_comuna,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VC_Catastro_VCT/5|Limite Comuna Corregimiento Catastral|Polygon|21|objectid,comuna,shape,sector,nombre,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VC_Catastro_VCT/6|Manzana Catastral|Polygon|10836|objectid,cobama,barrioveredaid,tipo_manzana,shape,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VC_Catastro_VCT/7|Lote Catastral|Polygon|313313|objectid,cobama,subtipo_lote,tipo_lote,numero_predio,cbml,shape,forma,numero_edificacion,area_lote,longitud,latitud
+VC_Catastro_VCT/8|Construccion|Polygon|1133927|objectid,cobama,cbml,numero_mejora,numero_edificacion,numero_pisos,numero_sotanos,numero_mezanines,tipo_construccion,shape,numero_semisotanos,id_construccion
+VC_Catastro_VCT/9|Uso del predio|Point|1218607|objectid,cbml,tipo_punto,numero_tipo,longitud,latitud,shape,nombre_predio,direccion,piso_ubicacion,numero_edificacion,numero_predial
+VC_Catastro_VCT/10|Estrato Socioeconomico|Polygon|32384|objectid,comuna,barrio,codigo_barrio,manzana,estrato,shape,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VC_Dllo_Territorial_Planificado/0|EP Existente|Polygon|3743|objectid,nombre,funcion,cbml,categoria,orden,dominio,nivel,subcategoria,label,shape,cod_barrio
+VC_Dllo_Territorial_Planificado/1|EP Proyectado|Polygon|480|objectid,nombre,categoria,orden,funcion,nivel,localizacion,label,shape,subcategoria,fecha_adopcion,fecha_actualizacion
+VC_Dllo_Territorial_Planificado/3|Corredores verdes|Polyline|83|objectid,actuacion,tramo,nombre,shape,fecha_adopcion,fecha_actualizacion,st_length(shape)
+VC_ptap_ptar/0|PTAP_PTAR|Point|36|objectid,id,acueducto,cbml,coord_x,coord_y,corregim,prestado,tipo,shape
+VC_Servicios_Publicos/0|Intervenciones Aseo y Ornato 2012|Point|293|objectid,id_registro,tipo_intervencion,barrio_vereda,comuna_corregimiento,coord_x,coord_y,codigo,periodo,direccion,direccion_alternativa,id_registroc
+VC_Servicios_Publicos/1|Intervenciones Aseo y Ornato 2013|Point|469|objectid,id_registro,tipo_intervencion,barrio_vereda,comuna_corregimiento,coord_x,coord_y,codigo,periodo,direccion,direccion_alternativa,id_registroc
+VC_Servicios_Publicos/2|Intervenciones Aseo y Ornato 2014|Point|185|objectid,id_registro,tipo_intervencion,barrio_vereda,comuna_corregimiento,coord_x,coord_y,codigo,periodo,direccion,direccion_alternativa,id_registroc
+VC_Servicios_Publicos/3|Intervenciones Aseo y Ornato 2015|Point|105|objectid,id_registro,tipo_intervencion,barrio_vereda,comuna_corregimiento,coord_x,coord_y,codigo,periodo,direccion,direccion_alternativa,id_registroc
+VC_Servicios_Publicos/4|Sensibilizaciones Aseo y Ornato|Point|1582|objectid,id_registro,fecha,dependencia,actividad,valor_medido,unidad_medida,observacion,direccion,direccionalternativa,barrio_vereda,comuna_corregimiento
+VC_SGVial_Espacio_Publico/0|Jardin|Polygon|617|id,id_espacio_publico,espacio_publico,barrio_vereda,fecha_creacion,nombre,fecha_ultima_modificacion,area_real,arboles_juveniles,direccion,geometria,subcategoria_tipologia
+VC_SGVial_Espacio_Publico/1|Espacio público|Polygon|24851|id,nombre_oficial,nombre_alternativo,cbml,observaciones,zona_riesgo,geometria_espacio_publico,area_geometria,puntos_wifi,accion_judicial,metro_cuadrado_por_habitante,indice_pobreza_multidimensional
+VC_Vivienda/0|OIME|Point|15725|objectid,codigo,cbml,tipo_de_oferta,estado,area_privada,valor_comercial,fecha,fuente,valor_m2,nombre_fuente,uso_oferta
+VC_Vivienda/1|Construcciones y Mejoras del Predio|Polygon|1133927|objectid,cobama,cbml,numero_mejora,numero_edificacion,numero_pisos,numero_sotanos,numero_mezanines,tipo_construccion,shape,numero_semisotanos,id_construccion
+VM_Aeronautica_Elevaciones_Decreto_266/0|Aero_Anotacion|Polygon|112|objectid,featureid,zorder,annotationclassid,symbolid,status,textstring,fontname,fontsize,bold,italic,underline
+VM_Aeronautica_Elevaciones_Decreto_266/5|Linea_Referencia|Polyline|126|objectid,codigo,shape,st_length(shape)
+VM_Aeronautica_Elevaciones_Decreto_266/6|Superficie_Limitadora|Polygon|13|objectid,zona,localizacion,elevacion_max,shape,st_area(shape),st_perimeter(shape)
+VM_Alumbrado_Publico/0|luminaria|Multipoint|166962|objectid,shape,proyecto,tipo_fuent,numero_lum,global_id,tipo_lumin,ubicacion,g3e_fid,nodo_trans,potencia,tipo_brazo
+VM_Alumbrado_Publico/1|Poste|Multipoint|46445|objectid,shape,g3e_fid,estado,material,altura,propietari,clase,estacion_t,ot_maximo,proyecto,requerimie
+VM_Alumbrado_Publico/7|Transformador|Multipoint|100|objectid,shape,g3e_fid,estado,capacidad_,nro_transf,nodo_trans,propietari,municipio,ubicacion
+VM_Base_Catastral/0|Limite Comuna_Corregimiento Catastral|Polygon|21|objectid,comuna,shape,sector,nombre,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VM_Base_Catastral/1|Limite Barrio_Vereda Catastral|Polygon|349|objectid,shape,comuna,barrio,codigo,nombre_barrio,indicador_ur,sector,nombre_comuna,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VM_Base_Catastral/3|Lotes|Polygon|310512|objectid,cobama,subtipo_lote,tipo_lote,numero_predio,cbml,numero_edificacion,shape,forma,anotaciones,area_lote,longitud
+VM_Base_Catastral/4|Construcciones Mejoras|Polygon|1123924|objectid,cbml,tipo_construccion,numero_mejora,numero_edificacion,numero_pisos,numero_sotanos,numero_mezanines,anotaciones,shape,numero_semisotanos,id_construccion
+VM_Base_Catastral/5|Construcciones|Polygon|1090078|objectid,cbml,tipo_construccion,numero_edificacion,numero_mejora,numero_pisos,numero_sotanos,numero_mezanines,anotaciones,shape,numero_semisotanos,id_construccion
+VM_Base_Catastral/7|Linea Nomenclatura Vial|Polyline|42381|objectid,municipio,comuna,tipo_via,label,label_big,name,nombre_comun,shape,orientacion_cruce,longitud,fecha_actualizacion
+VM_Base_Catastral/10|IEP Predio|Polygon|168623|objectid,cbml,iep,tipo_const,num_plantas_tipo,nm_subplanta,shape,piso_ubicacion,anotaciones,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VM_Base_Catastral/11|Codigo Postal|Polygon|59|objectid,codigo_postal,zonapostalid,shape,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VM_Base_Catastral/12|ZGE POT48 Vigente|Polygon|5831|objectid,comuna,valor_m2,cod_valor,shape,vigencia,fecha_sincronizacion,st_area(shape),st_perimeter(shape)
+VM_BienesInmuebles/0|Mejora|Polygon|1955|objectid,ident_uso,matricula,cbml,observacion,fecha_edicion,fecha_creacion,editor,shape,st_area(shape),st_perimeter(shape)
+VM_BienesInmuebles/1|BienTrasmitido|Polygon|3437|objectid,activo_fijo,ident_uso,cbml,matricula,observacion,fecha_edicion,fecha_creacion,editor,shape,st_area(shape),st_perimeter(shape)
+VM_BienesInmuebles/2|UsoContractual|Polygon|992|objectid,ident_uso,uso_contractual,cbml,matricula,observacion,activo_fijo,x_magnamed,y_magnamed,fecha_edicion,fecha_creacion,editor
+VM_BienesInmuebles/3|ActivoFijoParcela|Polygon|21666|objectid,cbml,matricula,cod_activo,activo_fijo,observaciones,id2,fecha_edicion,fecha_creacion,editor,tipo,codigo_activo
+VM_Contrato_MallaV/0|EPM Proyectos Energia|Point|23|objectid,oid_1,name,folderpath,shape
+VM_Contrato_MallaV/1|EPM Proyectos Aguas|Point|411|objectid,oid_1,name,folderpath,symbolid,altmode,base,snippet,popupinfo,haslabel,labelid,shape
+VM_Contrato_MallaV/2|EPM Proyectos Palenque Cucharracho|Point|8|objectid,oid_1,name,folderpath,popupinfo,shape
+VM_Contrato_MallaV/3|Mejoramiento Vias|Polyline|3|objectid,name,descriptio,tramo_vial,valor_tota,shape_leng,shape,st_length(shape)
+VM_Contrato_MallaV/4|EPM Validacion pre pavimento|Polyline|21|objectid,name,descriptio,timestamp,begin,end_,altitudemo,tessellate,extrude,visibility,draworder,icon
+VM_Contrato_MallaV/5|EPM Proyectos IDOM|Polyline|69|objectid,oid_1,name,folderpath,symbolid,altmode,base,clamped,extruded,snippet,popupinfo,shape_leng
+VM_Contrato_MallaV/6|EPM Proyectos Energia L|Polyline|144|objectid,oid_1,name,folderpath,shape,st_length(shape)
+VM_Contrato_MallaV/7|EPM Proyectos Aguas L|Polyline|3429|objectid,oid_1,name,folderpath,symbolid,altmode,base,clamped,extruded,snippet,popupinfo,shape_leng
+VM_Contrato_MallaV/8|EPM Proyectos Palenque_Cucharracho L|Polyline|8|objectid,oid_1,name,popupinfo,shape_leng,shape,st_length(shape)
+VM_Contrato_MallaV/9|Coincidencias Segmentos vs EPM|Polyline|9|objectid,id_op,nombre_bar,nombre_com,shape_leng,iri,fecha_iri,fase,jerarquía,rangorango,shape,st_length(shape)
+VM_Contrato_MallaV/10|Alternativas Mejoramiento Vial|Polyline|9|objectid,name,descriptio,tramo_vial,valor_tota,shape_leng,shape,st_length(shape)
+VM_Contrato_MallaV/11|Malla vial|Polyline|23408|objectid,id_op,nombre_bar,nombre_com,shape_leng,iri,fecha_iri,fase,jerarquía,shape,st_length(shape)
+VM_Contrato_MallaV/14|EPM Segmentos|Polyline|184|objectid,id_op,nombre_bar,nombre_com,fase,jerarquía,longitud,rango,estado_seg,fecha_iri,seg_csv_ir,shape
+VM_Contrato_MallaV/12|EPM Proyectos Aguas|Polygon|27|objectid,oid_1,name,folderpath,symbolid,altmode,base,clamped,extruded,snippet,popupinfo,shape_leng
+VM_Contrato_MallaV/13|EPM Proyectos Palenque Cucharracho Area|Polygon|6|objectid,oid_1,name,folderpath,shape_leng,shape,st_area(shape),st_perimeter(shape)
+VM_Corredores_SIF/0|Paraderos_priorizados|Multipoint|310|objectid,id,codigo_pla,referencia,panel_publ,locacion_,coordenada_x,coordenada_y,elemento,basurera,nombre_com,identifica
+VM_Corredores_SIF/1|Corredor_la_70|Polyline|66|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/2|La_oriental|Polyline|65|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/3|Av_las_palmas|Polyline|52|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/4|La_45|Polyline|33|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/5|Av_san_juan|Polyline|78|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/6|Calle_10|Polyline|48|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/7|Av_la_33|Polyline|70|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/8|Av_las_vegas|Polyline|52|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/9|Av_poblado|Polyline|74|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/10|Corredor_la_65|Polyline|177|objectid,nombre_bar,nombre_com,iri,fecha_iri,fase,id_op,shape,st_length(shape)
+VM_Corredores_SIF/11|Presupuesto EP Centro|Point|6|objectid,nom_p_inv,responsa,t_proyect,nom_proyec,v_princp,desde,hasta,idop_idgeo,tipo_inter,cantidad,unidadmed
+VM_Corredores_SIF/12|Presupuesto puentes|Polyline|1985|objectid,nom_p_inv,responsa,t_proyect,nom_proyec,v_princp,desde,hasta,idop_idgeo,direccion,tipo_inter,cantidad
+VM_Corredores_SIF/13|Presupuesto Malla vial|Polyline|554|objectid,nom_p_inv,responsa,t_proyect,nom_proyec,v_princp,desde,hasta,tipo_inter,cantidad,unidadmed,barrio
+VM_Corredores_SIF/14|Presupuesto EP|Polygon|195|objectid,nom_p_inv,responsa,t_proyect,nom_proyec,direccion,tipo_inter,cantidad,unidadmed,fech_inter,presup_apr,presu_eje
+VM_Corredores_SIF/15|Presupuesto Andenes|Polygon|17|objectid,nom_p_inv,responsa,t_proyect,nom_proyec,direccion,tipo_inter,cantidad,unidadmed,presup_apr,presu_eje,presup_pro
+VM_Dagrd_Inspecciones_Tecnicas/0|Inspecciones Tecnicas|Point|76964|objectid,evento_id,estado,estado2,estado3,fecha_registro,fecha_visita,fecha_ocurrencia,evento_materializado,elementos_e,numero_lesionados,numero_muertos
+VM_Dagrd_Inspecciones_Tecnicas/1|BarrioVereda_2014|Polygon|332|objectid,codigo,nombre,abreviatura,identificacion,limitecomunacorregimientoid,zhfisicageoeconomicaid,limitemunicipioid,vigencia_formacion,link_documento,nombre_comuna_corregimiento,subtipo_barriovereda
+VM_Dagrd_Inspecciones_Tecnicas/2|LimiteComunaCorregimiento_2014|Polygon|23|objectid,codigo,nombre,identificacion,limitemunicipioid,link_documento,subtipo_comunacorregimiento,shape,fecha_actualizacion,st_area(shape),st_perimeter(shape)
+VM_Dgrd_geologia/0|geologia|Polygon|2589|objectid,unidad,descripcion,shape,globalid,created_user,created_date,last_edited_user,last_edited_date,st_area(shape),st_perimeter(shape)
+VM_Licencias/0|Licencias|Point|835|objectid,licenciaid,nombre_proyecto,tratamientointervencionid,barrioveredaid,shape,longitud,latitud
+VM_Licencias/1|Solicitud|Point|21234|objectid,solicitudid,decreto,zona_avaluo,valor_avaluo,shape,longitud,latitud
+VM_Licencias/2|CURADURIA|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/3|OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/4|DAP OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/5|C1 OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/6|C2 OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/7|C3 OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Licencias/8|C4 OBJETO|Point|92308|objectid,id,placaprinc,g__id,g__direnc,g__x,g__y,g__latitud,g__longitu,g__matricu,g__cbml,g__tipo
+VM_Oferta_Comercial_Oime/0|Investigaciones Catastro|Point|193920|objectid,id,date,investigation_type,property_type,property_status,source,source_name,boxed_address,pays_administration,administration_value,registration
+VM_Oferta_Comercial_Oime/1|Investigaciones Internet|Point|28425|objectid,id,source_type,source_name,code,commercial_type,category,type,status,original_address,original_neighborhood,stratum
+VM_RedGeodesia_Publico/0|Punto Apoyo Geodesia|Point|1089|tipo,placa,estado,visual,tipo_visual,fecharevision,municipio,comuna,barriovereda,direccion,link_esquema,objectid
+VM_RedGeodesia_Publico/1|Origenes Cartesianos MAGNA VAburra|Polygon|5|objectid,origen,escala,shape
+VM_SGV_Baches_Dashboard/0|Baches|Point|100185|id_bache,objectid,longitud,latitud,shape,consecutivo,id_op,nombre,telefono,direccion,email,estado
+VM_StoryMap_PPS/0|PPS Totales|Point|8085|objectid,pps,anio,codigo,tipo,poblaciondane,poblacionpps,shape
+VM_StoryMap_PPS/1|PPS Indicadores|Polygon|1565|objectid,codigo,tipo,total_pps_2019,total_pps_2020,total_pps_2021,total_pps_2022,poblacionpps2019,poblacionpps2020,poblacionpps2021,poblacionpps2022,poblaciondane2019
+VM_Urbanismo_Geodesia/0|Proyectos Estrategicos Consolidado|Polygon|136|cod_pro,radicado,nom_pro,direccion,area_intervenida,area_vial_gen,esp_pub_gen,equip_gen,equip_req,ourb_vial,ourb_zv,ourb_equip
+VM_Urbanismo_Geodesia/1|Proyectos Amarre Final Consolidado|Polygon|217|cod_pro_f,nom_pro,direccion,cod_rad_f,licencia,alt_max,area_bruta,area_neta,ourb_vial,ourb_zv,ourb_equi,ret_queb

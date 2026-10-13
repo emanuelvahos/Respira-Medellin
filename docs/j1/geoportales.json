@@ -1,0 +1,45 @@
+{
+  "epm_geoportal": {
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "bytes": 123476,
+    "muestra": " Geoportal de EPM (function() { window.ContextHub = window.ContextHub || {}; /* setting paths */ ContextHub.Paths = ContextHub.Paths || {}; ContextHub.Paths.CONTEXTHUB_PATH = \"/libs/settings/cloudsettings/legacy/contexthub\"; ContextHub.Paths.RESOURCE_PATH = \"\\/content\\/epm\\/clientesyusuarios\\/geoportal\\/_jcr_content\\/contexthub\"; ContextHub.Paths.SEGMENTATION_PATH = \"\"; ContextHub.Paths.CQ_CONTEXT_PATH = \"\"; /* setting initial constants */ ContextHub.Constants = ContextHub.Constants || {}; ContextHub.Constants.ANONYMOUS_HOME = \"/home/users/K/KXJs2hKBrY2ewZOGvLY1\"; ContextHub.Constants.MODE = \"no-ui\"; }()); if ( !window.CQ_Analytics ) { window.CQ_Analytics = {}; } if ( !CQ_Analytics.TestTarget ) { CQ_Analytics.TestTarget = {}; } CQ_Analytics.TestTarget.clientCode = 'epm'; CQ_Analytics.TestTarget.currentPagePath = '\\/content\\/epm\\/clientesyusuarios\\/geoportal'; console.log('Active Microsoft Clarity'); (function(c,l,a,r,i,t,y){ c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, \"clarity\", \"script\", \"t1huqsd60f\"); var dataLayerName = 'adobeDataLayer' || 'adobeDataLayer'; window[dataLayerName] = window[dataLayerName] || []; window[dataLayerName].push({ page: JSON.parse(\"{\\x22page\\u002D639fc36d44\\x22:{\\x22@type\\x22:\\x22epm\\/components\\/page\\x22,\\x22repo:modifyDate\\x22:\\x222026\\u002D07\\u002D16T20:18:42Z\\x22,\\x22dc:title\\x2"
+  },
+  "epm_instructivo": {
+    "status": 200,
+    "content_type": "application/pdf",
+    "bytes": 5793831
+  },
+  "igac_agrologia": {
+    "error": "HTTPSConnectionPool(host='geoportal.igac.gov.co', port=443): Max retries exceeded with url: /contenido/datos-abiertos-agrologia (Caused by ConnectTimeoutError(<HTTPSConnection(host='geoportal.igac.gov"
+  },
+  "sgc_geoportal": {
+    "status": 200,
+    "content_type": "text/html",
+    "bytes": 48366,
+    "muestra": " Geoportal SGC Geoportal SGC Todo Visores Documentos PÃ¡ginas Buscar Geoportal SGC geoportal@sgc.gov.co Direcciones tÃ©cnicas Geociencias BÃ¡sicas Recursos Minerales Geoamenazas GestiÃ³n de InformaciÃ³n Bancos de informaciÃ³n --> Laboratorios Enlaces de interÃ©s Inventario de puntos de agua Visor de mapas Geoservicios Acerca de Mapa geolÃ³gico sudamericano X Otros Productos --> VisualizaciÃ³n cartogrÃ¡fica de la geologÃ­a del subcontinente sudamericano a escala 1:5.000.000 Nuestros productos Visor geocientÃ­fico Consultar Mapa geolÃ³gico de Colombia X Mapa digital que muestra la distribuciÃ³n y caracterÃ­sticas de las unidades geolÃ³gicas en el territorio colombiano. Nuestros productos Mapa geolÃ³gico de Colombia, versiÃ³n 2023 Mapa geolÃ³gico de Colombia, versiÃ³n 2020 Mapa geolÃ³gico de Colombia, versiÃ³n 2015 Mapa geolÃ³gico de Colombia, versiÃ³n 2007 Consultar Sistema de InformaciÃ³n GeotÃ©rmica (SIGTÂ°) X Datos del potencial geotÃ©rmico del paÃ­s. Nuestros productos Sistema de InformaciÃ³n GeotÃ©rmica (SIGTÂ°) Consultar Geotermia X Datos e informaciÃ³n sobre los recursos y manifestaciones geotÃ©rmicas presentes en Colombia. Nuestros productos Potencial geotÃ©rmico de Colombia Consultar Litorales colombianos X InformaciÃ³n geomorfodinÃ¡mica de los litorales colombianos. Nuestros productos Visor geogrÃ¡fico Consultar HidrogeologÃ­a X Estudios, mapas y datos sobre las aguas subterrÃ¡neas y acuÃ­feros en el territorio nacional. Nuestros productos Visor geogrÃ¡fico de aguas s"
+  },
+  "geomedellin": {
+    "status": 200,
+    "content_type": "text/html;;charset=UTF-8",
+    "bytes": 76955,
+    "muestra": " Alcaldía de Medellín window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-15029094-1'); window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-15029094-5'); window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-Y3T0JJ8YRJ'); (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NZF9TXT'); /*HTML Business for Java, 6.0*/ ur_system = {doc : window.document , mimepath :\"/com.sap.portal.design.urdesigndata/themes/portal/vacio/common/\", stylepath : \"/com.sap.portal.design.urdesigndata/themes/portal/vacio/\", is508 : false, domainrelaxing : \"MINIMAL\"}; var popup_emptydoc = \"/htmlb/jslib/emptyhover.html\"; Alcald&#xed;a&#x20;de&#x20;Medell&#xed;n var helpCenterIviewID = \"pcd:portal_content/every_user/general/com.sap.portal.helpCenteriView\"; /* */ var disableWorkProtectCheck = false; function popupUnsavedDataBeforeUnload(evt) { if(self.pageTitleBar && pageTitleBar.backForwardLink){ pageTitleBar.backForwardLink=false; } else { evt=evt||window.event; if(EPCM.getGlobalDirty()&&!disableWorkProtectCheck){ if"
+  },
+  "plan_silvicultura": {
+    "status": 200,
+    "content_type": "application/pdf",
+    "bytes": 3523124
+  },
+  "sgc_arcgis": {
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "bytes": 6751,
+    "muestra": " Folder: / ArcGIS REST Services Directory Login | Get Token Home &gt; services Help | API Reference JSON | SOAP Folder: / Current Version: 10.91 View Footprints In: &nbsp;&nbsp; ArcGIS Online Map Viewer Folders: Administracion_IBIC Amenaza_Sismica Amenaza_Volcanica Anomalias_Geoquimica AREAS_HIDRO_GEOQ Atlas_Geologico_2015 Atlas_Geologico_Colombiano Atlas_Geoquimico_V2016 Atlas_Geoquimico_V2018 Cartografia_Basica_IGAC Catalogo_Dataciones_Radiometricas_Colombia catalogo_sismos Elementos_Quimicos_Raros EPIS Estaciones_GNSS Estado_Cartografia_Geologica eval_int Exploracion_Carbones Geofisica Geologia Geological_Map_Colombia_2015 Geomecanica_Por_Regiones Geomorfodinamica Geotermia Hidrogeologia_Por_Regiones Inventario_Museo Mapa_Geologico_Colombia Mapa_Geologico_Colombia_2015 Mapa_Geologico_Sur_America Mapa_Intensidad_Maxima_Observada_Colombia Mapa_Inventario_Muestra_Litoteca Mapa_Metalogenico_2016 Mapa_metalogenico_2018 Mapa_Metalogenico_2022 Mapa_Metalogenico_Colombia_2002 Mapa_Nacional_Amenaza_Mov_Masa_100K Mapa_Potencial_Carbonifero_Colombia Mapa_Sombras_Colombia METG MTER PEXAS Plan_View PortalSismos Reactor_SGC SIMMA SIMMA_PRIVADA sismicidad_historica_2 sismicidad_historica_m System Utilities Zonas_amenaza_Sismica_NR10 Zonificacion_Amenazas_Mov_Masa Zonificacion_Sismica_Intensidad_Esperada Services: SampleWorldCities (MapServer) Supported Interfaces: &nbsp;&nbsp; REST &nbsp;&nbsp; SOAP &nbsp;&nbsp; Sitemap &nbsp;&nbsp; Geo Sitemap "
+  },
+  "igac_arcgis": {
+    "error": "HTTPSConnectionPool(host='geoportal.igac.gov.co', port=443): Max retries exceeded with url: /arcgis/rest/services (Caused by ConnectTimeoutError(<HTTPSConnection(host='geoportal.igac.gov.co', port=443"
+  },
+  "epm_arcgis": {
+    "error": "HTTPSConnectionPool(host='geoportal.epm.com.co', port=443): Max retries exceeded with url: /arcgis/rest/services (Caused by NewConnectionError(\"HTTPSConnection(host='geoportal.epm.com.co', port=443): "
+  }
+}

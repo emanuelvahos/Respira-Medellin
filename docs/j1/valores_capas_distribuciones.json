@@ -1,0 +1,2490 @@
+{
+ "redes_servicios": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VM_15_Subs_Servicios_Publicos/MapServer/7",
+  "campos": [
+   [
+    "geom",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "shape_length",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "t_id",
+    "esriFieldTypeOID"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "localizacion",
+    "esriFieldTypeString"
+   ],
+   [
+    "elemento",
+    "esriFieldTypeString"
+   ],
+   [
+    "tipo_servicio",
+    "esriFieldTypeString"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "tipo_servicio": {
+    "_error": "{\"code\": 400, \"extendedCode\": -2147467259, \"message\": \"Unable to complete operation.\", \"details\": []}"
+   },
+   "elemento": {
+    "_error": "{\"code\": 400, \"extendedCode\": -2147467259, \"message\": \"Unable to complete operation.\", \"details\": []}"
+   },
+   "localizacion": {
+    "_error": "{\"code\": 400, \"extendedCode\": -2147467259, \"message\": \"Unable to complete operation.\", \"details\": []}"
+   }
+  },
+  "num": {
+   "shape_length": {
+    "min": 0.00283019367811406,
+    "max": 43813.3073270991,
+    "avg": 129.46369485534672,
+    "sum": 1893924.392038867
+   }
+  },
+  "fecha": {
+   "max": "2014-12-17",
+   "min": "2014-12-17"
+  },
+  "punto_poblado": []
+ },
+ "influencia_redes_tension": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Contrato/MapServer/6",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "g3e_stylei",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "g3e_fno",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "g3e_cno",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "g3e_fid",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "g3e_cid",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "estado",
+    "esriFieldTypeString"
+   ],
+   [
+    "empresa_or",
+    "esriFieldTypeString"
+   ],
+   [
+    "nombre_ope",
+    "esriFieldTypeString"
+   ],
+   [
+    "nombre_mtt",
+    "esriFieldTypeString"
+   ],
+   [
+    "mercado",
+    "esriFieldTypeString"
+   ],
+   [
+    "departamen",
+    "esriFieldTypeString"
+   ],
+   [
+    "municipio",
+    "esriFieldTypeString"
+   ],
+   [
+    "comuna",
+    "esriFieldTypeString"
+   ],
+   [
+    "barrio",
+    "esriFieldTypeString"
+   ],
+   [
+    "corregimie",
+    "esriFieldTypeString"
+   ],
+   [
+    "vereda",
+    "esriFieldTypeString"
+   ],
+   [
+    "region",
+    "esriFieldTypeString"
+   ],
+   [
+    "grupo",
+    "esriFieldTypeString"
+   ],
+   [
+    "subestacio",
+    "esriFieldTypeString"
+   ],
+   [
+    "localizaci",
+    "esriFieldTypeString"
+   ],
+   [
+    "est_establ",
+    "esriFieldTypeString"
+   ],
+   [
+    "tipo_red",
+    "esriFieldTypeString"
+   ],
+   [
+    "fases",
+    "esriFieldTypeString"
+   ],
+   [
+    "circuito",
+    "esriFieldTypeString"
+   ],
+   [
+    "tension",
+    "esriFieldTypeString"
+   ],
+   [
+    "calibre",
+    "esriFieldTypeString"
+   ],
+   [
+    "material",
+    "esriFieldTypeString"
+   ],
+   [
+    "nro_ctos",
+    "esriFieldTypeString"
+   ],
+   [
+    "buff_dist",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "orig_fid",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "tension_tipo",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "tension_tipo": [
+    [
+     "110",
+     822
+    ],
+    [
+     "220C1",
+     69
+    ],
+    [
+     "230C1",
+     17
+    ],
+    [
+     "220C2",
+     16
+    ],
+    [
+     "230C2",
+     10
+    ]
+   ],
+   "tipo_red": [
+    [
+     "                TRANSMISION",
+     822
+    ],
+    [
+     "TRANSMISION",
+     112
+    ]
+   ],
+   "estado": [
+    [
+     "OPERACION",
+     933
+    ],
+    [
+     "RETIRADO",
+     1
+    ]
+   ],
+   "material": [
+    [
+     "                     ACSR",
+     603
+    ],
+    [
+     "                     AL",
+     131
+    ],
+    [
+     "                     AAC",
+     88
+    ],
+    [
+     "AL",
+     75
+    ],
+    [
+     "ACSR",
+     20
+    ],
+    [
+     null,
+     17
+    ]
+   ],
+   "comuna": [
+    [
+     " ",
+     893
+    ],
+    [
+     "BUENOS AIRES",
+     10
+    ],
+    [
+     "       CASTILLA",
+     8
+    ],
+    [
+     "       DOCE DE OCTUBRE",
+     4
+    ],
+    [
+     "EL POBLADO",
+     4
+    ],
+    [
+     "       BELLN",
+     4
+    ],
+    [
+     "COPACABANA (FICTICIA)",
+     2
+    ],
+    [
+     "ENVIGADO (FICTICIA)",
+     2
+    ],
+    [
+     "POPULAR NO. 1",
+     2
+    ],
+    [
+     "COPACABANA",
+     1
+    ],
+    [
+     "       GUAYABAL",
+     1
+    ],
+    [
+     "COMUNA 06 BELLO",
+     1
+    ],
+    [
+     "COMUNA 05 BELLO",
+     1
+    ],
+    [
+     "BELLO",
+     1
+    ]
+   ]
+  },
+  "num": {
+   "buff_dist": {
+    "min": 10.0,
+    "max": 32.0,
+    "avg": 12.454,
+    "sum": 11632.0
+   },
+   "tension": {
+    "_error": "{\"code\": 400, \"extendedCode\": -2147196457, \"message\": \"Unable to complete operation.\", \"details\": []}"
+   }
+  },
+  "punto_poblado": []
+ },
+ "amenaza_mov_masa": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/6",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "codigo",
+    "esriFieldTypeString"
+   ],
+   [
+    "categoria",
+    "esriFieldTypeString"
+   ],
+   [
+    "grado_amenaza",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "categoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "categoria": [
+    [
+     "Amenaza media por movimientos en masa",
+     1134
+    ],
+    [
+     "Amenaza alta por movimientos en masa",
+     984
+    ],
+    [
+     "Amenaza baja por movimientos en masa",
+     257
+    ],
+    [
+     "Amenaza muy baja por movimientos en masa",
+     1
+    ]
+   ],
+   "grado_amenaza": [
+    [
+     "Media",
+     1134
+    ],
+    [
+     "Alta",
+     984
+    ],
+    [
+     "Baja",
+     257
+    ],
+    [
+     "Muy Baja",
+     1
+    ]
+   ]
+  },
+  "num": {
+   "st_area(shape)": {
+    "min": 2.3759999463111164e-05,
+    "max": 295147594.85006106,
+    "avg": 158441.61939412053,
+    "sum": 376457287.68043035
+   }
+  },
+  "fecha": {
+   "max": "2026-04-30",
+   "min": "2026-04-30"
+  },
+  "punto_poblado": [
+   {
+    "objectid": 9471,
+    "codigo": "ZAB",
+    "categoria": "Amenaza baja por movimientos en masa",
+    "grado_amenaza": "Baja",
+    "st_area(shape)": 295147594.85006106,
+    "st_perimeter(shape)": 1015037.5692484649,
+    "categoria_proteccion": "N/A",
+    "subcategoria_proteccion": "N/A",
+    "fecha_adopcion": 1418774400000,
+    "fecha_actualizacion": 1777507200000
+   }
+  ]
+ },
+ "amenaza_inundacion": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/5",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "codigo",
+    "esriFieldTypeString"
+   ],
+   [
+    "categoria",
+    "esriFieldTypeString"
+   ],
+   [
+    "grado_amenaza",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "categoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "categoria": [
+    [
+     "Amenaza media por inundaciones",
+     259
+    ],
+    [
+     "Amenaza muy baja por inundaciones",
+     197
+    ],
+    [
+     "Amenaza alta por inundaciones",
+     137
+    ],
+    [
+     "Amenaza baja por inundaciones",
+     123
+    ]
+   ],
+   "grado_amenaza": [
+    [
+     "Media",
+     259
+    ],
+    [
+     "Muy Baja",
+     197
+    ],
+    [
+     "Alta",
+     137
+    ],
+    [
+     "Baja",
+     123
+    ]
+   ]
+  },
+  "num": {},
+  "fecha": {
+   "max": "2026-04-30",
+   "min": "2026-04-30"
+  },
+  "punto_poblado": []
+ },
+ "amenaza_torrencial": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/4",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "codigo",
+    "esriFieldTypeString"
+   ],
+   [
+    "categoria",
+    "esriFieldTypeString"
+   ],
+   [
+    "grado_amenaza",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "categoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "categoria": [
+    [
+     "Amenaza baja por avenidas torrenciales",
+     52
+    ],
+    [
+     "Amenaza media por avenidas torrenciales",
+     32
+    ],
+    [
+     "Amenaza alta por avenidas torrenciales",
+     31
+    ]
+   ],
+   "grado_amenaza": [
+    [
+     "Baja",
+     52
+    ],
+    [
+     "Media",
+     32
+    ],
+    [
+     "Alta",
+     31
+    ]
+   ]
+  },
+  "num": {},
+  "fecha": {
+   "max": "2026-07-17",
+   "min": "2026-04-30"
+  },
+  "punto_poblado": []
+ },
+ "riesgo_mov_masa": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_DGRD/MapServer/9",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "codigo",
+    "esriFieldTypeString"
+   ],
+   [
+    "nombre",
+    "esriFieldTypeString"
+   ],
+   [
+    "riesgo",
+    "esriFieldTypeString"
+   ],
+   [
+    "descripcion",
+    "esriFieldTypeString"
+   ],
+   [
+    "tipo_amenaza",
+    "esriFieldTypeString"
+   ],
+   [
+    "categoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria_proteccion",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "riesgo": [
+    [
+     "Con condiciones de riesgo",
+     215
+    ],
+    [
+     "Alto riesgo mitigable",
+     162
+    ],
+    [
+     "Alto riesgo no mitigable",
+     140
+    ],
+    [
+     "Riesgo medio",
+     115
+    ],
+    [
+     "Riesgo bajo",
+     104
+    ]
+   ],
+   "tipo_amenaza": [
+    [
+     "Movimientos en masa",
+     736
+    ]
+   ]
+  },
+  "num": {},
+  "fecha": {
+   "max": "2026-07-17",
+   "min": "2025-12-30"
+  },
+  "punto_poblado": []
+ },
+ "geologia": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VM_DAGRD/MapServer/0",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "unidad",
+    "esriFieldTypeString"
+   ],
+   [
+    "descripcion",
+    "esriFieldTypeString"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "unidad": [
+    [
+     "Qll",
+     1494
+    ],
+    [
+     "Qd",
+     465
+    ],
+    [
+     "NFI",
+     96
+    ],
+    [
+     "QFa",
+     86
+    ],
+    [
+     "NQFII",
+     71
+    ],
+    [
+     "Qat",
+     59
+    ],
+    [
+     "Qal",
+     56
+    ],
+    [
+     "QFIII",
+     43
+    ],
+    [
+     "KdA",
+     33
+    ],
+    [
+     "QFIV",
+     31
+    ],
+    [
+     "TRaM",
+     26
+    ],
+    [
+     "JKmbP",
+     26
+    ],
+    [
+     "NFpreI",
+     22
+    ],
+    [
+     "JKuM",
+     19
+    ],
+    [
+     "KgSD",
+     8
+    ],
+    [
+     "JmI",
+     8
+    ],
+    [
+     "KvsQG",
+     6
+    ],
+    [
+     "JKgmS",
+     5
+    ],
+    [
+     "KcdE",
+     5
+    ],
+    [
+     "KcdA",
+     5
+    ],
+    [
+     "TRmPP",
+     5
+    ],
+    [
+     "TReC",
+     4
+    ],
+    [
+     "JgR",
+     3
+    ],
+    [
+     "KvQG",
+     3
+    ],
+    [
+     "TRgP",
+     2
+    ],
+    [
+     "Río",
+     2
+    ],
+    [
+     "TReaB",
+     1
+    ],
+    [
+     "KcdML",
+     1
+    ],
+    [
+     "TRgLC",
+     1
+    ],
+    [
+     "JuR",
+     1
+    ],
+    [
+     "KtO",
+     1
+    ]
+   ]
+  },
+  "num": {},
+  "punto_poblado": [
+   {
+    "objectid": 2046,
+    "unidad": "NQFII",
+    "descripcion": "Depósitos de flujos de escombros y/o lodos",
+    "st_area(shape)": 1512228.3809914924,
+    "st_perimeter(shape)": 24253.832455481697
+   }
+  ]
+ },
+ "anden": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Infraestructura_Fisica/MapServer/0",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "codigo",
+    "esriFieldTypeBigInteger"
+   ],
+   [
+    "orden_elemento",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "id_segmento",
+    "esriFieldTypeBigInteger"
+   ],
+   [
+    "ancho",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "altura",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "longitud",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "estado",
+    "esriFieldTypeBigInteger"
+   ],
+   [
+    "homogeneo",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "homolgado",
+    "esriFieldTypeSmallInteger"
+   ],
+   [
+    "obstaculo",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "material",
+    "esriFieldTypeBigInteger"
+   ],
+   [
+    "id_elemento",
+    "esriFieldTypeBigInteger"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "estado": [
+    [
+     1,
+     19859
+    ],
+    [
+     2,
+     10536
+    ],
+    [
+     4,
+     9379
+    ],
+    [
+     3,
+     3181
+    ],
+    [
+     null,
+     10
+    ]
+   ],
+   "material": [
+    [
+     1,
+     27671
+    ],
+    [
+     4,
+     8439
+    ],
+    [
+     3,
+     4714
+    ],
+    [
+     2,
+     2130
+    ],
+    [
+     null,
+     10
+    ],
+    [
+     8,
+     1
+    ]
+   ],
+   "obstaculo": [
+    [
+     0.0,
+     29382
+    ],
+    [
+     1.0,
+     3766
+    ],
+    [
+     2.0,
+     2638
+    ],
+    [
+     10.0,
+     2329
+    ],
+    [
+     3.0,
+     1719
+    ],
+    [
+     4.0,
+     1021
+    ],
+    [
+     5.0,
+     658
+    ],
+    [
+     6.0,
+     406
+    ],
+    [
+     7.0,
+     244
+    ],
+    [
+     null,
+     229
+    ],
+    [
+     8.0,
+     199
+    ],
+    [
+     9.0,
+     99
+    ],
+    [
+     12.0,
+     56
+    ],
+    [
+     11.0,
+     45
+    ],
+    [
+     15.0,
+     36
+    ],
+    [
+     14.0,
+     31
+    ],
+    [
+     13.0,
+     26
+    ],
+    [
+     16.0,
+     17
+    ],
+    [
+     20.0,
+     12
+    ],
+    [
+     17.0,
+     11
+    ],
+    [
+     18.0,
+     7
+    ],
+    [
+     19.0,
+     6
+    ],
+    [
+     21.0,
+     5
+    ],
+    [
+     23.0,
+     4
+    ],
+    [
+     26.0,
+     4
+    ],
+    [
+     22.0,
+     3
+    ],
+    [
+     29.0,
+     2
+    ],
+    [
+     34.0,
+     2
+    ],
+    [
+     28.0,
+     2
+    ],
+    [
+     52.0,
+     1
+    ],
+    [
+     37.0,
+     1
+    ],
+    [
+     27.0,
+     1
+    ],
+    [
+     25.0,
+     1
+    ],
+    [
+     30.0,
+     1
+    ],
+    [
+     40.0,
+     1
+    ]
+   ],
+   "homogeneo": [
+    [
+     1.0,
+     22800
+    ],
+    [
+     0.0,
+     11473
+    ],
+    [
+     2.0,
+     6042
+    ],
+    [
+     3.0,
+     1911
+    ],
+    [
+     4.0,
+     296
+    ],
+    [
+     null,
+     274
+    ],
+    [
+     5.0,
+     87
+    ],
+    [
+     100.0,
+     21
+    ],
+    [
+     6.0,
+     20
+    ],
+    [
+     10.0,
+     14
+    ],
+    [
+     30.0,
+     9
+    ],
+    [
+     60.0,
+     7
+    ],
+    [
+     7.0,
+     2
+    ],
+    [
+     70.0,
+     1
+    ],
+    [
+     -2.0,
+     1
+    ],
+    [
+     11.0,
+     1
+    ],
+    [
+     93.0,
+     1
+    ],
+    [
+     23.0,
+     1
+    ],
+    [
+     50.0,
+     1
+    ],
+    [
+     32.0,
+     1
+    ],
+    [
+     12.0,
+     1
+    ],
+    [
+     75.0,
+     1
+    ]
+   ]
+  },
+  "num": {
+   "ancho": {
+    "min": -5.0,
+    "max": 146.0,
+    "avg": 1.671,
+    "sum": 56063.863
+   },
+   "altura": {
+    "min": -10.0,
+    "max": 180.0,
+    "avg": 0.208,
+    "sum": 6967.078
+   },
+   "longitud": {
+    "min": 0.0,
+    "max": 1405.0,
+    "avg": 65.738,
+    "sum": 2261976.124
+   }
+  },
+  "punto_poblado": []
+ },
+ "evu": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VA_SistemaArbolUrbano_Base/MapServer/5",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "id_poligono",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "proyecto",
+    "esriFieldTypeString"
+   ],
+   [
+    "sistema_pmepvu",
+    "esriFieldTypeString"
+   ],
+   [
+    "componente",
+    "esriFieldTypeString"
+   ],
+   [
+    "clasefuncional",
+    "esriFieldTypeString"
+   ],
+   [
+    "categoria_msu",
+    "esriFieldTypeString"
+   ],
+   [
+    "espacioverdeurbano",
+    "esriFieldTypeString"
+   ],
+   [
+    "zv_interna",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria",
+    "esriFieldTypeString"
+   ],
+   [
+    "cobertura",
+    "esriFieldTypeString"
+   ],
+   [
+    "narb_aprox",
+    "esriFieldTypeString"
+   ],
+   [
+    "cubierta_verde",
+    "esriFieldTypeString"
+   ],
+   [
+    "infraestructura",
+    "esriFieldTypeString"
+   ],
+   [
+    "equipamiento",
+    "esriFieldTypeString"
+   ],
+   [
+    "propiedad",
+    "esriFieldTypeString"
+   ],
+   [
+    "condicion",
+    "esriFieldTypeString"
+   ],
+   [
+    "observaciones",
+    "esriFieldTypeString"
+   ],
+   [
+    "fuente_inf",
+    "esriFieldTypeString"
+   ],
+   [
+    "coord_x_mb",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "coord_y_mb",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "area_ha",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "clasefuncional": [
+    [
+     "ZvLateVias",
+     62194
+    ],
+    [
+     "AvResidencial",
+     48635
+    ],
+    [
+     "AvAntejardin",
+     30018
+    ],
+    [
+     "AvResidual",
+     13998
+    ],
+    [
+     "AvEdifInst",
+     12427
+    ],
+    [
+     "AvParques",
+     10464
+    ],
+    [
+     "AvSeparador",
+     3600
+    ],
+    [
+     "AvIndustrial",
+     3199
+    ],
+    [
+     "AvNatAgua",
+     2573
+    ],
+    [
+     "AvArtifAgua",
+     2230
+    ],
+    [
+     "NA",
+     1809
+    ],
+    [
+     "AvNodAct",
+     1579
+    ],
+    [
+     "AvPrivado",
+     1504
+    ],
+    [
+     "AvOrejas",
+     357
+    ],
+    [
+     "AvGlorietas",
+     189
+    ],
+    [
+     "AvPlaza",
+     85
+    ],
+    [
+     "AProtegidas",
+     48
+    ],
+    [
+     "AvMiradores",
+     5
+    ],
+    [
+     "AContAmb",
+     2
+    ]
+   ],
+   "cobertura": [
+    [
+     "GramaPasto",
+     132405
+    ],
+    [
+     "Arboles",
+     32228
+    ],
+    [
+     "Jardin",
+     12899
+    ],
+    [
+     "Arbustos",
+     8069
+    ],
+    [
+     "Tierra",
+     7359
+    ],
+    [
+     "PisoSemi",
+     1342
+    ],
+    [
+     "Cultivos",
+     394
+    ],
+    [
+     "OtraCober",
+     220
+    ]
+   ],
+   "infraestructura": [
+    [
+     "Sin información",
+     137336
+    ],
+    [
+     "No aplica",
+     34551
+    ],
+    [
+     "Unidad Deportiva Atanasio Girardot",
+     554
+    ],
+    [
+     "Universidad de Antioquia",
+     340
+    ],
+    [
+     "Cementerio San Pedro",
+     257
+    ],
+    [
+     "Parqueadero Edificio Inteligente - EPM",
+     256
+    ],
+    [
+     "Universidad EAFIT",
+     234
+    ],
+    [
+     "Universidad Pontificia Bolivariana U.P.B",
+     219
+    ],
+    [
+     "Universidad Nacional de Colombia-Núcleo El Volador",
+     216
+    ],
+    [
+     "Hospital Universitario San Vicente de Paúl",
+     209
+    ],
+    [
+     "Jardin Botánico Joaquin Antonio Uribe",
+     208
+    ],
+    [
+     "Parque de Los Deseos",
+     183
+    ],
+    [
+     "Aeropuerto \"Enrique Olaya Herrera\"",
+     183
+    ],
+    [
+     "Territorio Robledo",
+     176
+    ],
+    [
+     "Nueva Villa de Aburrá",
+     173
+    ],
+    [
+     "Terminal de Transportes del Sur",
+     161
+    ],
+    [
+     "Urb. Quintas del Plantío",
+     152
+    ],
+    [
+     "Parque Norte J. E. Valderrama - Estadio Cincuentenario",
+     150
+    ],
+    [
+     "Edificio Bancolombia Industriales",
+     140
+    ],
+    [
+     "Estación de Servicio",
+     137
+    ],
+    [
+     "Jumbo de la 65",
+     134
+    ],
+    [
+     "Parque San Antonio",
+     131
+    ],
+    [
+     "Metro de Medellín",
+     131
+    ],
+    [
+     "Parque Juan Pablo II",
+     131
+    ],
+    [
+     "Unidad Residencial Almendros de la 80",
+     124
+    ],
+    [
+     "Departamento Operativo de Almacenes EPM",
+     119
+    ],
+    [
+     "Cuarta Brigada",
+     114
+    ],
+    [
+     "Santa María Ciudadela Campestre",
+     113
+    ],
+    [
+     "C:R: La Huerta",
+     108
+    ],
+    [
+     "Ciudadela San Diego",
+     107
+    ],
+    [
+     "Parque Bicentenario",
+     103
+    ],
+    [
+     "Unidad Deportiva de Belén",
+     101
+    ],
+    [
+     "Parque Explora",
+     100
+    ],
+    [
+     "Parque La República",
+     95
+    ],
+    [
+     "C.R. Aviva",
+     94
+    ],
+    [
+     "Instituto Tecnológico Metropolitano - ITM",
+     90
+    ],
+    [
+     "Club Campestre",
+     89
+    ],
+    [
+     "Laureles Campestre",
+     89
+    ],
+    [
+     "Teatro Metropolitano de Medellín",
+     85
+    ],
+    [
+     "Instituto Técnico Industrial Pascual Bravo",
+     79
+    ]
+   ],
+   "condicion": [
+    [
+     "NA",
+     130189
+    ],
+    [
+     "SinInfo",
+     46710
+    ],
+    [
+     "Casa",
+     18017
+    ]
+   ],
+   "propiedad": [
+    [
+     "No",
+     143685
+    ],
+    [
+     "Publico",
+     43140
+    ],
+    [
+     "Fiscal",
+     8091
+    ]
+   ],
+   "cubierta_verde": [
+    [
+     "NA",
+     146472
+    ],
+    [
+     "No aplica",
+     48046
+    ],
+    [
+     "Si",
+     398
+    ]
+   ],
+   "sistema_pmepvu": [
+    [
+     "Artificial",
+     189708
+    ],
+    [
+     "Natural",
+     5208
+    ]
+   ],
+   "fuente_inf": [
+    [
+     "Ortofoto Medellín 2016",
+     67247
+    ],
+    [
+     "Ortofoto Medellín 2016 y GoogleMaps",
+     47977
+    ],
+    [
+     "CONTRATO 4600067020 de 2016",
+     40882
+    ],
+    [
+     "CONTRATO 4600067020 de 2016, revisado en Fase II para homologación",
+     7413
+    ],
+    [
+     "Ortofoto Envigado, SAS Planet y Basemaps",
+     5203
+    ],
+    [
+     "Ortofoto Bello",
+     4350
+    ],
+    [
+     "Ortofoto Sabaneta",
+     3740
+    ],
+    [
+     "Basemaps",
+     3549
+    ],
+    [
+     "Ortofoto Medellín 2019",
+     2557
+    ],
+    [
+     "Ortofoto La Estrella, SAS Planet y Basemaps",
+     1745
+    ],
+    [
+     "Ortofo Itagüí, SAS Planet y Basemaps",
+     1177
+    ],
+    [
+     "Ortofoto Itagüí y SAS Planet",
+     1140
+    ],
+    [
+     "Ortofoto Girardota",
+     1139
+    ],
+    [
+     "Ortofoto Caldas",
+     1119
+    ],
+    [
+     "Cartoantioquia 2010-2012",
+     882
+    ],
+    [
+     "Ortofoto Itagüí",
+     718
+    ],
+    [
+     "Ortofoto Itagüí, Sabaneta y SAS Planet",
+     693
+    ],
+    [
+     "Ortofoto Itagüi y SAS Planet",
+     564
+    ],
+    [
+     "Ortofoto Copacabana",
+     558
+    ],
+    [
+     "Ortofoto Itagüí y Basemaps",
+     405
+    ],
+    [
+     "Ortofoto Barbosa",
+     388
+    ],
+    [
+     "Ortofoto Itagüí, SAS Planet y Basemaps",
+     340
+    ],
+    [
+     "Ortofoto Medellín, Itagüí y Basemaps",
+     321
+    ],
+    [
+     "Ortofoto Itaguí",
+     214
+    ],
+    [
+     "Ortofoto Sabaneta y La Estrella",
+     155
+    ],
+    [
+     "Identificación en campo",
+     100
+    ],
+    [
+     "Service Name: ServiciosImagen/Ortofoto_Medellin_2019",
+     92
+    ],
+    [
+     "Google Street View 2018",
+     82
+    ],
+    [
+     "Ortofoto Itagüi",
+     68
+    ],
+    [
+     "https://m-medellin.maps.arcgis.com/home/item.html?id=91729d448c4b4c1f8534db11f47645c9",
+     42
+    ],
+    [
+     "Ortofoto Caldas y Basemaps",
+     21
+    ],
+    [
+     "Ortofoto Medellín 2016 y Cartoantioquia 2010-2012",
+     6
+    ],
+    [
+     "Google Street View 2017",
+     6
+    ],
+    [
+     "Ortofoto Medellín 2016 y Basemaps",
+     5
+    ],
+    [
+     "Medellín 2016",
+     3
+    ],
+    [
+     "Orotofoto Caldas y Basemaps",
+     2
+    ],
+    [
+     "Ortofoto Sabaneta, SAS Planet y Basemaps",
+     2
+    ],
+    [
+     "Ortofoto Itagüí y SAS Panet",
+     2
+    ],
+    [
+     "Medellín 2019",
+     2
+    ],
+    [
+     "Ortofoto La Estrella y Sabaneta",
+     2
+    ]
+   ]
+  },
+  "num": {
+   "narb_aprox": {
+    "_error": "{\"code\": 400, \"extendedCode\": -2147196457, \"message\": \"Unable to complete operation.\", \"details\": []}"
+   },
+   "area_ha": {
+    "min": 0.0,
+    "max": 63.818,
+    "avg": 0.033,
+    "sum": 6508.288
+   }
+  },
+  "punto_poblado": [
+   {
+    "objectid": 65994,
+    "id_poligono": 159274.0,
+    "proyecto": "FASE 2 - CONTRATO 1344 de 2018",
+    "sistema_pmepvu": "Artificial",
+    "componente": "AvUrbani",
+    "clasefuncional": "AvResidual",
+    "categoria_msu": "RetiroLinderos",
+    "espacioverdeurbano": "RetiroLinderos",
+    "zv_interna": "NA",
+    "subcategoria": "NA",
+    "cobertura": "GramaPasto",
+    "narb_aprox": "Rango 1",
+    "cubierta_verde": "NA",
+    "infraestructura": "Sin información",
+    "equipamiento": "Sin información",
+    "propiedad": "Publico",
+    "condicion": "NA",
+    "observaciones": "No aplica",
+    "fuente_inf": "Ortofoto Medellín 2016",
+    "coord_x_mb": 835515.872165,
+    "coord_y_mb": 1178558.3132,
+    "area_ha": 0.01261026,
+    "st_area(shape)": 126.06669671163185,
+    "st_perimeter(shape)": 115.84799538269796
+   }
+  ]
+ },
+ "poste": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/vivienda_ciudad_terri/VM_Alumbrado_Publico/MapServer/1",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "g3e_fid",
+    "esriFieldTypeInteger"
+   ],
+   [
+    "estado",
+    "esriFieldTypeString"
+   ],
+   [
+    "material",
+    "esriFieldTypeString"
+   ],
+   [
+    "altura",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "propietari",
+    "esriFieldTypeString"
+   ],
+   [
+    "clase",
+    "esriFieldTypeString"
+   ],
+   [
+    "estacion_t",
+    "esriFieldTypeString"
+   ],
+   [
+    "ot_maximo",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "proyecto",
+    "esriFieldTypeString"
+   ],
+   [
+    "requerimie",
+    "esriFieldTypeString"
+   ],
+   [
+    "propietar1",
+    "esriFieldTypeString"
+   ],
+   [
+    "global_id",
+    "esriFieldTypeString"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "estado": [
+    [
+     "OPERACION",
+     46294
+    ],
+    [
+     "DISENO",
+     136
+    ],
+    [
+     "PLANEACION",
+     10
+    ],
+    [
+     "PROPUESTO MODIFICAR",
+     4
+    ],
+    [
+     "CONSTRUCCION",
+     1
+    ]
+   ],
+   "material": [
+    [
+     "CONCRETO",
+     28360
+    ],
+    [
+     "PRFV",
+     11548
+    ],
+    [
+     "METALICO",
+     3327
+    ],
+    [
+     "MADERA",
+     3208
+    ],
+    [
+     "FIBRA DE VIDRIO",
+     2
+    ]
+   ],
+   "clase": [
+    [
+     "CIRCULAR",
+     26344
+    ],
+    [
+     "OCTOGONAL",
+     8001
+    ],
+    [
+     "CARABOBO",
+     7446
+    ],
+    [
+     "BAILARINA",
+     3770
+    ],
+    [
+     "CIRCULAR_A",
+     617
+    ],
+    [
+     "SECCIONADO",
+     164
+    ],
+    [
+     "TRASLUCIDO",
+     83
+    ],
+    [
+     "TORRECILLA",
+     14
+    ],
+    [
+     "RIEL-TORRECILLA",
+     2
+    ],
+    [
+     "HEXAGONAL",
+     2
+    ],
+    [
+     "CUADRADO",
+     1
+    ],
+    [
+     " ",
+     1
+    ]
+   ],
+   "propietari": [
+    [
+     "ALUMBRADO PUBLICO",
+     44366
+    ],
+    [
+     "MEDELLTN",
+     1517
+    ],
+    [
+     "MEDELLCN",
+     199
+    ],
+    [
+     "MEDELLON",
+     195
+    ],
+    [
+     "MEDELL",
+     161
+    ],
+    [
+     "EPM",
+     6
+    ],
+    [
+     "EPM TELECOMUNICACIONES",
+     1
+    ]
+   ]
+  },
+  "num": {
+   "altura": {
+    "min": 4,
+    "max": 26,
+    "avg": 7.925653999354075,
+    "sum": 368107
+   }
+  },
+  "punto_poblado": []
+ },
+ "uso_suelo_urbano": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VA_POT48_Reporte_UsoSuelo_U/MapServer/20",
+  "campos": [
+   [
+    "objectid",
+    "esriFieldTypeOID"
+   ],
+   [
+    "cod_cat_uso",
+    "esriFieldTypeSmallInteger"
+   ],
+   [
+    "cod_subcat_uso",
+    "esriFieldTypeSmallInteger"
+   ],
+   [
+    "shape",
+    "esriFieldTypeGeometry"
+   ],
+   [
+    "areagraluso",
+    "esriFieldTypeString"
+   ],
+   [
+    "subcategoria",
+    "esriFieldTypeString"
+   ],
+   [
+    "st_area(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "st_perimeter(shape)",
+    "esriFieldTypeDouble"
+   ],
+   [
+    "fecha_adopcion",
+    "esriFieldTypeDate"
+   ],
+   [
+    "fecha_actualizacion",
+    "esriFieldTypeDate"
+   ]
+  ],
+  "maxRecordCount": 2000,
+  "cat": {
+   "subcategoria": [
+    [
+     "Áreas predominantemente residenciales",
+     10948
+    ],
+    [
+     null,
+     5835
+    ],
+    [
+     "Zonas de Transición; Centralidades dotacionales; Aglomeraciones comerciales y de servicios barriales",
+     3016
+    ],
+    [
+     "<Null>",
+     2509
+    ],
+    [
+     "Centralidades y corredores con alta mixtura",
+     1959
+    ],
+    [
+     "Centralidades con predominancia económica",
+     842
+    ],
+    [
+     "Áreas de actividad económica en trasformación",
+     337
+    ]
+   ],
+   "areagraluso": [
+    [
+     "Áreas de baja mixtura",
+     10948
+    ],
+    [
+     "Espacio Público Existente",
+     5496
+    ],
+    [
+     "Áreas y corredores de alta mixtura",
+     3138
+    ],
+    [
+     "Áreas y corredores de media mixtura",
+     3016
+    ],
+    [
+     "Uso Dotacional",
+     1822
+    ],
+    [
+     "Espacio Público Proyectado",
+     1026
+    ]
+   ]
+  },
+  "num": {},
+  "fecha": {
+   "max": "2014-12-17",
+   "min": "2014-12-17"
+  },
+  "punto_poblado": [
+   {
+    "objectid": 21034,
+    "cod_cat_uso": 4,
+    "cod_subcat_uso": 43,
+    "areagraluso": "Espacio Público Existente",
+    "subcategoria": "<Null>",
+    "st_area(shape)": 1701.955355951076,
+    "st_perimeter(shape)": 462.8435145604948,
+    "fecha_adopcion": 1418774400000,
+    "fecha_actualizacion": 1418774400000
+   }
+  ]
+ },
+ "retiros_hidricos": {
+  "url": "https://www.medellin.gov.co/servidormapas/rest/services/ambiente_dllo_sost/VM_04_Estructura_Ecologica_Principal/MapServer/8",
+  "campos": {
+   "_error": "{\"code\": 404, \"message\": \"Service not found\", \"details\": []}"
+  },
+  "maxRecordCount": null,
+  "cat": {
+   "categoria_proteccion": {
+    "_error": "{\"code\": 404, \"message\": \"Service not found\", \"details\": []}"
+   },
+   "subcategoria_proteccion": {
+    "_error": "{\"code\": 404, \"message\": \"Service not found\", \"details\": []}"
+   }
+  },
+  "num": {
+   "faja_retiro": {
+    "_error": "{\"code\": 404, \"message\": \"Service not found\", \"details\": []}"
+   }
+  },
+  "punto_poblado": {
+   "_error": "{\"code\": 404, \"message\": \"Service not found\", \"details\": []}"
+  }
+ },
+ "relieve": {
+  "mapas_nacionales/VC_Relieve/MapServer": {
+   "layers": [
+    [
+     0,
+     "Curva de Nivel Urbana"
+    ],
+    [
+     1,
+     "Curva de Nivel Rural"
+    ]
+   ],
+   "services": []
+  },
+  "Hosted/COTAS5M/FeatureServer": {
+   "layers": [
+    [
+     0,
+     "CNIVEL5METROS"
+    ]
+   ],
+   "services": []
+  },
+  "ServiciosImagen": {
+   "layers": [],
+   "services": [
+    "ServiciosImagen/Antioquia_Oriente_5000",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_RURAL",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z1",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z2",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z3",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z4",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z5",
+    "ServiciosImagen/CARTOANTIOQUIA_2010_URBANO_Z6",
+    "ServiciosImagen/Cinturon_Occidental",
+    "ServiciosImagen/Cinturon_Oriental",
+    "ServiciosImagen/Imagen1959",
+    "ServiciosImagen/Imagen1975",
+    "ServiciosImagen/Imagen1994",
+    "ServiciosImagen/Landsat7_p9r056_2000_08_21_orthorectified_1_a_3_pan",
+    "ServiciosImagen/Landsat7_p9r55_2000_08_21_orthorectified_1_a_3_pan",
+    "ServiciosImagen/Modelo_digital_de_elevacion_AMVA",
+    "ServiciosImagen/Modelo_digital_de_elevacion_medellin_2024",
+    "ServiciosImagen/Modelo_digital_de_elevacion_Medellin",
+    "ServiciosImagen/Modelo_digital_de_iluminacion_AMVA",
+    "ServiciosImagen/Modelo_digital_de_iluminacion_Medellin",
+    "ServiciosImagen/Modelo_digital_de_pendiente_gr_AMVA",
+    "ServiciosImagen/mosaico_rio_medellin_m_bog",
+    "ServiciosImagen/Mosaico_Rio",
+    "ServiciosImagen/Orto_Comuna_09_EPSG9377",
+    "ServiciosImagen/Orto_Comunas15_16_EPSG9377_ecw",
+    "ServiciosImagen/ortofoto_bello_2021_aoi_ecw",
+    "ServiciosImagen/ortofoto_bello_2021_aoi_jp2",
+    "ServiciosImagen/ortofoto_bello_2021_jp2",
+    "ServiciosImagen/Ortofoto_Medellin_2016_Centro",
+    "ServiciosImagen/Ortofoto_Medellin_2016_Occidente",
+    "ServiciosImagen/Ortofoto_Medellin_2019",
+    "ServiciosImagen/Ortofoto_Medellin_2021_MAGNA_Medellin",
+    "ServiciosImagen/Ortofoto_Medellin_2024",
+    "ServiciosImagen/Ortofoto_Medellin_RGBI_NW_ecw",
+    "ServiciosImagen/Ortofotos_2004_SIGMA",
+    "ServiciosImagen/Plan_Regulador_Basica_1958",
+    "ServiciosImagen/QuickBird_2006_1",
+    "ServiciosImagen/QuickBird_2006_2",
+    "ServiciosImagen/QuickBird_2006_3",
+    "ServiciosImagen/QuickBird_2006_4",
+    "ServiciosImagen/QuickBird_2006_5",
+    "ServiciosImagen/QuickBird_2006_6",
+    "ServiciosImagen/QuickBird_2008"
+   ]
+  }
+ },
+ "dem": {
+  "Modelo_digital_de_elevacion_medellin_2024": {
+   "description": "",
+   "pixelSizeX": 1,
+   "pixelSizeY": 1,
+   "bandCount": 1,
+   "pixelType": "F32",
+   "extent": {
+    "xmin": 4698974.44186295,
+    "ymin": 2239446.0700197904,
+    "xmax": 4726835.44186295,
+    "ymax": 2263390.0700197904,
+    "spatialReference": {
+     "wkid": 9377,
+     "latestWkid": 9377
+    }
+   },
+   "minValues": [
+    1143.6232910156
+   ],
+   "maxValues": [
+    3141.205078125
+   ],
+   "meanValues": [
+    2067.5855294181
+   ],
+   "identify_poblado": {
+    "objectId": 0,
+    "name": "Pixel",
+    "value": "NoData",
+    "location": {
+     "x": -75.5636,
+     "y": 6.2088,
+     "spatialReference": {
+      "wkid": 9377,
+      "latestWkid": 9377
+     }
+    },
+    "properties": null,
+    "catalogItems": null,
+    "catalogItemVisibilities": []
+   }
+  },
+  "Modelo_digital_de_elevacion_Medellin": {
+   "description": "",
+   "pixelSizeX": 5.001524079528757,
+   "pixelSizeY": 5.001524079528767,
+   "bandCount": 1,
+   "pixelType": "F32",
+   "extent": {
+    "xmin": 816242.7021446824,
+    "ymin": 1172489.9238103335,
+    "xmax": 846271.8527181731,
+    "ymax": 1197512.548780216,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "minValues": [
+    1024.4064941406
+   ],
+   "maxValues": [
+    3137.5529785156
+   ],
+   "meanValues": [
+    2107.4799157263
+   ],
+   "identify_poblado": {
+    "objectId": 0,
+    "name": "Pixel",
+    "value": "NoData",
+    "location": {
+     "x": -75.5636,
+     "y": 6.2088,
+     "spatialReference": {
+      "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+      "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+     }
+    },
+    "properties": null,
+    "catalogItems": null,
+    "catalogItemVisibilities": []
+   }
+  },
+  "Modelo_digital_de_elevacion_AMVA": {
+   "description": "",
+   "pixelSizeX": 10.0068282411477,
+   "pixelSizeY": 10.006828241147673,
+   "bandCount": 1,
+   "pixelType": "F32",
+   "extent": {
+    "xmin": 818266.1374588601,
+    "ymin": 1153014.9150048047,
+    "xmax": 873443.7883805485,
+    "ymax": 1212105.2357687817,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "minValues": [
+    1120
+   ],
+   "maxValues": [
+    3130
+   ],
+   "meanValues": [
+    2011.8607381944
+   ],
+   "identify_poblado": {
+    "objectId": 0,
+    "name": "Pixel",
+    "value": "NoData",
+    "location": {
+     "x": -75.5636,
+     "y": 6.2088,
+     "spatialReference": {
+      "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+      "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+     }
+    },
+    "properties": null,
+    "catalogItems": null,
+    "catalogItemVisibilities": []
+   }
+  },
+  "Modelo_digital_de_pendiente_gr_AMVA": {
+   "description": "",
+   "pixelSizeX": 10.0068282411477,
+   "pixelSizeY": 10.006828241147712,
+   "bandCount": 1,
+   "pixelType": "F32",
+   "extent": {
+    "xmin": 818266.1374588615,
+    "ymin": 1153014.9150048203,
+    "xmax": 873443.7883805499,
+    "ymax": 1212105.2357687976,
+    "spatialReference": {
+     "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+     "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+    }
+   },
+   "minValues": [
+    0
+   ],
+   "maxValues": [
+    78.908576965332
+   ],
+   "meanValues": [
+    20.797490306075
+   ],
+   "identify_poblado": {
+    "objectId": 0,
+    "name": "Pixel",
+    "value": "NoData",
+    "location": {
+     "x": -75.5636,
+     "y": 6.2088,
+     "spatialReference": {
+      "wkt2": "PROJCRS[\"PCS_MAG_Ant_Medellin\",BASEGEOGCRS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",ELLIPSOID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",1180816.875,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",-75.56488694,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",1.0,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",6.229208889,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+      "wkt": "PROJCS[\"PCS_MAG_Ant_Medellin\",GEOGCS[\"GCS_MAG_Ant_Medellin\",DATUM[\"D_DAT_MAG_Ant_Medellin\",SPHEROID[\"GRS1980_MAG_Ant_Medellin\",6379647.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",835378.647],PARAMETER[\"False_Northing\",1180816.875],PARAMETER[\"Central_Meridian\",-75.56488694],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",6.229208889],UNIT[\"Meter\",1.0]]"
+     }
+    },
+    "properties": null,
+    "catalogItems": null,
+    "catalogItemVisibilities": []
+   }
+  }
+ }
+}
