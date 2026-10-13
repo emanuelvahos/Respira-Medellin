@@ -72,7 +72,14 @@ def _get(session, url, params, tries=4):
     raise RuntimeError(f"{url}: {err}")
 
 
-def descargar_capa(session, ruta: str, bounds) -> gpd.GeoDataFrame:
+ALTERNAS = {
+    "retiros": ["ambiente_dllo_sost/VA_POT48_Reporte_UsoSuelo_R/MapServer/7",
+                "ordenamiento_ter/VA_POT48_Reporte_UsoSuelo_R/MapServer/7",
+                "ordenamiento_ter/VM_03_Cat_Suelo_Protecc_Producc_Suburb/MapServer/3"],
+}
+
+
+def descargar_capa(session, ruta: str, bounds, ordenar=True) -> gpd.GeoDataFrame:
     url = f"{BASE}/{ruta}/query"
     xmin, ymin, xmax, ymax = bounds
     env = json.dumps({"xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": {"wkid": CRS}})
@@ -82,7 +89,7 @@ def descargar_capa(session, ruta: str, bounds) -> gpd.GeoDataFrame:
             "f": "geojson", "where": "1=1", "geometry": env, "geometryType": "esriGeometryEnvelope",
             "inSR": CRS, "outSR": CRS, "spatialRel": "esriSpatialRelIntersects", "outFields": "*",
             "returnGeometry": "true", "resultOffset": offset, "resultRecordCount": 2000,
-            "orderByFields": "objectid",
+            **({"orderByFields": "objectid"} if ordenar else {}),
         })
         j = r.json()
         page = j.get("features", [])
@@ -367,10 +374,27 @@ def main():
     b = (b[0] - 200, b[1] - 200, b[2] + 200, b[3] + 200)
     capas, manifest = {}, {"fecha_consulta": date.today().isoformat(), "capas": {}}
     for k, (ruta, nombre) in CAPAS.items():
-        g = descargar_capa(s, ruta, b)
+        g, usada, error = None, ruta, None
+        for r_ in [ruta] + ALTERNAS.get(k, []):
+            for ordenar in (True, False):
+                try:
+                    g = descargar_capa(s, r_, b, ordenar)
+                    usada = r_
+                    break
+                except Exception as e:  # noqa: BLE001
+                    error = str(e)[:200]
+                    print("fallo", k, r_, ordenar, error, flush=True)
+            if g is not None:
+                break
+        if g is None:
+            g = gpd.GeoDataFrame(geometry=[], crs=CRS)
+            manifest["capas"][k] = {"nombre": nombre, "url": f"{BASE}/{ruta}", "registros": 0, "estado": "no_disponible", "error": error}
+            capas[k] = g
+            continue
+        ruta = usada
         capas[k] = g
         h = hashlib.sha256(pd.util.hash_pandas_object(g.geometry.to_wkb(), index=False).values.tobytes()).hexdigest()[:16] if len(g) else None
-        manifest["capas"][k] = {"nombre": nombre, "url": f"{BASE}/{ruta}", "registros": int(len(g)), "hash_geometrias": h}
+        manifest["capas"][k] = {"nombre": nombre, "url": f"{BASE}/{ruta}", "registros": int(len(g)), "hash_geometrias": h, "estado": "ok"}
         print(k, len(g), flush=True)
     mosaico, origen, px = descargar_pendiente(s, tuple(zonas.total_bounds))
     manifest["pendiente"] = {"url": SLOPE_URL, "pixel_m": px, "filas": int(mosaico.shape[0]), "columnas": int(mosaico.shape[1]),
