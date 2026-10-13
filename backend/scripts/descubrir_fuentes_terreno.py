@@ -78,6 +78,13 @@ def detalle_servicio(item):
 
 
 def detalle_capa(args):
+    try:
+        return _detalle_capa(args)
+    except Exception as e:  # noqa: BLE001
+        return {"servicio": args[0], "id": args[2].get("id"), "nombre": args[2].get("nombre"), "_error": repr(e)[:200]}
+
+
+def _detalle_capa(args):
     servicio, tipo, capa = args
     url = f"{BASE}/{servicio}/{tipo}/{capa['id']}"
     d = get(url)
@@ -162,8 +169,11 @@ def main():
     with ThreadPoolExecutor(8) as ex:
         capas = list(ex.map(detalle_capa, candidatas))
     (salida / "capas_candidatas.json").write_text(json.dumps(capas, ensure_ascii=False, indent=1))
-    catalogos_abiertos(salida)
-    sondear_geoportales(salida)
+    for fn in (catalogos_abiertos, sondear_geoportales):
+        try:
+            fn(salida)
+        except Exception as e:  # noqa: BLE001
+            print("fallo", fn.__name__, repr(e))
     print("listo")
 
 
