@@ -12,6 +12,8 @@ from app.models.siembra import (
     ZonaSiembraDetalle,
 )
 from app.models.zona_verde import FeatureCollection, ZonaPriorizadaSiembraProperties
+from app.models.aptitud import ResumenAptitud, ZonaAptitud
+from app.services import aptitud as aptitud_svc
 from app.services.ahp import (
     PESO_AREA_DEFECTO,
     PESO_DEFICIT_DEFECTO,
@@ -96,6 +98,32 @@ def get_zona_siembra_detalle(id_poligono: int) -> ZonaSiembraDetalle:
         ),
         n_especies_compatibles=diversificacion["n_especies_compatibles"] if diversificacion else None,
     )
+
+
+@router.get("/zona/{id_poligono}/aptitud", response_model=ZonaAptitud)
+def get_zona_aptitud(id_poligono: int) -> ZonaAptitud:
+    """Aptitud del terreno de la zona (nivel 1): apta / apta con condiciones / no apta, con motivos."""
+    res = aptitud_svc.zona_aptitud(id_poligono)
+    if res is None:
+        raise HTTPException(status_code=404, detail=f"Sin análisis de terreno para la zona {id_poligono}.")
+    return res
+
+
+@router.get("/aptitud/resumen", response_model=ResumenAptitud)
+def get_aptitud_resumen() -> ResumenAptitud:
+    """Resumen del análisis de terreno: conteos, capas usadas, umbrales y avisos."""
+    res = aptitud_svc.resumen()
+    if res is None:
+        raise HTTPException(status_code=404, detail="El análisis de terreno no está disponible.")
+    return res
+
+
+@router.get("/puntos-indicativos")
+def get_puntos_indicativos(id_poligono: int | None = Query(default=None)) -> dict:
+    """Nivel 2: puntos INDICATIVOS de siembra (GeoJSON, WGS84). Apagado salvo PUNTOS_INDICATIVOS_PUBLICOS=true."""
+    if not aptitud_svc.puntos_publicos():
+        raise HTTPException(status_code=404, detail="Los puntos indicativos de siembra no están habilitados.")
+    return aptitud_svc.puntos_geojson(id_poligono)
 
 
 @router.get("/resumen-comuna", response_model=list[ResumenRecomendacionComuna])

@@ -8,6 +8,8 @@ import {
   proyeccionMaduracionUrl,
   rankingComunasUrl,
   zonaSiembraDetalleUrl,
+  zonaAptitudUrl,
+  puntosIndicativosUrl,
   type Bbox,
 } from "@/lib/api/endpoints";
 import {
@@ -37,6 +39,7 @@ import {
 } from "@/types/arbolSau";
 import { calidadDatosSchema } from "@/types/calidadDatos";
 import { ndviResumenSchema } from "@/types/ndvi";
+import { puntosIndicativosSchema, zonaAptitudSchema } from "@/types/aptitud";
 import { arbolesComunaDetalleSchema } from "@/types/arbolesDetalle";
 import { ahpV2ComunaSchema, ahpV2ResumenSchema } from "@/types/ahpV2";
 import { resumenSaludRespiratoriaResponseSchema } from "@/types/saludRespiratoria";
@@ -139,6 +142,24 @@ export function useZonaSiembraDetalle(idPoligono: number | null) {
     queryFn: () =>
       fetchAndValidate(zonaSiembraDetalleUrl(idPoligono as number), zonaSiembraDetalleSchema),
     enabled: idPoligono !== null,
+  });
+}
+
+/** J2 — aptitud del terreno (nivel 1) de una zona de siembra. */
+export function useZonaAptitud(idPoligono: number | null) {
+  return useQuery({
+    queryKey: ["zona-aptitud", idPoligono],
+    queryFn: () => fetchAndValidate(zonaAptitudUrl(idPoligono as number), zonaAptitudSchema),
+    enabled: idPoligono !== null,
+  });
+}
+
+/** J2 — puntos indicativos (nivel 2). Solo se pide si el backend declara `puntos_publicos`. */
+export function usePuntosIndicativos(idPoligono: number | null, habilitado: boolean) {
+  return useQuery({
+    queryKey: ["puntos-indicativos", idPoligono],
+    queryFn: () => fetchAndValidate(puntosIndicativosUrl(idPoligono as number), puntosIndicativosSchema),
+    enabled: idPoligono !== null && habilitado,
   });
 }
 

@@ -25,6 +25,16 @@ export function zonaSiembraDetalleUrl(idPoligono: number): string {
   return `/api/siembra/zona/${idPoligono}/detalle`;
 }
 
+/** `/api/siembra/zona/{id}/aptitud` (J2) — aptitud del terreno de una zona (nivel 1). */
+export function zonaAptitudUrl(idPoligono: number): string {
+  return `/api/siembra/zona/${idPoligono}/aptitud`;
+}
+
+/** `/api/siembra/puntos-indicativos?id_poligono=` (J2, nivel 2) — responde 404 si el nivel 2 está apagado. */
+export function puntosIndicativosUrl(idPoligono: number): string {
+  return `/api/siembra/puntos-indicativos?id_poligono=${idPoligono}`;
+}
+
 /** `/api/siembra/ranking-comunas` toma pesos como query params — no es una ruta estática. */
 export function rankingComunasUrl(pesos: {
   pesoPm25: number;

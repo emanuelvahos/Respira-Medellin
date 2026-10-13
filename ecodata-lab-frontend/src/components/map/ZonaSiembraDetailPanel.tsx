@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import { useZonaSiembraDetalle } from "@/lib/api/queries";
+import { AptitudTerrenoBloque } from "@/components/map/AptitudTerrenoBloque";
 import { ZonaDudosaThumbnail } from "@/components/map/ZonaDudosaThumbnail";
 import { buildZonaDudosaThumbnailUrl } from "@/lib/map/staticImage";
 import { approximateCentroid } from "@/lib/map/geoCentroid";
@@ -122,6 +123,8 @@ export function ZonaSiembraDetailPanel() {
               </div>
             </>
           )}
+
+          <AptitudTerrenoBloque idPoligono={zona.properties.id_poligono} />
 
           {detalleQuery.isLoading && (
             <p className="mt-3 text-xs text-muted-foreground">Cargando detalle…</p>

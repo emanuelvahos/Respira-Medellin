@@ -276,3 +276,39 @@ def test_calidad_datos_panel():
     assert zv["fecha_corte"] is None and zv["estado"] == "sin_fecha"
     integridad = {c["id"]: c["ok"] for c in r["chequeos"]}
     assert integridad["suma_vivos"] and integridad["balance_cuadra"] and integridad["21_comunas"]
+
+
+def test_aptitud_terreno_por_zona_y_resumen():
+    res = client.get("/api/siembra/aptitud/resumen").json()
+    assert res["zonas"] == 1648
+    assert res["apta"] + res["apta_con_condiciones"] + res["no_apta"] == 1648
+    assert any(c["id"] == "redes" for c in res["capas"])
+    assert res["avisos"] and res["umbrales"]["pendiente_no_apta_grados"] == 35.0
+    zid = client.get("/api/siembra/zonas").json()[0]["id_poligono"]
+    z = client.get(f"/api/siembra/zona/{zid}/aptitud").json()
+    assert z["aptitud"] in {"apta", "apta_con_condiciones", "no_apta"}
+    assert z["razones_especie"] and z["avisos"]
+    assert client.get("/api/siembra/zona/999999999/aptitud").status_code == 404
+
+
+def test_puntos_indicativos_apagados_por_defecto(monkeypatch):
+    assert client.get("/api/siembra/puntos-indicativos").status_code == 404
+    z = client.get("/api/siembra/zona/2308/aptitud").json()
+    assert z["puntos_publicos"] is False and z["puntos_indicativos"] == 0
+    monkeypatch.setattr("app.services.aptitud.puntos_publicos", lambda: True)
+    fc = client.get("/api/siembra/puntos-indicativos").json()
+    assert fc["type"] == "FeatureCollection" and len(fc["features"]) > 1000
+    una = client.get("/api/siembra/puntos-indicativos", params={"id_poligono": fc["features"][0]["properties"]["id_poligono"]}).json()
+    assert 0 < len(una["features"]) < len(fc["features"])
+
+
+def test_no_hay_puntos_en_zonas_no_aptas():
+    import pandas as pd
+
+    df = pd.read_csv("data/aptitud_terreno_por_zona.csv")
+    no = set(df[df["aptitud"] == "no_apta"]["id_poligono"])
+    fc = client.get  # noqa: F841
+    import json
+
+    pts = json.load(open("data/puntos_indicativos_siembra.geojson"))
+    assert not any(f["properties"]["id_poligono"] in no for f in pts["features"])

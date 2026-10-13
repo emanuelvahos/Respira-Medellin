@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     data_ahp_v2_sau_resumen: Path = Path("./data/ahp_v2_sau_resumen.json")
     data_ndvi_por_comuna: Path = Path("./data/ndvi_por_comuna.csv")
     data_ndvi_meta: Path = Path("./data/ndvi_meta.json")
+    data_aptitud_terreno: Path = Path("./data/aptitud_terreno_por_zona.csv")
+    data_puntos_indicativos: Path = Path("./data/puntos_indicativos_siembra.geojson")
+    data_capas_terreno_manifest: Path = Path("./data/capas_terreno_manifest.json")
+    # Nivel 2 (puntos indicativos de siembra): apagado por defecto; se enciende con PUNTOS_INDICATIVOS_PUBLICOS=true
+    puntos_indicativos_publicos: bool = False
     data_salud_respiratoria_resumen_comuna: Path
     data_poblacion_por_comuna: Path
 
