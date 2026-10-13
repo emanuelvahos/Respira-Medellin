@@ -14,12 +14,23 @@ jobs:
         with: { python-version: "3.11" }
       - run: pip install requests
       - run: python backend/scripts/descubrir_fuentes_terreno.py out 2>&1 | tail -30
+        continue-on-error: true
       - name: Texto del Plan de Silvicultura
+        continue-on-error: true
         run: |
-          which pdftotext || sudo apt-get install -y poppler-utils >/dev/null
-          [ -f out/plan_silvicultura.pdf ] && pdftotext -layout out/plan_silvicultura.pdf out/plan_silvicultura.txt && wc -c out/plan_silvicultura.txt || echo "sin pdf"
-          rm -f out/plan_silvicultura.pdf
+          pip install pypdf >/dev/null
+          python - <<'PY'
+          import pathlib
+          from pypdf import PdfReader
+          p = pathlib.Path("out/plan_silvicultura.pdf")
+          if p.exists():
+              t = "\n\n".join((pg.extract_text() or "") + f"\n[pagina {i+1}]" for i, pg in enumerate(PdfReader(str(p)).pages))
+              pathlib.Path("out/plan_silvicultura.txt").write_text(t)
+              p.unlink()
+              print(len(t))
+          PY
       - name: Publicar resultado
+        if: always()
         run: |
           git config user.name bot; git config user.email bot@example.com
           git checkout -b h6-descubrimiento-result
