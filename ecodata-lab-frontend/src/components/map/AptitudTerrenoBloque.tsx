@@ -9,7 +9,7 @@ const ETIQUETA: Record<ZonaAptitud["aptitud"], { texto: string; clases: string }
   apta: { texto: "Apta", clases: "border-vegetation/40 bg-vegetation-muted text-vegetation" },
   apta_con_condiciones: {
     texto: "Apta con condiciones",
-    clases: "border-warning/50 bg-warning/10 text-warning-foreground",
+    clases: "border-warning/60 bg-warning/20 text-foreground",
   },
   no_apta: { texto: "No apta", clases: "border-critical/40 bg-critical/10 text-critical" },
 };
