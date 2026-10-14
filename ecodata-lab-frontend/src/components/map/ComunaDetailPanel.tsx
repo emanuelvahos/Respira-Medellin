@@ -163,7 +163,7 @@ export function ComunaDetailPanel() {
           {resumen && !resumen.tiene_zona_siembra && (
             <div
               role="note"
-              className="mb-4 rounded-md border border-warning bg-warning/10 p-3 text-sm text-warning-foreground"
+              className="mb-4 rounded-md border border-warning bg-warning/10 p-3 text-sm text-foreground"
             >
               <p className="font-medium">Sin zona de siembra identificada</p>
               <p className="mt-1 text-xs">
