@@ -1,5 +1,5 @@
 INSTRUCCIONES - Respira Medellin
-Equipo: [nombre: NOVA] · Hackathon de Datos 2026
+Equipo: nombre equipo: NOVA · Hackathon de Datos 2026
 
 1. QUE ES             Respira Medellin: tablero interactivo que cruza PM2.5 (SIATA), arbolado urbano (SAU), salud y mortalidad respiratoria (MEData)
                       por comuna de Medellin, y prioriza donde sembrar primero (modelo multicriterio AHP). Modalidad: Visualizacion.
@@ -26,4 +26,4 @@ Equipo: [nombre: NOVA] · Hackathon de Datos 2026
                       - Proyecciones de poblacion (DANE via Alcaldia) y limites de comunas (GeoMedellin)
                       Datos incluidos en backend/data. Para refrescar MEData: python backend/scripts/fetch_mortalidad_medata.py
 7. USO DE IA          Claude (Anthropic) como asistente de programacion y analisis; el equipo revisa y puede explicar la solucion.
-8. CONTACTO           [nombre del lider] · [correo del lider]
+8. CONTACTO           Emaunel Vahos Villa · emanuelvahos216440@correo.itm.edu.co
