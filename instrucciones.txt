@@ -1,0 +1,29 @@
+INSTRUCCIONES - EcoData Lab Medellin
+Equipo: [nombre del equipo] · Hackathon de Datos 2026
+
+1. QUE ES             Tablero interactivo que cruza PM2.5 (SIATA), arbolado urbano (SAU), salud y mortalidad respiratoria (MEData)
+                      por comuna de Medellin, y prioriza donde sembrar primero (modelo multicriterio AHP). Modalidad: Visualizacion.
+2. PROBARLO EN LINEA  https://ecodata-lab-frontend.vercel.app/dashboard   (mapa: /mapa)
+                      Si la primera carga tarda, esperar ~30 s: el servidor gratuito se esta despertando.
+3. ENTORNO            Node.js 20+ con pnpm · Python 3.11 · Git. Dependencias: ecodata-lab-frontend/package.json y backend/requirements.txt
+4. EJECUTARLO         git clone https://github.com/emanuelvahos/Eco-Data-Lab.git
+                      cd Eco-Data-Lab/backend
+                      pip install -r requirements.txt
+                      cp .env.example .env
+                      uvicorn app.main:app --port 8000
+                      (en otra terminal)
+                      cd Eco-Data-Lab/ecodata-lab-frontend
+                      pnpm install
+                      NEXT_PUBLIC_API_URL=http://localhost:8000 pnpm dev
+                      Abrir http://localhost:3000/dashboard
+                      (El mapa 3D de /mapa necesita un token publico de Mapbox en NEXT_PUBLIC_MAPBOX_TOKEN; el enlace en linea ya lo trae.)
+5. QUE DEBE VER       En /dashboard: la pregunta, el hallazgo con cifra (21,5 a 27,7 arboles por 1.000 hab. en Santa Cruz, Popular y Manrique
+                      frente a 506,7 en El Poblado) y la tarjeta de mortalidad respiratoria de MEData por comuna.
+6. DATOS Y FUENTES    - MEData · Mortalidad (Secretaria de Salud) · https://medata.app.medellin.gov.co/dataset/1-026-22-000161 · CC BY(-SA) 4.0
+                      - SAU, arbol urbano (Alcaldia de Medellin) · https://www.medellin.gov.co/sau/
+                      - SIATA, PM2.5 · https://siata.gov.co
+                      - Perfil de morbilidad ESE Metrosalud · https://www.datos.gov.co (pypc-7h3w)
+                      - Proyecciones de poblacion (DANE via Alcaldia) y limites de comunas (GeoMedellin)
+                      Datos incluidos en backend/data. Para refrescar MEData: python backend/scripts/fetch_mortalidad_medata.py
+7. USO DE IA          Claude (Anthropic) como asistente de programacion y analisis; el equipo revisa y puede explicar la solucion.
+8. CONTACTO           [nombre del lider] · [correo del lider]
