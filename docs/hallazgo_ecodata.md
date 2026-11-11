@@ -1,4 +1,4 @@
-# EcoData Lab — Hallazgo para Hackathon de Datos 2026
+# Respira Medellín — Hallazgo para Hackathon de Datos 2026
 
 <config>
 Categoría: Interna · Modalidad: Visualización · Temática: Desarrollo sostenible y ambiente

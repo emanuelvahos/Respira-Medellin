@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "EcoData Lab · Medellín",
-  shortName: "EcoData Lab",
+  name: "Respira Medellín",
+  shortName: "Respira Medellín",
   description:
     "Plataforma de datos abiertos para la arborización urbana y la mitigación de PM2.5 en Medellín. Un laboratorio de ciencia de datos ambiental al servicio de la ciudad.",
   institution: "Secretaría de Medio Ambiente de Medellín",

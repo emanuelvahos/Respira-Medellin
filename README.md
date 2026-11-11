@@ -1,4 +1,4 @@
-# proyecto-alcaldia — EcoData Lab Medellín
+# proyecto-alcaldia — Respira Medellín (antes EcoData Lab)
 
 [![CI](https://github.com/emanuelvahos/Eco-Data-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/emanuelvahos/Eco-Data-Lab/actions/workflows/ci.yml)
 
