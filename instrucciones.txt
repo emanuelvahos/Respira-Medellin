@@ -3,7 +3,7 @@ Equipo: NOVA · Hackathon de Datos 2026
 
 1. QUE ES             Respira Medellin: tablero interactivo que cruza PM2.5 (SIATA), arbolado urbano (SAU), salud y mortalidad respiratoria (MEData)
                       por comuna de Medellin, y prioriza donde sembrar primero (modelo multicriterio AHP). Modalidad: Visualizacion.
-2. PROBARLO EN LINEA  https://ecodata-lab-frontend.vercel.app/dashboard   (mapa: /mapa)
+2. PROBARLO EN LINEA  https://respira-medellin.vercel.app/dashboard   (mapa: /mapa)
                       Si la primera carga tarda, esperar ~30 s: el servidor gratuito se esta despertando.
 3. ENTORNO            Node.js 20+ con pnpm · Python 3.11 · Git. Dependencias: respira-medellin-frontend/package.json y backend/requirements.txt
 4. EJECUTARLO         git clone https://github.com/emanuelvahos/Respira-Medellin.git
