@@ -5,7 +5,7 @@
 Monorepo del proyecto de arborización urbana para mitigación de PM2.5 en
 Medellín. El proyecto **activo** son dos carpetas desplegadas por separado:
 
-- **`ecodata-lab-frontend/`** — frontend Next.js (landing con scroll-telling,
+- **`respira-medellin-frontend/`** — frontend Next.js (landing con scroll-telling,
   mapa 3D, dashboard analítico con comparador AHP). Ver su `README.md` para
   desarrollo local y deploy a Vercel.
 - **`backend/`** — API FastAPI que expone los datasets ya generados por el
@@ -28,7 +28,7 @@ cómo hacerlo.
 
 | Carpeta | Plataforma | Root Directory a configurar |
 |---|---|---|
-| `ecodata-lab-frontend/` | Vercel | `ecodata-lab-frontend` |
+| `respira-medellin-frontend/` | Vercel | `respira-medellin-frontend` |
 | `backend/` | Render (`render.yaml`) | `backend` |
 
 Variables de entorno de cada lado, documentadas en su propio README.
