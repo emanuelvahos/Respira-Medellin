@@ -17,6 +17,7 @@ export const endpoints = {
   arbolesComunasDetalle: "/api/arboles/comunas-detalle",
   ahpV2Resumen: "/api/siembra/ahp-v2/resumen",
   saludResumenComuna: "/api/salud/resumen-comuna",
+  saludMortalidadRespiratoria: "/api/salud/mortalidad-respiratoria",
   poblacionComuna: "/api/comunas/poblacion",
 } as const;
 

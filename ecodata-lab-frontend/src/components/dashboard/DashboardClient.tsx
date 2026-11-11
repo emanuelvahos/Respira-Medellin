@@ -17,6 +17,9 @@ import { NdviEvidencia } from "@/components/dashboard/NdviEvidencia";
 import { CalidadDatosPanel } from "@/components/dashboard/CalidadDatosPanel";
 import { AhpV2Comparison } from "@/components/dashboard/AhpV2Comparison";
 import { ArbolesSauStats } from "@/components/dashboard/ArbolesSauStats";
+import { PreguntaHallazgoPropuesta } from "@/components/dashboard/PreguntaHallazgoPropuesta";
+import { MortalidadRespiratoriaCard } from "@/components/dashboard/MortalidadRespiratoriaCard";
+import { FuentesLicencias } from "@/components/dashboard/FuentesLicencias";
 import { SaludRespiratoriaBarChart } from "@/components/dashboard/SaludRespiratoriaBarChart";
 import { Pm25SaludComparacion } from "@/components/dashboard/Pm25SaludComparacion";
 import { AhpScenarioComparator } from "@/components/dashboard/AhpScenarioComparator";
@@ -72,6 +75,10 @@ function DashboardInner() {
       </div>
 
       <SeccionesIndice />
+
+      <PreguntaHallazgoPropuesta />
+
+      <MortalidadRespiratoriaCard />
 
       <section id="resumen" className="scroll-mt-32 space-y-6">
         <ResumenEjecutivo />
@@ -136,6 +143,8 @@ function DashboardInner() {
           <ComunasTable pesos={pesos} />
         </CardContent>
       </Card>
+
+      <FuentesLicencias />
     </MainContainer>
   );
 }

@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
+from app.models.mortalidad_respiratoria import MortalidadRespiratoriaResponse
 from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
-from app.services.data_loader import load_salud_respiratoria_resumen
+from app.services.data_loader import load_mortalidad_respiratoria, load_salud_respiratoria_resumen
 
 router = APIRouter(prefix="/api/salud", tags=["salud"])
 
@@ -20,3 +21,12 @@ def get_resumen_comuna() -> ResumenSaludRespiratoriaResponse:
     respiratoria total de Medellín.
     """
     return load_salud_respiratoria_resumen()
+
+
+@router.get("/mortalidad-respiratoria", response_model=MortalidadRespiratoriaResponse)
+def get_mortalidad_respiratoria() -> MortalidadRespiratoriaResponse:
+    """Muertes respiratorias 2017-2021 y tasa cruda por 100 mil hab./año, por comuna (MEData).
+
+    `metodologia` es obligatorio: la tasa es cruda, sin ajustar por edad.
+    """
+    return load_mortalidad_respiratoria()

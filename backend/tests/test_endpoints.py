@@ -312,3 +312,14 @@ def test_no_hay_puntos_en_zonas_no_aptas():
 
     pts = json.load(open("data/puntos_indicativos_siembra.geojson"))
     assert not any(f["properties"]["id_poligono"] in no for f in pts["features"])
+
+
+def test_salud_mortalidad_respiratoria():
+    resp = client.get("/api/salud/mortalidad-respiratoria")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["metodologia"]
+    assert len(data["comunas"]) == 21
+    fila = next(c for c in data["comunas"] if c["comuna"] == "La Candelaria")
+    assert fila["muertes_2017_2021"] == 1152
+    assert fila["tasa_x100mil"] == 285.2

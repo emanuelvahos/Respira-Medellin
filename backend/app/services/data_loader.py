@@ -19,6 +19,7 @@ from fastapi import HTTPException
 from app.core.config import get_settings
 from app.models.ahp_v2 import AhpV2Comuna, AhpV2Resumen
 from app.models.arbol_sau import ArbolSau, BalanceSau
+from app.models.mortalidad_respiratoria import MortalidadRespiratoriaResponse
 from app.models.salud_respiratoria import ResumenSaludRespiratoriaResponse
 from app.models.pm25 import EstacionPM25, IntegracionPM25Arboles, RelacionComunaAnual
 from app.models.comuna import EstacionAuditoria
@@ -527,6 +528,41 @@ def load_salud_respiratoria_resumen() -> ResumenSaludRespiratoriaResponse:
         "proporción. Se muestra junto al conteo absoluto, no en su reemplazo."
     )
     return ResumenSaludRespiratoriaResponse.model_validate(raw)
+
+
+@lru_cache
+def load_mortalidad_respiratoria() -> MortalidadRespiratoriaResponse:
+    """Mortalidad respiratoria 2017-2021 por comuna (MEData, Secretaría de Salud).
+
+    Lee el CSV generado por backend/scripts/fetch_mortalidad_medata.py.
+    """
+    settings = get_settings()
+    df = _read_csv(
+        settings.data_medata_mortalidad_respiratoria_comuna,
+        "DATA_MEDATA_MORTALIDAD_RESPIRATORIA_COMUNA",
+    )
+    comunas = [
+        {
+            "comuna": row["comuna"],
+            "muertes_2017_2021": int(row["muertes_resp_2017_2021"]),
+            "tasa_x100mil": float(row["tasa_resp_x100mil_anio"]),
+        }
+        for row in df.to_dict(orient="records")
+    ]
+    return MortalidadRespiratoriaResponse.model_validate(
+        {
+            "fuente": "MEData · Mortalidad, Secretaría de Salud de Medellín "
+            "(https://medata.app.medellin.gov.co/dataset/1-026-22-000161)",
+            "licencia": "CC BY(-SA) 4.0",
+            "metodologia": (
+                "Muertes por causas respiratorias 2017-2021 por comuna de residencia "
+                "(3 subcategorías OPS). Tasa cruda por 100 mil habitantes por año, "
+                "sin ajustar por edad: las comunas más envejecidas pesan más. "
+                "No es causal ni atribuible al aire o al arbolado."
+            ),
+            "comunas": comunas,
+        }
+    )
 
 
 @lru_cache

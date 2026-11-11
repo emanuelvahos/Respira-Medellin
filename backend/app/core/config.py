@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     puntos_indicativos_publicos: bool = False
     data_salud_respiratoria_resumen_comuna: Path
     data_poblacion_por_comuna: Path
+    data_medata_mortalidad_respiratoria_comuna: Path = Path(
+        "./data/medata_mortalidad_respiratoria_comuna.csv"
+    )
 
     cors_allowed_origins: str = "http://localhost:3000"
     sentry_dsn: str | None = None

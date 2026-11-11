@@ -43,6 +43,7 @@ import { puntosIndicativosSchema, zonaAptitudSchema } from "@/types/aptitud";
 import { arbolesComunaDetalleSchema } from "@/types/arbolesDetalle";
 import { ahpV2ComunaSchema, ahpV2ResumenSchema } from "@/types/ahpV2";
 import { resumenSaludRespiratoriaResponseSchema } from "@/types/saludRespiratoria";
+import { mortalidadRespiratoriaResponseSchema } from "@/types/mortalidadRespiratoria";
 
 async function fetchAndValidate<Schema extends z.ZodTypeAny>(
   path: string,
@@ -258,6 +259,18 @@ export function useSaludResumenComuna() {
       ),
     // Agregado liviano (por comuna, ya resumido en el backend): se puede
     // cargar siempre, igual que arboles-resumen-comuna.
+  });
+}
+
+export function useMortalidadRespiratoria() {
+  return useQuery({
+    queryKey: ["salud-mortalidad-respiratoria"],
+    queryFn: () =>
+      fetchAndValidate(
+        endpoints.saludMortalidadRespiratoria,
+        mortalidadRespiratoriaResponseSchema,
+      ),
+    // Agregado liviano (21 filas): se puede cargar siempre.
   });
 }
 
