@@ -64,7 +64,7 @@ def build_ranking_excel(items: list[RankingComunaItem], pesos: PesosAhp) -> byte
             {"campo": "peso_deficit", "valor": pesos["peso_deficit"]},
             {"campo": "peso_area", "valor": pesos["peso_area"]},
             {"campo": "fecha_generacion", "valor": _fecha_generacion()},
-            {"campo": "fuente", "valor": "EcoData Lab Medellín — /api/siembra/ranking-comunas"},
+            {"campo": "fuente", "valor": "Respira Medellín — /api/siembra/ranking-comunas"},
         ]
     )
 
@@ -88,7 +88,7 @@ def build_ranking_pdf(items: list[RankingComunaItem], pesos: PesosAhp) -> bytes:
     styles = getSampleStyleSheet()
     story = [
         Paragraph("Ranking de comunas priorizadas para siembra", styles["Title"]),
-        Paragraph(f"Generado: {_fecha_generacion()} — EcoData Lab Medellín", styles["Normal"]),
+        Paragraph(f"Generado: {_fecha_generacion()} — Respira Medellín", styles["Normal"]),
         Paragraph(
             f"Pesos AHP usados — PM2.5: {pesos['peso_pm25'] * 100:.0f}% · "
             f"Déficit de mitigadores: {pesos['peso_deficit'] * 100:.0f}% · "

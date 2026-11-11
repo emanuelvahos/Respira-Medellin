@@ -31,7 +31,7 @@ if settings.sentry_dsn:
     )
 
 app = FastAPI(
-    title="EcoData Lab Medellín — API",
+    title="Respira Medellín — API",
     description=(
         "Capa de servicio sobre los datasets ya generados por el pipeline "
         "de ciencia de datos (bloque_1/bloque_2). No recalcula el modelo "
