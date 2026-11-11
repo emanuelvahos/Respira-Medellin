@@ -1,5 +1,5 @@
 INSTRUCCIONES - EcoData Lab Medellin
-Equipo: [nombre del equipo] · Hackathon de Datos 2026
+Equipo: [nombre: NOVA] · Hackathon de Datos 2026
 
 1. QUE ES             Tablero interactivo que cruza PM2.5 (SIATA), arbolado urbano (SAU), salud y mortalidad respiratoria (MEData)
                       por comuna de Medellin, y prioriza donde sembrar primero (modelo multicriterio AHP). Modalidad: Visualizacion.
