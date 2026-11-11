@@ -5,6 +5,8 @@ Fuente: https://medata.app.medellin.gov.co/dataset/1-026-22-000161  (ficha: CC B
 Solo se piden dos columnas (comuna_res, ano): no se descarga ni se guarda ningún dato personal.
 Uso:  python scripts/fetch_mortalidad_medata.py
 Salida: data/medata_mortalidad_respiratoria_comuna.csv
+(columnas: comuna, muertes_resp_2012_2021, muertes_resp_2017_2021, tasa_resp_x100mil_anio;
+el cruce con comuna y población usa el código de comuna y data/poblacion_por_comuna.csv)
 """
 import csv, sys, time
 from collections import defaultdict
@@ -30,6 +32,21 @@ def consulta(sub, offset):
         time.sleep(3 * (intento + 1))
     sys.exit(f"MEData no respondió ({r.status_code}): {r.text[:200]}")
 
+def construir_filas(todo, reciente, pob_csv):
+    """Une por código de comuna ('01 Popular' -> '01'); descarta 'Sin informacion'."""
+    with open(pob_csv, encoding="utf-8") as fh:
+        pob = {r["codigo_comuna"]: r for r in csv.DictReader(fh)}
+    anios = 2021 - DESDE + 1
+    filas = []
+    for c in todo:
+        codigo = c.split(" ", 1)[0]
+        if codigo not in pob:
+            continue
+        p = pob[codigo]
+        tasa = round(reciente[c] / anios / int(p["poblacion"]) * 1e5, 1)
+        filas.append([p["nombre_comuna"], todo[c], reciente[c], tasa])
+    return filas
+
 def main():
     todo, reciente = defaultdict(int), defaultdict(int)
     for sub in SUBCATEGORIAS:
@@ -44,13 +61,14 @@ def main():
             if len(filas) < PAGE:
                 break
             offset += PAGE
-    out = Path(__file__).resolve().parent.parent / "data" / "medata_mortalidad_respiratoria_comuna.csv"
+    data = Path(__file__).resolve().parent.parent / "data"
+    filas = construir_filas(todo, reciente, data / "poblacion_por_comuna.csv")
+    out = data / "medata_mortalidad_respiratoria_comuna.csv"
     with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
-        w.writerow(["comuna_medata", "muertes_resp_2012_2021", f"muertes_resp_{DESDE}_2021"])
-        for c in sorted(todo):
-            w.writerow([c, todo[c], reciente[c]])
-    print(f"OK {sum(todo.values())} defunciones respiratorias -> {out}")
+        w.writerow(["comuna", "muertes_resp_2012_2021", f"muertes_resp_{DESDE}_2021", "tasa_resp_x100mil_anio"])
+        w.writerows(filas)
+    print(f"OK {sum(todo.values())} defunciones respiratorias ({len(filas)} comunas) -> {out}")
 
 if __name__ == "__main__":
     main()
